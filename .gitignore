@@ -1,0 +1,13 @@
+.DS_Store
+node_modules/
+*.log
+.worktrees/
+
+# claude plugin eval run outputs
+evals/**/results/
+evals/results/
+evals/**/.replay/
+
+# third-party source documents: fetched locally by references/refresh.sh, never committed
+references/pdfs/
+references/*.html

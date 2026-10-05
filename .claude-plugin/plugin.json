@@ -1,0 +1,9 @@
+{
+  "name": "ekyc-jp",
+  "version": "0.1.0",
+  "description": "日本のeKYC（マイナンバーカード・公的個人認証JPKI）に対応したiOSアプリ開発を支援するスキル群。CoreNFCによるICチップ直接読み取り（カ方式）、署名検証サーバー、犯収法・携帯法の本人確認方法マップを含む。",
+  "author": {
+    "name": "quangha"
+  },
+  "license": "MIT"
+}
