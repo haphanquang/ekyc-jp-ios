@@ -136,7 +136,7 @@ sequenceDiagram
     participant JLIS as J-LIS
     App->>Srv: Start session
     Srv-->>App: Session token + data to sign (includes a one-time nonce)
-    Note over App: One NFC session (under ~60 s):<br/>SELECT JPKI app → VERIFY PIN →<br/>COMPUTE SIGNATURE → READ certificate
+    Note over App: One NFC session (under ~60 s):<br/>SELECT on-chip JPKI-AP → VERIFY PIN →<br/>COMPUTE SIGNATURE → READ certificate
     App->>Srv: Signature + signing certificate
     Srv->>Srv: Verify signature, chain to J-LIS CA, check dates
     Srv->>PF: Is this certificate still valid?
