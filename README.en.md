@@ -60,19 +60,19 @@ is **not published yet**, so `claude plugin marketplace add …` does not work. 
 local clone:
 
 ```bash
-git clone git@github.com:haphanquang/jp-ekyc-ios-agent-skills.git
+git clone git@github.com:haphanquang/ekyc-jp-ios.git
 
 # Option A (recommended): load the plugin for a session
-claude --plugin-dir ./jp-ekyc-ios-agent-skills
+claude --plugin-dir ./ekyc-jp-ios
 
 # Option B: install the skills as personal skills
-ln -s "$PWD"/jp-ekyc-ios-agent-skills/skills/* ~/.claude/skills/
+ln -s "$PWD"/ekyc-jp-ios/skills/* ~/.claude/skills/
 ```
 
 Option A is more reliable: the skills point to `references/` by paths relative to the repo root,
 and Option B links only the skills.
 
-To check the plugin: `claude plugin validate ./jp-ekyc-ios-agent-skills`
+To check the plugin: `claude plugin validate ./ekyc-jp-ios`
 
 ## Try it
 

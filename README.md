@@ -58,19 +58,19 @@ APDU で IC チップを直接読み取る構成を前提にしています。
 clone して読み込みます。
 
 ```bash
-git clone git@github.com:haphanquang/jp-ekyc-ios-agent-skills.git
+git clone git@github.com:haphanquang/ekyc-jp-ios.git
 
 # 方法A（推奨）: セッション単位でプラグインとして読み込む
-claude --plugin-dir ./jp-ekyc-ios-agent-skills
+claude --plugin-dir ./ekyc-jp-ios
 
 # 方法B: 個人スキルとしてシンボリックリンクを張る
-ln -s "$PWD"/jp-ekyc-ios-agent-skills/skills/* ~/.claude/skills/
+ln -s "$PWD"/ekyc-jp-ios/skills/* ~/.claude/skills/
 ```
 
 方法A のほうが確実です。各スキルはリポジトリルートからの相対パスで `references/` を参照しており、
 方法B ではスキルだけがリンクされます。
 
-検証: `claude plugin validate ./jp-ekyc-ios-agent-skills`
+検証: `claude plugin validate ./ekyc-jp-ios`
 
 ## 試してみる
 
