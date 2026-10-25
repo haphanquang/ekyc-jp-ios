@@ -22,7 +22,7 @@ VERIFY（`00 20 00 80` ＋ 暗証番号バイト列）に対する応答 SW1SW2 
 
 | 暗証番号 | 桁数 | 連続失敗でロック | 確度（`apdu-cheatsheet.md` 参照） |
 |---|---|---|---|
-| 署名用 | 6〜16 英数字 | 5 回 | 確認済（J-LIS `jpki.go.jp`） |
+| 署名用 | 6〜16 英大文字・数字 | 5 回 | 確認済（J-LIS `jpki.go.jp`） |
 | 利用者証明用 | 4 数字 | 3 回 | 確認済（J-LIS `jpki.go.jp`） |
 | 券面入力補助用 | 4 数字 | 3 回 | 確認済（マイナンバーカード総合サイト・マイナポータル FAQ・デジタル庁） |
 | 券面事項確認用（照合番号B・14 桁：生年月日6＋有効期限4＋セキュリティコード4） | 14 桁 | 10 回 | 確認済（デジタル庁・自治体・複数ベンダー資料が一致） |
@@ -70,10 +70,10 @@ func pinBytes(_ input: String, kind: PINKind) throws -> [UInt8] {
     if kind == .shomei { s = s.uppercased() }   // 署名用は英大文字＋数字
     let pattern: String
     switch kind {
-    case .riyousha, .kenmenHojo: pattern = "^[0-9]{4}$"
-    case .shomei:                pattern = "^[A-Z0-9]{6,16}$"
-    case .shogoB:                pattern = "^[0-9]{14}$"
-    case .shogoA:                pattern = "^[0-9]{12}$"
+    case .riyousha, .kenmenHojo: pattern = "\\A[0-9]{4}\\z"
+    case .shomei:                pattern = "\\A[A-Z0-9]{6,16}\\z"
+    case .shogoB:                pattern = "\\A[0-9]{14}\\z"
+    case .shogoA:                pattern = "\\A[0-9]{12}\\z"
     }
     guard s.range(of: pattern, options: .regularExpression) != nil else {
         throw PINInputError.invalidFormat
@@ -145,6 +145,7 @@ func interpret(sw1: UInt8, sw2: UInt8) -> VerifyOutcome {
 
 - `references/apdu-cheatsheet.md`（「暗証番号の桁数・ロック回数」「SW1SW2」— 数値・出典・確度の一次記録。本スキルはその索引）
 - `references/pdfs/06_certificate-expiry-what-to-do.pdf`（J-LIS「電子証明書が失効する場合とその対応」— 失効事由と失効理由コード。暗証番号ロックそのものの記載はないが、失効・ロックの双方が「窓口での手続き」に至る点の背景）
+- `references/pdfs/33_guide-liquid-ekyc.pdf` p11（LIQUID eKYC のご案内 — 券面記載14桁の照合番号Bのロック回数10回の記載。ベンダー資料）
 - https://www.jpki.go.jp/procedure/password.html （J-LIS「電子証明書のパスワードをロック／失念した場合の解除方法」— 署名用 5 回・利用者証明用 3 回でロック。解除はスマホアプリ＋コンビニのキオスク端末での初期化、または市区町村窓口での再設定。郵送・オンライン不可。HTTP 200。取得日 2026-09-08）
 - https://www.jpki.go.jp/ （J-LIS ポータルトップ — 利用者証明用（4 桁）3 回・署名用（6〜16 桁 英数字）5 回でロック。HTTP 200。取得日 2026-09-08）
 - https://www.kojinbango-card.go.jp/faq_pin2/ （マイナンバーカード総合サイト FAQ「券面事項入力補助アプリの暗証番号とは何ですか？」— 数字 4 桁、3 回誤入力でロック、市区町村で再設定。HTTP 200。取得日 2026-09-08）

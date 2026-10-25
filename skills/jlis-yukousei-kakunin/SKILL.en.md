@@ -1,6 +1,6 @@
 ---
 name: jlis-yukousei-kakunin
-description: Use when implementing server-side validity verification (revocation check) for My Number Card signing certificates. Covers the procedure to verify if the certificate is still valid (within validity period and not revoked) via the API of a competent minister-certified platform operator (PF operator), after the signature verification (`signature-verification`) passes as "cryptographically correct". Includes branching and user-facing messages per revocation reason (expiration, change in four basic attributes, death, moving abroad, card return/reissuance), timeout/bounded retry/idempotency design, and audit log items. Direct queries to J-LIS from apps or uncertified in-house servers are not permitted.
+description: Use when implementing server-side validity verification (revocation check) for My Number Card electronic certificates (signing and user-authentication) via a certified PF operator API after signature-verification passes. Covers CRL vs OCSP selection, branching and user messages per revocation reason (expiration, 4-attribute change, death/moving abroad, suspension/reissuance), timeout/bounded retry/idempotency, audit logs, and prohibiting direct J-LIS queries.
 ---
 
 # Certificate Validity Verification (via PF Operator API)
@@ -24,7 +24,7 @@ For role division between PF operators and SP operators, general concepts of CRL
 - **Only operators certified by the competent minister can query J-LIS for certificate validity verification** (Public Personal Authentication Act). The apps/servers targeted by this plugin are usually **SP operators**, and they delegate validity verification **via the API of a PF operator**.
 - **Neither apps nor uncertified in-house servers may directly download CRLs or query the OCSP responder to J-LIS.** Downloading CRLs, checking against the issuance number, and obtaining OCSP responses are all done on the PF operator side, and the in-house server only receives the results of the PF operator API.
 - The fact that cards can be read directly via CoreNFC does not change this boundary. Reading (app) and validity verification (PF operator) are separate layers.
-- Whether the PF operator API refers to J-LIS revocation information via CRL or OCSP depends on the operator's implementation. From the in-house server, treat it as an interface that "passes the issuance number (certificate serial) and receives the validity judgment and reference ID".
+- Whether the PF operator API refers to J-LIS revocation information via CRL or OCSP depends on the operator's implementation. From the in-house server, treat it as an interface that "passes the CA generation (`issuer DER`) and issuance number (certificate serial) pair `(issuer DER, issuance number)` and receives the validity judgment and reference ID".
 
 ## Choosing Between CRL and OCSP Methods
 
@@ -58,10 +58,10 @@ Normalize the validity verification result into the following 4 categories befor
 Background of revocation reasons (`references/pdfs/06_*`, `jpki-introduction.ja.md` §5.1.1):
 
 - **Signing certificates** are revoked upon `expiration of validity period` / `modification of four basic attributes (name, address, date of birth, gender)` / `death of the person, etc. (elimination of resident record: death, moving abroad, out of scope of Basic Resident Registration Act)` / `request from the person (loss/theft of card, arrival of expiration date, suspension of use due to change in personal number, suspension of use of electronic certificate, leakage of private key, etc.)`. Also revoked by record errors/omissions.
-- **User-authentication certificates** are `not revoked by changes in the four basic attributes`. They are revoked by `expiration of validity period` / `death, etc.` / `request from the person`.
+- **User-authentication certificates** are `not revoked by changes in the four basic attributes`. They are revoked by `expiration of validity period` / `death, etc.` / `request from the person`. Therefore, **when `signing = × revoked` and `user-authentication = ○ valid`, the cause is specifically identified as "① Change of name, address, etc."** (when both are `× revoked`, it maps to ② death/moving abroad or ③ user request for suspension/loss, etc.; `references/pdfs/06_certificate-expiry-what-to-do.pdf` p.1).
 - The validity period is **in principle 5 years** (or until the card's expiration date if it arrives within 5 years. Matches the user-authentication expiration date). The exact rules are common with the unverified items in `signature-verification`.
 - If a signing certificate is revoked due to "change in four basic attributes", the common response by PF operators/operators is "guiding to a procedure to confirm address, name, etc." Specifically, (1) having them resend the updated signing certificate, (2) having them send the recorded information of the `card-face input-assist application` (`references/pdfs/06_*`). How much of a recovery flow this app will have is a design decision.
-- The PF operator API may return a revocation reason code (`references/pdfs/06_*` lists `affiliationChanged` / `cessationOfOperation` / `superseded` / `certificateHold`). The exact correspondence between codes and reasons is **unverified** (see below). Save the returned code as-is in the audit log, and output user-facing messages based on the categories in the table above.
+- The PF operator API may return a revocation reason code. In the table of `references/pdfs/06_certificate-expiry-what-to-do.pdf` p.1, `affiliationChanged` (spelled `affliationChanged` in the PDF) = `"Death" or "Moving abroad" (「死亡」又は「海外転出」)`, `cessationOfOperation` = `"Card loss" or "Moving abroad" (「カード紛失」又は「海外転出」)`, `Superseded` = `"Certificate renewal" (「証明書更新」)`, and `certificateHold` = `"Card loss" (「カード紛失」)`. Save the returned code as-is in the audit log, and output user-facing messages based on the categories in the table above.
 
 ## Call Design (timeout / retry / idempotency)
 
@@ -72,7 +72,7 @@ Background of revocation reasons (`references/pdfs/06_*`, `jpki-introduction.ja.
 - [ ] **Fail closed** — "Unverifiable" means "Not valid". If the retry limit is reached, do not move to `validity_checked`; put the session in a pending/rejected state, and do not set it to `completed`.
 - [ ] **Receiving Reference ID** — Always receive and save the PF operator's response ID / reference ID / query date and time (see "Audit Log" below). Treat responses where these cannot be received as incomplete.
 - [ ] **Replay Protection** — If the OCSP method supports nonces, attach a nonce per session and verify the nonce in the response (check if the PF operator API supports this).
-- [ ] **Suppressing Duplicate Queries** — Do not query the same issuance number multiple times within the same session (for billing/rate-limit mitigation). Cache the result in the session.
+- [ ] **Suppressing Duplicate Queries** — Do not query the same `(issuer DER, issuance number)` pair multiple times within the same session (for billing/rate-limit mitigation). Cache the result in the session.
 
 ## Audit Log
 
@@ -85,17 +85,17 @@ As **evidence of validity verification** for record preservation under the Act o
 - Reference ID / Response ID of the PF operator
 - Query date and time (with timezone)
 - Verification method (CRL provision method / OCSP responder method). If CRL method, the reference time of the consulted CRL (e.g., `thisUpdate` / `nextUpdate`)
-- Serial number (**issuance number**) of the target electronic certificate
+- CA generation and serial number pair (**`(issuer DER, issuance number)`**) of the target electronic certificate
 - eKYC session ID, corresponding result ID of signature verification (`signature-verification`)
 
 **Do Not Save:**
 
-- The electronic certificate itself (DER) / public key. Signing certificates should be discarded after use, except when using the "latest user information (four attributes) provision service" (`doui-jouhou-kanri`).
+- The electronic certificate itself (DER) / public key. Do not store them in the validity verification log (they are also never retained under the "Latest User Information (4 Attributes) Provision Service" per `doui-jouhou-kanri`), and normally discard them after use. The only exception is when performing transaction verification under AML Act Method Ka (New Nu from April 2027), where the signing certificate (DER) and electronic signature are retained only in a separate 7-year confirmation record store (`signature-verification` / `honnin-kakunin-houhou`).
 - Personal number (My Number) (Do not keep without basis in the My Number Act. `kenmen-jikou-kakunin-ap`)
 - PIN / private key (Never leaves the device in the first place. `ios-security`)
 - Raw values of the four basic attributes in the validity verification log beyond the scope necessary for matching.
 
-The issuance number (serial) may be saved to trace "which certificate was verified" later, but consider it separately from storing the certificate body.
+The CA generation and issuance number (serial) pair `(issuer DER, issuance number)` may be saved to trace "which certificate was verified" later, but consider it separately from storing the certificate body.
 
 ## Sources
 
@@ -118,7 +118,7 @@ PDFs under `references/pdfs/` are third-party works and are not shipped with the
 ## Unverified Items
 
 - **The specific interface of the PF operator API** (endpoints, request/response formats, result code system for validity judgment, presence/absence of revocation reason codes, Idempotency-Key support, OCSP nonce support, response for "issuance number not in revocation info / out of query scope") varies by operator. This skill provides general design principles only. Check the specifications of your contracted PF operator.
-- **Exact correspondence between revocation reason codes and revocation reasons** (`affiliationChanged` / `cessationOfOperation` / `superseded` / `certificateHold`). They are listed in `references/pdfs/06_*`, but since text extraction from the PDF body breaks the column alignment of the diagram, the correspondence between codes and reasons is not asserted. Confirm with the original diagram, or the Public Personal Authentication Service Profile Specifications / Revocation info provision procedure flow for signature verifiers, etc. (J-LIS `20221027minkan.pdf`).
+- **Detailed profile specification definitions of revocation reason codes**. Visual inspection of `references/pdfs/06_certificate-expiry-what-to-do.pdf` p.1 confirms that `signing = × revoked` and `user-authentication = ○ valid` maps to "① Change of name, address, etc.", while both `× revoked` maps to ② death/moving abroad or ③ user suspension/loss, and the table maps `affiliationChanged` (spelled `affliationChanged` in the PDF) = `"Death" or "Moving abroad"`, `cessationOfOperation` = `"Card loss" or "Moving abroad"`, `Superseded` = `"Certificate renewal"`, and `certificateHold` = `"Card loss"`. However, strict CRL extension assignment rules and PF operator API return specifications should be confirmed in the Public Personal Authentication Service Profile Specifications / Revocation info provision procedure flow for signature verifiers, etc. (J-LIS `20221027minkan.pdf`) and your contracted PF operator's specifications.
 - **Specifics of CRL update times** ("about once a day, exact time unverified". Common with unverified items in `platform-jigyousha`).
 - **Exact rules for the validity period of signing certificates** (in principle 5 years, until the 5th birthday after issuance, relationship with card expiration date) are common with unverified items in `signature-verification`.
 - **Recovery design after "Unverifiable"** (retry limits, possibility of fallback between CRL <-> OCSP, procedure to resume pending sessions) depends on the PF operator's SLA and specifications.

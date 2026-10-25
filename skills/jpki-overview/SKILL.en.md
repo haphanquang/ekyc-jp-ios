@@ -108,7 +108,9 @@ PDFs under `references/pdfs/` are third-party works and are not shipped with the
 - `references/pdfs/01_overview-public-personal-authentication.pdf` (Overview of the Public Personal Authentication system, signature verifier model, revocation conditions)
 - `references/pdfs/03_public-key-cryptography.pdf` (Public key cryptography, authentication flow for signing / user-authentication)
 - `references/pdfs/04_jpki-platform-operator-system.pdf` (Platform operator system, relationship with SP operators, procedures on the J-LIS side)
+- `references/pdfs/05_private-sector-guidelines-v1.8.pdf` (Guidelines for Private Operators Using the Public Personal Authentication Service, Version 1.8)
 - `references/pdfs/21_guide-public-personal-authentication.pdf` (Example of introduction flow from the perspective of an SP operator)
+- `references/pdfs/29_guide-trustdock-jpki.pdf` (Guide to TRUSTDOCK Public Personal Authentication Service, configuration example as an SP operator)
 
 ## Last Verified
 
@@ -116,4 +118,4 @@ PDFs under `references/pdfs/` are third-party works and are not shipped with the
 
 ## Unverified Items
 
-- The specific period required for procedures on the J-LIS side (AID disclosure application, usage application, screening) when an SP operator introduces it via a PF operator. Do not assert this as it is not explicitly stated in the read primary sources. Supplement it by checking the PF operator materials (`references/pdfs/04`, `05`, `21`, `29`, etc.) in `platform-jigyousha`.
+- The specific period required for procedures on the J-LIS side (AID disclosure application, usage application, screening) when an SP operator introduces it via a PF operator. Do not assert this as it is not explicitly stated in the read primary sources. Supplement it by checking the PF operator materials (`references/pdfs/04_jpki-platform-operator-system.pdf`, `references/pdfs/05_private-sector-guidelines-v1.8.pdf`, `references/pdfs/21_guide-public-personal-authentication.pdf`, `references/pdfs/29_guide-trustdock-jpki.pdf`, etc.) in `platform-jigyousha`.

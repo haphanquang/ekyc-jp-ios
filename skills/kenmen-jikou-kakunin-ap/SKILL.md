@@ -72,12 +72,13 @@ description: マイナンバーカードの券面事項確認AP から 券面イ
 
 ```swift
 extension CardReader {
-    // 手順 3: 照会番号の VERIFY。表面のみは14桁、個人番号も読むならマイナンバー12桁。
-    // keyref(P2) / Lc / 桁整形は未確認のため、確定したバイト列に差し替えて使う。
+    // 手順 2〜3: 解錠情報 EF の SELECT と照会番号の VERIFY。表面のみは14桁、個人番号も読むならマイナンバー12桁。
+    // EF-ID / keyref(P2) / Lc / 桁整形は未確認のため、確定したバイト列に差し替えて使う。
     // VerifyOutcome / PINKind / pinBytes / interpret は pin-lock-handling で定義。
     // kind: 表面のみは .shogoB（14 桁）、個人番号も読むなら .shogoA（12 桁）
-    func verifyKenmenInquiry(_ inquiry: String, kind: PINKind, tag: NFCISO7816Tag) async throws -> VerifyOutcome {
+    func verifyKenmenInquiry(_ inquiry: String, kind: PINKind, pinEFID: [UInt8], tag: NFCISO7816Tag) async throws -> VerifyOutcome {
         let bytes = try pinBytes(inquiry, kind: kind)        // 全角→半角・桁数チェック（整形は未確認）
+        try await selectEF(efID: pinEFID, tag: tag)          // 00 A4 02 0C 02 <pinEFID>（EF-ID は未確認）
         let p2: UInt8 = 0x80                                 // keyref は未確認（JPKI-AP の値を仮置き）
         let apdu = rawAPDU([0x00, 0x20, 0x00, p2, UInt8(bytes.count)] + bytes)
         let (_, sw1, sw2) = try await send(apdu, to: tag)

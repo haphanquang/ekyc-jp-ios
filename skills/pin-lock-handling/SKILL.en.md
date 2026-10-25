@@ -22,7 +22,7 @@ Values, sources, and confidence levels are primarily recorded in `references/apd
 
 | PIN | Digits | Locks After Consecutive Failures | Confidence (see `apdu-cheatsheet.md`) |
 |---|---|---|---|
-| Signature | 6–16 alphanumeric | 5 times | Verified (J-LIS `jpki.go.jp`) |
+| Signature | 6–16 uppercase alphanumeric | 5 times | Verified (J-LIS `jpki.go.jp`) |
 | User Authentication | 4 digits | 3 times | Verified (J-LIS `jpki.go.jp`) |
 | Card Surface Input Assistance | 4 digits | 3 times | Verified (My Number Card General Site, MynaPortal FAQ, Digital Agency) |
 | Card Surface Verification (Inquiry Number B, 14 digits: DOB 6 + expiry 4 + security code 4) | 14 digits | 10 times | Verified (Digital Agency, municipalities, multiple vendor materials agree) |
@@ -55,7 +55,7 @@ VERIFY response SW1SW2. Values are ISO/IEC 7816-4 standard values; primary sourc
 enum PINKind {
     case riyousha        // User Authentication: 4 digits
     case kenmenHojo      // Card Surface Input Assistance: 4 digits
-    case shomei          // Signature: 6–16 alphanumeric characters
+    case shomei          // Signature: 6–16 uppercase alphanumeric characters
     case shogoB          // Inquiry Number B: 14 digits written on card surface (DOB 6 + expiry 4 + security code 4)
     case shogoA          // Inquiry Number A: Individual Number 12 digits
 }
@@ -70,10 +70,10 @@ func pinBytes(_ input: String, kind: PINKind) throws -> [UInt8] {
     if kind == .shomei { s = s.uppercased() }   // Signature requires uppercase letters + numbers
     let pattern: String
     switch kind {
-    case .riyousha, .kenmenHojo: pattern = "^[0-9]{4}$"
-    case .shomei:                pattern = "^[A-Z0-9]{6,16}$"
-    case .shogoB:                pattern = "^[0-9]{14}$"
-    case .shogoA:                pattern = "^[0-9]{12}$"
+    case .riyousha, .kenmenHojo: pattern = "\\A[0-9]{4}\\z"
+    case .shomei:                pattern = "\\A[A-Z0-9]{6,16}\\z"
+    case .shogoB:                pattern = "\\A[0-9]{14}\\z"
+    case .shogoA:                pattern = "\\A[0-9]{12}\\z"
     }
     guard s.range(of: pattern, options: .regularExpression) != nil else {
         throw PINInputError.invalidFormat
@@ -143,8 +143,9 @@ The app cannot perform lock release or initialization. Guide the user to the fol
 
 PDFs under `references/pdfs/` are third-party works and are not shipped with the plugin. If a file is missing, run `bash references/refresh.sh` to download it (URLs and SHA256 are in `references/sources.md`).
 
-- `references/apdu-cheatsheet.md` ("PIN Digit Count and Lock Count" and "SW1SW2" — primary record for values, sources, and confidence levels. This skill is its index)
+- `references/apdu-cheatsheet.md` ("PIN Length and Lock Attempt Limits" and "SW1SW2" — primary record for values, sources, and confidence levels. This skill is its index)
 - `references/pdfs/06_certificate-expiry-what-to-do.pdf` (J-LIS "When Digital Certificates are Revoked and How to Respond" — Revocation reasons and reason codes. No direct description of PIN lock, but background on both revocation and lock leading to "procedures at the counter")
+- `references/pdfs/33_guide-liquid-ekyc.pdf` p11 (LIQUID eKYC Guide — records the 10-attempt lock count for the 14-digit Inquiry Number B printed on the card face. Vendor material)
 - https://www.jpki.go.jp/procedure/password.html (J-LIS "How to release lock / if you forgot your digital certificate password" — Signature locks after 5, user authentication after 3. Release via smartphone app + convenience store kiosk, or reset at municipal office. Not available by mail or online. HTTP 200. Retrieved 2026-09-08)
 - https://www.jpki.go.jp/ (J-LIS portal top — User authentication (4 digits) 3 times, signature (6–16 alphanumeric) 5 times locks. HTTP 200. Retrieved 2026-09-08)
 - https://www.kojinbango-card.go.jp/faq_pin2/ (My Number Card General Site FAQ "What is the Card Surface Input Assistance App PIN?" — 4-digit number, locks after 3 incorrect entries, reset at municipal office. HTTP 200. Retrieved 2026-09-08)

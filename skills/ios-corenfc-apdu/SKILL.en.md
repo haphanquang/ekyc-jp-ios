@@ -1,6 +1,6 @@
 ---
 name: ios-corenfc-apdu
-description: Used when reading My Number Cards with CoreNFC on iOS. Covers creation of NFCTagReaderSession, connection to NFCISO7816Tag, APDU transmission (NFCISO7816APDU / sendCommand), entitlement settings (readersession.formats = TAG), listing AIDs to SELECT in Info.plist under com.apple.developer.nfc.readersession.iso7816.select-identifiers and NFCReaderUsageDescription, Type-B card polling, SELECT / READ BINARY, and segmented reading exceeding 256 bytes. JPKI-specific VERIFY PIN / signature generation are out of scope (see jpki-ap-shomei / jpki-ap-riyousha).
+description: Use when reading My Number Cards with CoreNFC on iOS. Covers NFCTagReaderSession, NFCISO7816Tag connection, APDU transmission (NFCISO7816APDU / sendCommand), TAG entitlement, Info.plist com.apple.developer.nfc.readersession.iso7816.select-identifiers and NFCReaderUsageDescription, Type-B polling, SELECT / READ BINARY, and segmented reads over 256 bytes. JPKI VERIFY PIN and signing are out of scope (see jpki-ap-shomei / jpki-ap-riyousha).
 ---
 
 # Sending APDUs with iOS CoreNFC (Transport Layer)
@@ -20,7 +20,7 @@ For JPKI PIN verification and electronic signature generation procedures, see `j
 ## Project Settings
 
 - [ ] **Add capability** — Add "Near Field Communication Tag Reading" in Xcode's Signing & Capabilities. This adds the `TAG` format to `com.apple.developer.nfc.readersession.formats`. Also, enable "NFC Tag Reading" in the App ID on the Apple Developer portal, and use a provisioning profile linked to that App ID (if NFC is missing from the profile, actual device builds will fail).
-- [ ] **List AIDs to SELECT in `Info.plist`** — Enumerate the AIDs of the APs that the app will select via SELECT FILE (DF Name) as hex strings in `com.apple.developer.nfc.readersession.iso7816.select-identifiers` (string array, iOS 13.0+) of `Info.plist`. AIDs missing from here are filtered by the OS, causing SELECT via `sendCommand` to fail or the tag to not be passed to `didDetect`. See `references/apdu-cheatsheet.md` for actual AID values of each My Number Card AP (as of this plugin, anything other than JPKI-AP is marked `未確認` (unverified) or `（1ソースのみ・要検証）` (single source, needs verification) there. List them after verification). Regarding the acquisition of AIDs for the app to SELECT (application for AID disclosure), see `platform-jigyousha`.
+- [ ] **List AIDs to SELECT in `Info.plist`** — Enumerate the AIDs of the APs that the app will select via SELECT FILE (DF Name) as **contiguous hex strings without spaces** (e.g., `D392F000260100000001`, `D3921000310001010408`) in `com.apple.developer.nfc.readersession.iso7816.select-identifiers` (string array, iOS 13.0+) of `Info.plist`. AIDs missing from here are filtered by the OS, causing SELECT via `sendCommand` to fail or the tag to not be passed to `didDetect`. See `references/apdu-cheatsheet.md` for actual AID values of each My Number Card AP (`JPKI-AP` matches across 3 sources and `券面入力補助AP` matches across 2 public sources—`kopaneet` & `tex2e`, though unconfirmed in J-LIS primary docs—while others are `未確認` (unverified); list them after verification). Regarding the acquisition of AIDs for the app to SELECT (application for AID disclosure), see `platform-jigyousha`.
 - [ ] **Set `NFCReaderUsageDescription` in `Info.plist`** — Enter a non-empty string explaining why the NFC hardware is used. If unset or empty, the session will fail with `tagReaderSession(_:didInvalidateWithError:)` immediately after creation.
 - [ ] **Test on a physical device (Simulator not allowed)** — CoreNFC only works on actual iPhones that support NFC. Even if you can build on the Simulator, reading will not work. The My Number Card is ISO/IEC 14443 **Type-B**. Specify `.iso14443` for polling (both Type A and B are included in `.iso14443`). An actual card is required for testing.
 
@@ -93,7 +93,7 @@ extension CardReader {
 
     // (B) Create from a raw byte array (include Lc yourself) — init?(data:)
     func rawAPDU(_ bytes: [UInt8]) -> NFCISO7816APDU {
-        NFCISO7816APDU(data: Data(bytes))!
+        NFCISO7816APDU(data: Data(bytes))!                   // Assumes valid ≥4B header + matching Lc (nil if malformed)
     }
 
     // Send. The async version overloads are determined by the return type
@@ -210,7 +210,7 @@ extension CardReader {
 ## Common Failures
 
 - **Testing on Simulator** — NFC requires a physical device. `NFCTagReaderSession.readingAvailable` returns `false`.
-- **Writing AIDs in `.entitlements` / Forgetting to list them in `Info.plist`** — `select-identifiers` is a key in `Info.plist` (only `readersession.formats` goes into `.entitlements`). Trying to SELECT an AID not in `select-identifiers` of `Info.plist` fails / the tag does not arrive at `didDetect`.
+- **Writing AIDs in `.entitlements` / Forgetting to list them in `Info.plist` / Including spaces** — `select-identifiers` is a key in `Info.plist` (only `readersession.formats` goes into `.entitlements`), and AIDs must be contiguous hex strings without spaces (`D392F000260100000001`, `D3921000310001010408`, etc.). Trying to SELECT an AID not in `select-identifiers` of `Info.plist` fails / the tag does not arrive at `didDetect`.
 - **No NFC in provisioning profile** — If NFC Tag Reading is not enabled in the App ID, physical device builds / execution are impossible.
 - **`NFCReaderUsageDescription` not set** — The session terminates immediately with `didInvalidateWithError` right after creation.
 - **Incorrect `pollingOption`** — If anything other than `.iso14443` is specified, the Type-B My Number Card will not be detected.
@@ -231,14 +231,12 @@ extension CardReader {
 - <https://zenn.dev/trustdock/articles/66a228895294bc> (TrustDock "Introduction to Public Personal Authentication (JPKI)" — My Number Card is NFC Type-B, communication is ISO/IEC 7816-4 APDU. iOS implementation code is not in Vol.1 but checked as a premise. Retrieved on 2026-09-08)
 - `references/apdu-cheatsheet.md` (Byte arrays for SELECT / READ BINARY `00 A4 04 0C` / `00 A4 02 0C` / `00 B0`, AIDs, SW1SW2 and certainty of each value)
 
-## Last Verified
-
-2026-09-11
+## Last Verified: 2026-09-11
 
 ## Unverified Items
 
-- AID strings of each My Number Card AP that should be listed in the entitlement `select-identifiers`. Anything other than JPKI-AP is marked `未確認` (unverified) or `（1ソースのみ・要検証）` in `references/apdu-cheatsheet.md` as well. Verify before implementation.
+- AID strings of each My Number Card AP that should be listed in `select-identifiers` in `Info.plist` (contiguous hex strings without spaces: `D392F000260100000001`, `D3921000310001010408`, etc.). In `references/apdu-cheatsheet.md`, `JPKI-AP` (3 sources) and `券面入力補助AP` (matches across 2 public sources, `kopaneet` & `tex2e`, though unconfirmed in J-LIS primary docs) are recorded while others are marked `未確認` (unverified). Verify before implementation.
 - Exact termination conditions for the My Number Card when reading more than 256 bytes with READ BINARY (whether maximum length can be requested with Le=0, whether it returns `61 xx` / `6C xx`, maximum read length per EF). The above code terminates at the total length of the TLV header and handles `62 82` / `6C xx` according to ISO/IEC 7816-4, but actual behavior on physical cards requires verification.
-- Whether the P1P2 `00 A4 02 0C` for SELECT (EF identifier) is common across all APs. `apdu-cheatsheet.md` only has examples for JPKI-AP.
+- Whether the P1P2 `00 A4 02 0C` for SELECT (EF identifier) is common across all APs. `apdu-cheatsheet.md` only has examples for JPKI-AP and the card-face input-assist AP.
 - Whether the My Number Card (ISO/IEC 14443 Type-B) is reliably passed as `case .iso7816` when `.iso14443` is specified. TrustDock specifies Type-B, but Apple documentation does not explicitly distinguish between Type A / B.
 - Whether the My Number Card supports APDU Extended Length (Lc / Le being 3 bytes). The code in this skill assumes a short Le.

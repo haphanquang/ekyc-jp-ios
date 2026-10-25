@@ -1,6 +1,6 @@
 ---
 name: jpki-ap-riyousha
-description: Used when implementing personal authentication (challenge-response) using the user-authentication certificate of the My Number Card on iOS. Covers SELECT of JPKI-AP, VERIFY of user-authentication PIN (4-digit number), signature to the challenge (nonce) issued by the server, READ of user-authentication certificate (DER), and transmission to the server. The server uses it for repeated personal authentication such as login by verifying the chain to the user-authentication CA, signature verification, and matching the issuer number to identify the same card. Since it does not contain the four basic attributes, it cannot be used alone for identity verification under the Act on Prevention of Transfer of Criminal Proceeds. Nonce generation, issuer number matching, validity check, and signature verification are server-side (out of scope).
+description: Use when implementing challenge-response personal authentication with the My Number Card user-authentication certificate on iOS. Covers JPKI-AP SELECT, 4-digit PIN VERIFY, signing the server-issued nonce, and reading/sending the certificate (DER). Lacks Basic 4 Information, so it cannot be used alone for Act on Prevention of Transfer of Criminal Proceeds identity verification. Nonce generation, chain/signature/validity checks, and serial matching are server-side.
 ---
 
 # Using User-Authentication Keys and Certificates with JPKI-AP (Personal Authentication / Challenge-Response)
@@ -55,11 +55,11 @@ Premised on the server having issued a challenge (nonce) tied to the session. Se
 - [ ] **5. Sign the challenge (COMPUTE DIGITAL SIGNATURE)** — `80 2A 00 80` + signature target data created from the server's challenge. tex2e uses the same `80 2A 00 80` for user-authentication (authentication) as for signing, appends the 32-byte hash to the SHA-256 DigestInfo prefix (RFC 8017 compliant) `30 31 30 0D 06 09 60 86 48 01 65 03 04 02 01 05 00 04 20`, and sends it with Lc=`33`. Using `80 2A 00 80` for challenge-response and using DigestInfo as input are both **from tex2e only, 1 source, requires verification**. The response data is the RSA-2048 signature value (256 bytes, requires verification), and the trailing SW is `90 00`.
   - Whether the server passes the "raw byte array of the nonce" or the "SHA-256 hash of the nonce" should match the server implementation (`ekyc-session-orchestration`). Whether to wrap it with DigestInfo or not is also `Unverified`.
   - The existence of implementations performing challenge-response with another command like `INTERNAL AUTHENTICATE` (`00 88 …`) is `Unverified`. Not in tex2e's procedure.
-- [ ] **6. SELECT & READ the EF for user-authentication certificate** — `00 A4 02 0C 02 00 0A` (EF-ID `00 0A` is from tex2e. Obtaining the certificate does not require a PIN). Determine the total DER length from the ASN.1 length field in the first 4 bytes, and segment READ it with `00 B0 <offset high> <offset low>` (using the segmented read from `ios-corenfc-apdu`).
+- [ ] **6. SELECT & READ the EF for user-authentication certificate** — `00 A4 02 0C 02 00 0A` (EF-ID `00 0A` is from tex2e, `(Only 1 source, requires verification)`. Obtaining the certificate does not require a PIN). Determine the total DER length from the ASN.1 length field in the first 4 bytes, and segment READ it with `00 B0 <offset high> <offset low>` (using the segmented read from `ios-corenfc-apdu`).
 
 ```swift
 extension CardReader {
-    // Step 3: VERIFY of user-authentication PIN (4-digit number). Return SW to caller,
+    // Steps 2-3: SELECT the EF and VERIFY the user-authentication PIN (4-digit number). Return SW to caller,
     //         and delegate retries to pin-lock-handling
     //         (VerifyOutcome / pinBytes / interpret are defined in pin-lock-handling)
     func verifyRiyoushaPIN(_ pin: String, tag: NFCISO7816Tag) async throws -> VerifyOutcome {
@@ -89,7 +89,7 @@ extension CardReader {
 
     // Step 6: User-authentication certificate (DER). Does not include the 4 basic attributes
     func readRiyoushaCertificate(tag: NFCISO7816Tag) async throws -> Data {
-        try await selectEF(efID: [0x00, 0x0A], tag: tag)          // 00 A4 02 0C 02 00 0A
+        try await selectEF(efID: [0x00, 0x0A], tag: tag)          // 00 A4 02 0C 02 00 0A (1 source only, requires verification: tex2e)
         return try await readSelectedTLV(tag: tag)                 // ios-corenfc-apdu: segmented READ up to the total length in the DER header
     }
 }
@@ -128,13 +128,11 @@ extension CardReader {
 - <https://zenn.dev/trustdock/articles/66a228895294bc> (TrustDock "Introduction to Public Personal Authentication (JPKI)" — NFC Type-B, ISO 7816 APDU, user-authentication PIN is a 4-digit number, challenge-response (challenge from server → processing in IC card → response return → server verification) in 4 stages. No description of AID/APDU hex values or issuer number mechanism. Retrieved on 2026-09-08)
 - <https://www.jpki.go.jp/procedure/password.html> (J-LIS "Public Personal Authentication Service Portal Site" — Password for user-authentication certificate (4-digit number) locks upon 3 consecutive incorrect attempts, signing is 5 consecutive. Retrieved on 2026-09-08)
 
-## Last Verified
-
-2026-09-08
+## Last Verified: 2026-09-08
 
 ## Unverified Items
 
-- Private key EF `00 17` and PIN EF `00 18` for user-authentication (notated as "authentication" by tex2e) are from tex2e only (1 source) (added to `apdu-cheatsheet.md` with the same certainty). Verify before implementation.
+- Private key EF `00 17`, PIN EF `00 18`, and certificate EF `00 0A` for user-authentication (notated as "authentication" by tex2e) are all `(Only 1 source, requires verification: tex2e)` (matching `apdu-cheatsheet.md`). Verify before implementation.
 - Whether it can be verified via a PF operator's linking (serial mapping) function that both signing and user-authentication certificates originate from the same card. If not, identical origin during registration is ensured by "obtaining both signatures for the same nonce within the same NFC session".
 - Whether challenge-response is done with COMPUTE DIGITAL SIGNATURE `80 2A 00 80` or another command like `INTERNAL AUTHENTICATE` (`00 88 …`). tex2e shows `80 2A 00 80` for authentication as well, but it is only 1 source.
 - Input format passed to Step 5 (whether the server's challenge = raw nonce is signed as-is, a SHA-256 hash, wrapped in DigestInfo, hash length). Requires coordination with server specifications (`ekyc-session-orchestration`).

@@ -55,11 +55,11 @@ tex2e によれば、チャレンジレスポンスに使う APDU 自体は署�
 - [ ] **5. チャレンジに署名する（COMPUTE DIGITAL SIGNATURE）** — `80 2A 00 80` ＋ サーバーのチャレンジから作った署名対象データ。tex2e は利用者証明用（認証用）でも署名用と同じ `80 2A 00 80` を使い、SHA-256 の DigestInfo プレフィックス（RFC 8017 準拠）`30 31 30 0D 06 09 60 86 48 01 65 03 04 02 01 05 00 04 20` に 32 バイトのハッシュを連結して Lc=`33` で送る。チャレンジレスポンスに `80 2A 00 80` を使う点・入力を DigestInfo とする点はいずれも **tex2e 1 ソースのみ・要検証**。応答データが RSA-2048 の署名値（256 バイト・要検証）、末尾 SW が `90 00`。
   - サーバーが「nonce の生バイト列」を渡すのか「nonce の SHA-256 ハッシュ」を渡すのかは、サーバー実装（`ekyc-session-orchestration`）と合わせる。DigestInfo でラップするか否かも含めて `未確認`。
   - `INTERNAL AUTHENTICATE`（`00 88 …`）等の別コマンドでチャレンジレスポンスを行う実装の有無は `未確認`。tex2e の手順には無い。
-- [ ] **6. 利用者証明用電子証明書の EF を SELECT ＆ READ** — `00 A4 02 0C 02 00 0A`（EF-ID `00 0A` は tex2e。証明書取得には暗証番号は不要）。先頭 4 バイトの ASN.1 長フィールドから DER 全長を求め、`00 B0 <offset 上位> <offset 下位>` で分割 READ する（`ios-corenfc-apdu` の分割読み取りを使う）。
+- [ ] **6. 利用者証明用電子証明書の EF を SELECT ＆ READ** — `00 A4 02 0C 02 00 0A`（EF-ID `00 0A` は tex2e、`（1ソースのみ・要検証）`。証明書取得には暗証番号は不要）。先頭 4 バイトの ASN.1 長フィールドから DER 全長を求め、`00 B0 <offset 上位> <offset 下位>` で分割 READ する（`ios-corenfc-apdu` の分割読み取りを使う）。
 
 ```swift
 extension CardReader {
-    // 手順 3: 利用者証明用暗証番号（4桁 数字）の VERIFY。SW を呼び出し側へ返し、
+    // 手順 2〜3: 利用者証明用暗証番号（4桁 数字）の EF を SELECT して VERIFY。SW を呼び出し側へ返し、
     //         リトライは pin-lock-handling に委ねる
     //         （VerifyOutcome / pinBytes / interpret は pin-lock-handling で定義）
     func verifyRiyoushaPIN(_ pin: String, tag: NFCISO7816Tag) async throws -> VerifyOutcome {
@@ -89,7 +89,7 @@ extension CardReader {
 
     // 手順 6: 利用者証明用電子証明書（DER）。基本4情報は含まれない
     func readRiyoushaCertificate(tag: NFCISO7816Tag) async throws -> Data {
-        try await selectEF(efID: [0x00, 0x0A], tag: tag)          // 00 A4 02 0C 02 00 0A
+        try await selectEF(efID: [0x00, 0x0A], tag: tag)          // 00 A4 02 0C 02 00 0A（1ソースのみ・要検証：tex2e）
         return try await readSelectedTLV(tag: tag)                 // ios-corenfc-apdu: DER ヘッダの全長どおりに分割 READ
     }
 }
@@ -132,7 +132,7 @@ extension CardReader {
 
 ## 未確認事項
 
-- 利用者証明用（tex2e 表記「認証用」）の秘密鍵 EF `00 17`・暗証番号 EF `00 18` は tex2e 1 ソースのみ（`apdu-cheatsheet.md` に同確度で追記）。実装前に検証すること。
+- 利用者証明用（tex2e 表記「認証用」）の秘密鍵 EF `00 17`・暗証番号 EF `00 18`・証明書 EF `00 0A` はいずれも（1ソースのみ・要検証：tex2e）（`apdu-cheatsheet.md` と同確度）。実装前に検証すること。
 - 署名用・利用者証明用の両電子証明書が同一カード由来であることを、PF事業者の紐付け（シリアル対応）機能で確認できるか。できない場合、登録時の同一性は「同じ NFC セッション・同じ nonce で両方の署名が得られた」ことで担保する。
 - チャレンジレスポンスを COMPUTE DIGITAL SIGNATURE `80 2A 00 80` で行うか、`INTERNAL AUTHENTICATE`（`00 88 …`）等の別コマンドか。tex2e は認証用でも `80 2A 00 80` を示すが 1 ソースのみ。
 - 手順 5 に渡す入力形式（サーバーのチャレンジ＝生 nonce をそのまま署名するのか、SHA-256 ハッシュか、DigestInfo でラップするか、ハッシュ長）。サーバー仕様（`ekyc-session-orchestration`）と要すり合わせ。

@@ -1,6 +1,6 @@
 ---
 name: kenmen-jikou-kakunin-ap
-description: Used in iOS implementation to read the card surface images (front/back), IC chip face photo, and individual number (My Number, 12 digits) from the My Number Card's Card Surface Verification AP. The card surface verification inquiry number (DOB 6 digits + expiry year 4 digits + security code 4 digits) unlocks the front (4 attributes + face photo), and the 12-digit My Number unlocks both front and back (individual number). The face photo is a low-quality compressed image for server-side facial matching. Collecting and storing the individual number requires a legal basis under the Number Use Act (My Number Act); identity verification alone is not a sufficient basis. Includes notes on storage, deletion, and logging prohibition under the Number Use Act.
+description: Use when reading card-face images (front/back), on-chip face photo, or the 12-digit My Number from the My Number Card's Card Surface Verification AP on iOS. Covers unlocking the front (14-digit Inquiry Number B: DOB 6 + expiry year 4 + security code 4) vs front+back (12-digit My Number), and My Number Act legal basis, encryption, deletion, and logging rules.
 ---
 
 # Reading Card Surface Images, Face Photo, and Individual Number with Card Surface Verification AP
@@ -72,12 +72,13 @@ Send sequentially within 1 session. Interrupt if any response SW is not `90 00`.
 
 ```swift
 extension CardReader {
-    // Step 3: VERIFY inquiry number. 14 digits for front only, 12-digit My Number if reading individual number too.
-    // keyref(P2) / Lc / formatting are unverified, so replace with confirmed byte sequences before use.
+    // Steps 2-3: SELECT unlock EF and VERIFY inquiry number. 14 digits for front only, 12-digit My Number if reading individual number too.
+    // EF-ID / keyref(P2) / Lc / formatting are unverified, so replace with confirmed byte sequences before use.
     // VerifyOutcome / PINKind / pinBytes / interpret are defined in pin-lock-handling.
     // kind: .shogoB (14 digits) for front only, .shogoA (12 digits) if reading the individual number too
-    func verifyKenmenInquiry(_ inquiry: String, kind: PINKind, tag: NFCISO7816Tag) async throws -> VerifyOutcome {
+    func verifyKenmenInquiry(_ inquiry: String, kind: PINKind, pinEFID: [UInt8], tag: NFCISO7816Tag) async throws -> VerifyOutcome {
         let bytes = try pinBytes(inquiry, kind: kind)        // full-width to half-width, digit-count check (formatting unverified)
+        try await selectEF(efID: pinEFID, tag: tag)          // 00 A4 02 0C 02 <pinEFID> (EF-ID unverified)
         let p2: UInt8 = 0x80                                 // keyref unverified (placeholder value from JPKI-AP)
         let apdu = rawAPDU([0x00, 0x20, 0x00, p2, UInt8(bytes.count)] + bytes)
         let (_, sw1, sw2) = try await send(apdu, to: tag)

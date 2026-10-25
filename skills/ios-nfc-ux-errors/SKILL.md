@@ -25,7 +25,7 @@ description: iOS で NFC 読み取り UX とエラーメッセージ 日本語 �
 | 読み取り中にカードが離れた／接続が切れた | `readerTransceiveErrorTagConnectionLost` | 「カードが離れました。カードを iPhone の上部にあて、読み取りが終わるまで動かさないでください」 |
 | 再試行の上限超過（密着不足・手ぶれ） | `readerTransceiveErrorRetryExceeded` | 「うまく読み取れませんでした。ケースを外し、カードを動かさずにもう一度お試しください」 |
 | カードから予期しない応答 | `readerTransceiveErrorTagResponseError` | 「カードを読み取れませんでした。もう一度お試しください」 |
-| セッションのタイムアウト（一定時間タグ未検出） | `readerSessionInvalidationErrorSessionTimeout` | 「時間内に読み取れませんでした。もう一度お試しください」 |
+| セッションのタイムアウト（一定時間タグ未検出、または読み取り開始から約60秒超過） | `readerSessionInvalidationErrorSessionTimeout` | 「時間内に読み取れませんでした。もう一度お試しください」 |
 | 利用者がシートを閉じた／キャンセル | `readerSessionInvalidationErrorUserCanceled` | エラー表示しない。無言で前の画面に戻す（必要なら「読み取りを中止しました」） |
 | システムが一時的にビジー／別セッションが有効なまま `begin()` した | `readerSessionInvalidationErrorSystemIsBusy` | 「いま読み取りを開始できません。少し待ってからもう一度お試しください」 |
 | セッションが予期せず終了 | `readerSessionInvalidationErrorSessionTerminatedUnexpectedly` | 「読み取りが中断されました。もう一度お試しください」 |
@@ -112,7 +112,7 @@ session.invalidate(errorMessage: "読み取りに失敗しました。ケース�
 - <https://developer.apple.com/documentation/corenfc/nfcreadersessionprotocol/alertmessage>（`alertMessage` はスキャンシートに表示され、セッション中に更新できる。HTTP 200。取得日 2026-09-08）
 - <https://developer.apple.com/documentation/corenfc/nfctagreadersession>（`readingAvailable`、`invalidate()` / `invalidate(errorMessage:)`。HTTP 200。取得日 2026-09-08）
 - <https://developer.apple.com/documentation/appclip/choosing-the-right-functionality-for-your-app-clip>（App Clip で「実行時に機能しないフレームワーク」一覧に CoreNFC は含まれない。App Clip はバックグラウンド動作不可。サイズ上限 iOS 15 以前 10 MB / iOS 16 以前 15 MB / iOS 17 以降 最大 100 MB（条件付き）。フルアプリと同一機能を含む単一ターゲットで提供。HTTP 200。取得日 2026-09-08）
-- `ekyc-jp/skills/ios-corenfc-apdu/SKILL.md` / `ekyc-jp/skills/pin-lock-handling/SKILL.md`（セッション実装・`alertMessage` 初期値・SW1SW2 の解釈との整合）
+- `skills/ios-corenfc-apdu/SKILL.md` / `skills/pin-lock-handling/SKILL.md`（セッション実装・`alertMessage` 初期値・SW1SW2 の解釈との整合）
 
 ## 最終確認日: 2026-09-08
 

@@ -37,7 +37,7 @@ APDU で IC チップを直接読み取る構成を前提にしています。
 | プラグイン | `ekyc-jp` v0.1.0 · 19 スキル · 知識と手順のみ |
 | 記述言語 | 日本語（`SKILL.md`）。各スキルに英語の参考訳 `SKILL.en.md` があるが、Claude Code は読み込まない |
 | 品質確認 | `claude plugin validate` パス · `claude plugin eval` のトリガー検証 115 件 |
-| 最終レビュー | 2026-09-25 |
+| 最終レビュー | 2026-10-05 |
 | ライセンス | [MIT](LICENSE)（第三者資料を除く。[ライセンス](#ライセンス) 参照） |
 
 ## 30 秒でわかる用語
@@ -228,7 +228,7 @@ SW1SW2 の意味など）は推測せず `未確認` と明記しています。
 
 次のものは MIT License の対象外です。
 
-- **`references/jpki-introduction.ja.md`**: デジタル庁のページの写しで、同サイトの利用規約に従います。
+- **`references/jpki-introduction.ja.md` / `references/jpki-introduction.en.md`**: デジタル庁のページの写しで、同サイトの利用規約に従います。
 - **[`references/hourei-eKYC.md`](references/hourei-eKYC.md) に引用した法令本文**: 法令は著作権の目的と
   なりません（著作権法第13条）。
 

@@ -145,7 +145,7 @@ description: 基本4情報（氏名・住所・生年月日・性別）と、公
 - `references/pdfs/08_latest-information-4-types.pdf` — 「公的個人認証サービスを利用した最新の利用者情報（4情報）提供サービス」。サービス活用前後の比較、PF事業者・J-LIS 経由の概要、4情報＝住所・氏名・生年月日・性別。
 - `references/pdfs/10_platform-operators-4-info-list.pdf` — 「最新の利用者情報（4情報）提供サービスに対応しているプラットフォーム事業者一覧」（令和8年6月10日時点）。
 - `references/pdfs/11_personal-consent-support-mynaportal.pdf` — 「マイナポータルを活用した『基本4情報提供サービス』の『本人同意取得支援サービス』」。QR／リンク経由の同意フロー、連携される情報（同意情報・電子証明書情報・PPID 等）。
-- `references/pdfs/05_private-sector-guidelines-v1.8.pdf` §5「本人同意に基づく最新の利用者情報（基本4情報）提供サービスの概要」（43〜49ページ、第1.8版・2026-04-13）。仕組み（図5-2）、同意の取得・取消し、有効期間10年の起算例、利用者クライアントソフト（Windows/Android/Mac/iOS版）、手数料1件20円。
+- `references/pdfs/05_private-sector-guidelines-v1.8.pdf` §5「本人同意に基づく最新の利用者情報（基本4情報）提供サービスの概要」（44〜50ページ、第1.8版・2026-04-13）。仕組み（図5-2）、同意の取得・取消し、有効期間10年の起算例、利用者クライアントソフト（Windows/Android/Mac/iOS版）、手数料1件20円。
 - `references/jpki-introduction.ja.md`（§6.1「最新の利用者情報（4情報）提供サービス」2023年5月16日開始、§6.1.1「本人同意の取得支援サービス」2024年10月29日開始。デジタル庁、取得日 2026-09-07）。
 - ライブ URL: <https://www.digital.go.jp/policies/mynumber/private-business/jpki-introduction>（取得日 2026-09-07）
 

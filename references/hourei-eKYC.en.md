@@ -45,7 +45,7 @@ Quoting the proviso at the end of the provision **verbatim** (confirmed via e-Go
 > Limited to cases where the specified business operator is a signature verifier prescribed in Article 17, Paragraph 4 of the Public Personal Authentication Act.
 
 → The JPKI method ((ka) (カ)) cannot be used for confirmation at the time of transaction unless **the specified business operator itself is a "signature verifier."**
-See Section 3 below for the definition of "signature verifier." A platform operator may handle the setup of signature verification equipment and act as an agent for accreditation/notification, but the title of accreditation/notification belongs to the specified business operator (`platform-jigyousha`).
+See Section 4 below for the definition of "signature verifier." A platform operator may handle the setup of signature verification equipment and act as an agent for accreditation/notification, but the title of accreditation/notification belongs to the specified business operator (`platform-jigyousha`).
 
 ### Article 19, Paragraph 1, Item 2 (ri) (リ) (Attachment of Electromagnetic Records to Confirmation Records)
 

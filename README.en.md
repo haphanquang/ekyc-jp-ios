@@ -39,7 +39,7 @@ plausible guess. When a value is not confirmed, the skill says so.
 | Plugin | `ekyc-jp` v0.1.0 · 19 skills · knowledge and procedure only |
 | Skill language | Japanese (`SKILL.md`). Each skill also has a `SKILL.en.md` English reference translation, which Claude Code does not load |
 | Quality checks | `claude plugin validate` passes · 115 `claude plugin eval` triggering cases |
-| Last reviewed | 2026-09-25 |
+| Last reviewed | 2026-10-05 |
 | License | [MIT](LICENSE) (third-party documents excluded, see [License](#license)) |
 
 ## Key terms in 30 seconds
@@ -51,7 +51,7 @@ plausible guess. When a value is not confirmed, the skill says so.
 - **Platform operator** (PF事業者): a government-accredited company that checks certificate
   validity with J-LIS on your behalf. A private business cannot query J-LIS itself.
 
-More terms: [`references/yougoshuu.md`](references/yougoshuu.md) (about 90 terms, in Japanese).
+More terms: [`references/yougoshuu.md`](references/yougoshuu.md) (in Japanese) / [`references/yougoshuu.en.md`](references/yougoshuu.en.md) (in English, about 90 terms).
 
 ## Install
 
@@ -234,7 +234,7 @@ apps; keep the copyright notice when you redistribute the plugin itself.
 
 Not covered by the MIT License:
 
-- **`references/jpki-introduction.ja.md`**: a copy of a Digital Agency page, under that site's
+- **`references/jpki-introduction.ja.md` / `references/jpki-introduction.en.md`**: copies of Digital Agency pages, under that site's
   terms of use.
 - **Statute text quoted in [`references/hourei-eKYC.md`](references/hourei-eKYC.md)**: Japanese
   laws and ordinances are not subject to copyright (Copyright Act, Article 13).

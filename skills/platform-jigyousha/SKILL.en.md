@@ -19,7 +19,7 @@ See `jlis-yukousei-kakunin` for implementation procedures of certificate validit
 
 ## Why a Certified Operator is Required
 
-**Technically, it is possible for an app to directly read the electronic certificate from the IC chip using either the He-method or the Ka-method** (for reading method designations, see `references/method-map.md`). However, regarding the "certificate validity verification" to confirm whether the read electronic certificate is **currently valid** (not revoked due to moving, name change, reissue, death, moving overseas, etc.), **only operators certified by the competent minister based on the Public Personal Authentication Act can inquire with J-LIS**.
+**In JPKI (Ka-method), it is technically possible for an app to directly read the electronic certificate from the IC chip over NFC using public APDUs** (note that the He-method reads card-face AP data rather than electronic certificates and requires a J-LIS "AID disclosure application" as described below; for reading method designations, see `references/method-map.md`). However, regarding the "certificate validity verification" (via CRL/OCSP) to confirm whether the read electronic certificate is **currently valid** (not revoked due to moving, name change, reissue, death, moving overseas, etc.), **only operators certified by the competent minister based on the Public Personal Authentication Act can inquire with J-LIS**.
 
 | Category | Definition | Competent Minister Certification | Signature Verification Equipment | Validity Inquiry to J-LIS |
 |---|---|---|---|---|
@@ -64,13 +64,13 @@ In jpki-introduction §7.2.5 "Inquiries regarding services provided by platform 
 | TRUSTDOCK Inc. | (Not listed) | `29_guide-trustdock-jpki.pdf` (TRUSTDOCK Public Personal Authentication) |
 | PocketSign Inc. | (Not listed) | `23_guide-pocketsign-platform.pdf` (POCKETSIGN Platform) |
 | GMO GlobalSign K.K. | GMO Online Identity Verification Service Inquiry Window | `15_guide-identity-verification.pdf` (GMO Online Identity Verification Service) |
-| Double Standard Inc. | Data Management Group / Data Management Dept. | None in `references/pdfs/` (See the link "eKYC solution using public personal authentication" in §7.2.5) |
+| Double Standard Inc. | Data Management Group / Data Management Dept. | `21_guide-public-personal-authentication.pdf` (Guide to eKYC Solution Using JPKI) |
 | NEC Corporation | Social Public Integration Management Div. New Business Creation Group | `16_guide-my-number-card-certification-service.pdf` (My Number Card Certification Service) |
 | Cybertrust Japan Co., Ltd. | Trust Service Management Dept. | `18_guide-itrust-identity-verification.pdf` (iTrust Identity Verification Service) |
 | NTT DATA Corporation | Social Infrastructure Solution Sector Digital Community Div. | `14_guide-bizpico.pdf` (BizPICO) |
 | Cyber Links Co., Ltd. | Public Cloud Div. Public Sales Dept. Planning and Sales Sec. | `17_guide-maina-sign.pdf` (Myna Sign) |
 | ACSiON, Ltd. | Sales Dept. | `27_guide-acsion-jpki.pdf` (ACSiON Public Personal Authentication Service) |
-| NTT Communications Corporation | Business Solution Div. Social Innovation Dept. | `26_guide-smartlita.pdf` (SmartLiTA) |
+| NTT DOCOMO BUSINESS, Inc. | Business Solution Div. Social Innovation Dept. | `26_guide-smartlita.pdf` (SmartLiTA) |
 | Primagest, Inc. | New Business Promotion Dept. | `32_guide-pridest-trust-services.pdf` (Primagest Trust Services) |
 
 - Other operators listed in §7.2.5 (partial): ICT Town Development Common Platform Promotion Organization (myTAP), TOPPAN Inc., Nomura Research Institute, Ltd., Workthy Inc., TISI Inc., Flight Solutions Inc. (myVerifist), Bengo4.com, Inc. (CloudSign), milabo Inc. (mila-e Authentication), MRSO Inc., CrowdShip Co., Ltd. (CrowdShipTrust), MynaWallet Inc., JMDC Inc., AIFUL CORPORATION.
@@ -102,7 +102,7 @@ Check each item for each candidate PF operator (most will only become clear from
 2. Respond to the requirements of the certification criteria and create certification documents. Apply for certification examination to the Digital Agency and the Ministry of Internal Affairs and Communications (§3.2.2, inquiries are §7.2.3).
 3. After acquiring certification, confirm operation in the test environment → notify J-LIS, etc. → confirm operation in the production environment → start using the service (§3.2.3).
 
-**Estimated period: About 6 months to 1 year from obtaining technical specifications, etc. to acquiring competent minister certification** (jpki-introduction §3.2). See pages 39-41 "C. Certification Procedure" of the Guidelines for Private Operators (Version 1.8) for an overview of the procedures.
+**Estimated period: About 6 months to 1 year from obtaining technical specifications, etc. to acquiring competent minister certification** (jpki-introduction §3.2). See pages 40–42 "C. Certification Procedure" of the Guidelines for Private Operators (Version 1.8) for an overview of the procedures.
 
 ### When becoming an SP operator (envisioned for this app)
 
@@ -136,7 +136,9 @@ PDFs under `references/pdfs/` are third-party works and are not shipped with the
 - `references/jpki-introduction.ja.md` (§3 Methods of introducing the service [§3.1 Method of becoming an SP operator/PF operator, §3.2 Procedure for becoming a PF operator, §3.3 Usage fees], §5.1.2 Methods of validity verification of electronic certificates, §7.2.5 Contact information regarding services provided by platform operators, etc.)
 - Live URL: <https://www.digital.go.jp/policies/mynumber/private-business/jpki-introduction> (Retrieved on 2026-09-07)
 - `references/pdfs/04_jpki-platform-operator-system.pdf` (Platform operator system, delegation of competent minister certification/notification to the agency, split-the-bill effect)
+- `references/pdfs/05_private-sector-guidelines-v1.8.pdf` (Guidelines for Private Operators Using the Public Personal Authentication Service, Version 1.8, pages 40–42 "C. Certification Procedure")
 - `references/pdfs/15_guide-identity-verification.pdf` (GMO Online Identity Verification Service, API usage, PF operator certification, account opening use case)
+- `references/pdfs/21_guide-public-personal-authentication.pdf` (Double Standard "Guide to eKYC Solution Using JPKI") and other operator service introduction materials listed in the table above (`14`, `16`, `17`, `18`, `23`, `26`, `27`, `32`)
 - `references/pdfs/29_guide-trustdock-jpki.pdf` (TRUSTDOCK, 2 formats: SDK / provided app, configuration diagram as an SP operator, support for multiple identity verification methods)
 - `references/pdfs/33_guide-liquid-ekyc.pdf` (LIQUID eKYC. p18-19 Fraud detection/notation fluctuation, p21 "Flow to introduction" = NDA, AID disclosure application, Public Personal Authentication Service usage application, J-LIS examination about 1-2 months, schedule upper limit)
 - `references/method-map.md` (Definitions of He-method/Ka-method. The legal names and timing are uniquely defined in this file and `honnin-kakunin-houhou`)

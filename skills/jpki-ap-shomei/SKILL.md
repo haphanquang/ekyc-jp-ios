@@ -1,6 +1,6 @@
 ---
 name: jpki-ap-shomei
-description: マイナンバーカードの署名用電子証明書 読み取りと JPKI 電子署名 生成を iOS で実装する際に使用。JPKI-AP の SELECT、署名用 暗証番号（6〜16桁 英数字）の VERIFY、COMPUTE DIGITAL SIGNATURE による署名（サーバーが組み立てた to-be-signed の本文を表示し、ハッシュはアプリが計算する＝WYSIWYS）、署名用電子証明書 EF（DER）の READ、署名と証明書のサーバー送信を扱う。カ方式 iOS実装。ロック・残回数の UX、サーバー側の署名検証・有効性確認は対象外。
+description: マイナンバーカードの署名用電子証明書 読み取りと JPKI 電子署名 生成を iOS で実装する際に使用。JPKI-AP の SELECT、署名用 暗証番号（6〜16桁 英大文字・数字）の VERIFY、COMPUTE DIGITAL SIGNATURE による署名（サーバーが組み立てた to-be-signed の本文を表示し、ハッシュはアプリが計算する＝WYSIWYS）、署名用電子証明書 EF（DER）の READ、署名と証明書のサーバー送信を扱う。カ方式 iOS実装。ロック・残回数の UX、サーバー側の署名検証・有効性確認は対象外。
 ---
 
 # JPKI-AP で署名用の鍵・証明書を使う（署名生成）
@@ -13,7 +13,7 @@ description: マイナンバーカードの署名用電子証明書 読み取り
 
 - iOS アプリで署名用電子証明書を読み取り、JPKI 電子署名を生成する実装を書くとき
 - `COMPUTE DIGITAL SIGNATURE` の APDU（CLA INS P1 P2）と入力データ形式を確認するとき
-- 署名用 暗証番号（6〜16桁 英数字）の VERIFY と、SW による残り試行回数の読み取りを実装するとき
+- 署名用 暗証番号（6〜16桁 英大文字・数字）の VERIFY と、SW による残り試行回数の読み取りを実装するとき
 - サーバーへ渡すもの（署名値・証明書 DER）と、サーバーが用意するもの（署名対象データ）の分担を確認するとき
 
 ロック・残回数の UX は `pin-lock-handling`、サーバー側の署名検証は `signature-verification`、電子証明書の有効性確認は `jlis-yukousei-kakunin` を参照。CoreNFC のセッション確立・APDU 送受信は `ios-corenfc-apdu`。
@@ -37,7 +37,7 @@ description: マイナンバーカードの署名用電子証明書 読み取り
 
 - [ ] **1. JPKI-AP を SELECT** — `00 A4 04 0C 0A D3 92 F0 00 26 01 00 00 00 01`（AID は tex2e・moritamori・kopaneet の 3 ソースで一致）。`6A 82` なら AID / `Info.plist` の `select-identifiers` を見直す。
 - [ ] **2. 署名用 暗証番号の EF を SELECT** — `00 A4 02 0C 02 00 1B`（EF-ID は tex2e）。
-- [ ] **3. 暗証番号を VERIFY** — `00 20 00 80` + 暗証番号の ASCII バイト列（keyref P2=`80` は 3 ソース一致）。6〜16 桁の英数字（桁数は zenn.dev/trustdock・tex2e で一致）。応答 SW を確認する:
+- [ ] **3. 暗証番号を VERIFY** — `00 20 00 80` + 暗証番号の ASCII バイト列（keyref P2=`80` は 3 ソース一致）。6〜16 桁の英大文字・数字（桁数は zenn.dev/trustdock・tex2e で一致）。応答 SW を確認する:
   - `90 00`: 照合成功。
   - `63 CX`: 不一致。下位ニブル `X` が残り試行回数（ISO/IEC 7816-4 標準値。JPKI 固有の一次ソースは `未確認`）。**自動リトライしない。** 残回数の提示・ロック手前の警告・ロック時の解錠導線は `pin-lock-handling` に委譲する。
   - `69 83`: ロック済み。`pin-lock-handling` 参照。
@@ -81,7 +81,7 @@ extension CardReader {
 
 ## 証明書の読み出し
 
-署名用電子証明書は DER（RSA-2048 で 1 KB 超）なので、必ず分割 READ する。
+署名用電子証明書（EF `00 01`）には基本4情報が含まれるため、同一 NFC セッション内で**署名用暗証番号（EF `00 1B`、6〜16桁 英大文字・数字）の VERIFY（上記手順 2〜3）が済んでいること**が読み出しの前提となる。`readShomeiCertificate(tag:)` は必ず `verifyShomeiPIN` の**後**に呼ぶ。また DER（RSA-2048 で 1 KB 超）なので、必ず分割 READ する。
 
 1. **署名用証明書の EF を SELECT** — `00 A4 02 0C 02 00 01`（EF-ID は tex2e）。
 2. **先頭を READ BINARY** — `00 B0 00 00`。応答先頭の ASN.1 SEQUENCE タグ直後の長さフィールド（長形式）から DER 全長を求める。
@@ -90,7 +90,7 @@ extension CardReader {
 ```swift
 extension CardReader {
     func readShomeiCertificate(tag: NFCISO7816Tag) async throws -> Data {
-        try await selectEF(efID: [0x00, 0x01], tag: tag)    // 00 A4 02 0C 02 00 01
+        try await selectEF(efID: [0x00, 0x01], tag: tag)    // 00 A4 02 0C 02 00 01（同一セッションで verifyShomeiPIN 後に呼ぶ）
         let der = try await readSelectedTLV(tag: tag)        // ios-corenfc-apdu: DER ヘッダの全長どおりに分割 READ
         return der                                           // DER のまま保持しない（サーバー送信後に破棄）
     }
@@ -99,7 +99,7 @@ extension CardReader {
 
 READ BINARY で 256 バイト超を読む際のマイナンバーカードの正確な終了条件（`61 xx` / `6C xx` の有無、EF ごとの最大長）は `未確認`。`ios-corenfc-apdu` の注記に従う。
 
-> 注: 実装によっては、署名用電子証明書（EF `00 01`）の READ 前に**利用者証明用（4桁）暗証番号**の VERIFY が必要との報告がある（`未確認事項`）。`63 CX` / `69 82`（セキュリティ状態不満足）が返る場合はこの前提を疑う。
+> 注: 署名用電子証明書（EF `00 01`）には基本4情報（氏名・住所・生年月日・性別）が含まれるため、利用者証明用電子証明書（EF `00 0A`、暗証番号不要）とは異なり、読み出しには同一セッション内で**署名用暗証番号（EF `00 1B`、6〜16桁 英大文字・数字）の事前 VERIFY** が必要である。VERIFY 前に `READ BINARY` を送るとカードは `69 82`（Security status not satisfied）を返す。
 
 ## サーバーへの受け渡し
 
@@ -137,4 +137,4 @@ READ BINARY で 256 バイト超を読む際のマイナンバーカードの正
 - 署名用秘密鍵 EF `00 1A`・暗証番号 EF `00 1B`・証明書 EF `00 01` の EF-ID（tex2e 1 ソース）。
 - `63 CX` の下位ニブルが残り試行回数か、`69 83` がロックか（ISO/IEC 7816-4 標準値。JPKI 固有の一次ソースは `未確認`）。署名用の失敗ロック回数 5 回は J-LIS `jpki.go.jp` で確認済（`pin-lock-handling` / `apdu-cheatsheet.md`）。
 - READ BINARY で証明書 EF（256 バイト超）を読む際の終了条件と最大読み取り長。
-- **署名用電子証明書（EF `00 01`）の READ に、利用者証明用（4桁）暗証番号の事前 VERIFY が必要か。** 複数の実装で「署名用証明書の読み出しには利用者証明用パスワードが要る」との報告がある（`jpki-ap-riyousha` の利用者証明用証明書は暗証番号不要）。必要な場合、フロー全体で 2 種類の暗証番号入力が要る設計になる。実カード / 正式仕様で要検証。
+- **署名用電子証明書（EF `00 01`）の READ に必要な事前 VERIFY。** 署名用電子証明書は基本4情報を含むため、読み出しには同一 NFC セッション内で**署名用暗証番号（EF `00 1B`、6〜16桁 英大文字・数字）**の VERIFY が必要であり、未照合のまま `READ BINARY` を呼ぶと `69 82`（Security status not satisfied）が返る（`jpki-ap-riyousha` の利用者証明用証明書 EF `00 0A` は暗証番号不要）。したがって `readShomeiCertificate(tag:)` は手順 2〜3（`verifyShomeiPIN`）の後に呼ぶ（tex2e の手順と一致）。

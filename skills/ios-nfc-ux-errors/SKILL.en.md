@@ -1,6 +1,6 @@
 ---
 name: ios-nfc-ux-errors
-description: Used when designing NFC reading UX and error messages (Japanese) on iOS. Maps reading failure handling (card moved away too early, wrong PIN, PIN locked, timeout, not a My Number Card, NFC unavailable, session busy, tag connection lost) to NFCReaderError codes and user-friendly messages, covers iPhone antenna position guidance, alertMessage updates during sessions, App Clip for JPKI (install-free flow) use cases, and onboarding before first read. For PIN remaining count and unlock details, see pin-lock-handling; for session/APDU mechanics, see ios-corenfc-apdu.
+description: Use when designing iOS NFC reading UX and Japanese error messages for My Number Card eKYC. Covers mapping NFCReaderError codes and APDU errors (wrong PIN, locked PIN, wrong card) to user-friendly guidance, iPhone antenna placement, live alertMessage updates, App Clip flows, and pre-scan onboarding.
 ---
 
 # iOS NFC Reading UX and Error Messages
@@ -25,7 +25,7 @@ Cast `error` from `didInvalidateWithError` to `error as? NFCReaderError` and bra
 | Card moved away / connection lost during reading | `readerTransceiveErrorTagConnectionLost` | "The card was moved away. Place the card on the top of your iPhone and don't move it until reading is complete." |
 | Retry limit exceeded (poor contact / hand shake) | `readerTransceiveErrorRetryExceeded` | "Could not read properly. Remove your case and try again without moving the card." |
 | Unexpected response from card | `readerTransceiveErrorTagResponseError` | "Could not read the card. Please try again." |
-| Session timeout (no tag detected within time) | `readerSessionInvalidationErrorSessionTimeout` | "Could not read within the time limit. Please try again." |
+| Session timeout (no tag detected within time, or ~60s active session limit exceeded) | `readerSessionInvalidationErrorSessionTimeout` | "Could not read within the time limit. Please try again." |
 | User closed sheet / cancelled | `readerSessionInvalidationErrorUserCanceled` | Don't show an error. Silently return to previous screen (optionally "Reading was cancelled"). |
 | System temporarily busy / called `begin()` while another session active | `readerSessionInvalidationErrorSystemIsBusy` | "Cannot start reading right now. Please wait a moment and try again." |
 | Session terminated unexpectedly | `readerSessionInvalidationErrorSessionTerminatedUnexpectedly` | "Reading was interrupted. Please try again." |
@@ -108,11 +108,11 @@ PDFs under `references/pdfs/` are third-party works and are not shipped with the
 
 - `references/pdfs/21_guide-public-personal-authentication.pdf` (Double Standard Corporation "eKYC Solution Using JPKI" p6 — App Clip: "Access web → Launch App Clip → Hold My Number Card and enter password" without installation; operators "can expect effects in preventing service dropout." Retrieved 2026-09-08)
 - `references/pdfs/33_guide-liquid-ekyc.pdf` (Liquid "LIQUID eKYC" p16 "Mechanisms to thoroughly prevent user dropout" — instructions and error handling (instruction pages considering anticipated failure scenarios, presenting specific failure reasons during reading), IC chip auto-detection (Android reading position varies by model), high-level real-time image quality checks. Retrieved 2026-09-08)
-- <https://developer.apple.com/documentation/corenfc/nfcreadererror-swift.struct> (`NFCReaderError` and `NFCReaderError.Code`. Confirmed codes listed. HTTP 200. Retrieved 2026-09-08)
+- <https://developer.apple.com/documentation/corenfc/nfcreadererror-swift.struct> (`NFCReaderError` and `NFCReaderError.Code`. Confirmed codes: `readerSessionInvalidationErrorUserCanceled`, `readerSessionInvalidationErrorSessionTimeout`, `readerSessionInvalidationErrorSystemIsBusy`, `readerSessionInvalidationErrorSessionTerminatedUnexpectedly`, `readerTransceiveErrorTagConnectionLost`, `readerTransceiveErrorRetryExceeded`, `readerTransceiveErrorTagResponseError`, `readerTransceiveErrorPacketTooLong`, `readerTransceiveErrorTagNotConnected`, `readerErrorRadioDisabled`, `readerErrorSecurityViolation`, `readerErrorUnsupportedFeature`, `readerErrorInvalidParameter`, `readerErrorInvalidParameterLength`, `readerErrorParameterOutOfBound`. HTTP 200. Retrieved 2026-09-08)
 - <https://developer.apple.com/documentation/corenfc/nfcreadersessionprotocol/alertmessage> (`alertMessage` displayed on scan sheet, updatable during session. HTTP 200. Retrieved 2026-09-08)
 - <https://developer.apple.com/documentation/corenfc/nfctagreadersession> (`readingAvailable`, `invalidate()` / `invalidate(errorMessage:)`. HTTP 200. Retrieved 2026-09-08)
 - <https://developer.apple.com/documentation/appclip/choosing-the-right-functionality-for-your-app-clip> (CoreNFC NOT in App Clip's "non-functioning frameworks" list. App Clips cannot run in background. Size limits: iOS 15 and earlier 10 MB / iOS 16 and earlier 15 MB / iOS 17+ up to 100 MB (conditional). Provide as single target with same functionality as full app. HTTP 200. Retrieved 2026-09-08)
-- `ekyc-jp/skills/ios-corenfc-apdu/SKILL.md` / `ekyc-jp/skills/pin-lock-handling/SKILL.md` (session implementation, `alertMessage` initial values, SW1SW2 interpretation alignment)
+- `skills/ios-corenfc-apdu/SKILL.md` / `skills/pin-lock-handling/SKILL.md` (session implementation, `alertMessage` initial values, SW1SW2 interpretation alignment)
 
 ## Last Verified: 2026-09-08
 

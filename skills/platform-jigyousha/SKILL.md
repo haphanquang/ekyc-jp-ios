@@ -19,7 +19,7 @@ description: プラットフォーム事業者（PF事業者）／サービス�
 
 ## なぜ認定事業者が必要か
 
-**アプリが ICチップから電子証明書を読み取ること自体は、ヘ方式でもカ方式でも技術的に可能**（読取方式の記号は `references/method-map.md` を参照）。しかし、読み取った電子証明書が**現在も有効か**（引越し・改姓・再発行・死亡・国外転出等で失効していないか）を確かめる「電子証明書の有効性確認」は、公的個人認証法に基づき**主務大臣認定を受けた事業者しか J-LIS に照会できない**。
+**JPKI（カ方式）において、アプリが公開 APDU を用いて NFC 経由で ICチップから電子証明書を読み取ること自体は技術的に可能**である（なお、ヘ方式は電子証明書ではなく券面系 AP のデータを読み取る方式であり、後述の J-LIS「AID開示申請」が必要。読取方式の記号は `references/method-map.md` を参照）。しかし、読み取った電子証明書が**現在も有効か**（引越し・改姓・再発行・死亡・国外転出等で失効していないか）を確かめる「電子証明書の有効性確認」（CRL／OCSP）は、公的個人認証法に基づき**主務大臣認定を受けた事業者しか J-LIS に照会できない**。
 
 | 区分 | 定義 | 主務大臣認定 | 署名検証設備 | J-LIS への有効性照会 |
 |---|---|---|---|---|
@@ -64,7 +64,7 @@ jpki-introduction §7.2.5「プラットフォーム事業者の提供サービ�
 | 株式会社TRUSTDOCK | （記載なし） | `29_guide-trustdock-jpki.pdf`（TRUSTDOCK公的個人認証） |
 | ポケットサイン株式会社 | （記載なし） | `23_guide-pocketsign-platform.pdf`（POCKETSIGN Platform） |
 | GMOグローバルサイン株式会社 | GMOオンライン本人確認サービス問い合わせ窓口 | `15_guide-identity-verification.pdf`（GMOオンライン本人確認サービス） |
-| 株式会社ダブルスタンダード | データマネジメントグループ／データマネジメント部 | `references/pdfs/` になし（§7.2.5 のリンク「公的個人認証を利用したeKYCソリューション」を参照） |
+| 株式会社ダブルスタンダード | データマネジメントグループ／データマネジメント部 | `21_guide-public-personal-authentication.pdf`（公的個人認証を利用したeKYCソリューションのご案内） |
 | 日本電気株式会社（NEC） | 社会公共インテグレーション統括部 新事業創出グループ | `16_guide-my-number-card-certification-service.pdf`（マイナンバーカード認証サービス） |
 | サイバートラスト株式会社 | トラストサービスマネジメント部 | `18_guide-itrust-identity-verification.pdf`（iTrust 本人確認サービス） |
 | 株式会社NTTデータ | 社会基盤ソリューション事業本部 デジタルコミュニティ事業部 | `14_guide-bizpico.pdf`（BizPICO） |
@@ -102,7 +102,7 @@ jpki-introduction §7.2.5「プラットフォーム事業者の提供サービ�
 2. 認定基準の要求事項に対応し、証明書類を作成。デジタル庁・総務省へ認定審査を申請する（§3.2.2、問合せは §7.2.3）。
 3. 認定取得後、試験環境で動作確認 → J-LIS へ届出等 → 本番環境で動作確認 → サービス利用開始（§3.2.3）。
 
-**期間の目安: 技術仕様等の入手から主務大臣認定取得までに 6か月〜1年程度**（jpki-introduction §3.2）。手続きの全体像は民間事業者向けガイドライン（第1.8版）39〜41ページ「ウ 認定手続」を参照。
+**期間の目安: 技術仕様等の入手から主務大臣認定取得までに 6か月〜1年程度**（jpki-introduction §3.2）。手続きの全体像は民間事業者向けガイドライン（第1.8版）40〜42ページ「ウ 認定手続」を参照。
 
 ### SP事業者になる場合（このアプリの想定）
 
@@ -136,7 +136,9 @@ PF事業者と契約し、その SDK / API 経由で有効性確認を委託す�
 - `references/jpki-introduction.ja.md`（§3 サービス導入の方法〔§3.1 SP事業者/PF事業者になる方式、§3.2 PF事業者になるための手続き、§3.3 利用料〕、§5.1.2 電子証明書の有効性確認の方式、§7.2.5 プラットフォーム事業者の提供サービス等に関する問合せ先）
 - ライブ URL: <https://www.digital.go.jp/policies/mynumber/private-business/jpki-introduction>（取得日 2026-09-07）
 - `references/pdfs/04_jpki-platform-operator-system.pdf`（プラットフォーム事業者制度、主務大臣認定・機構への届出の委託、割り勘効果）
+- `references/pdfs/05_private-sector-guidelines-v1.8.pdf`（公的個人認証サービス利用のための民間事業者向けガイドライン 第1.8版 40〜42ページ「ウ 認定手続」）
 - `references/pdfs/15_guide-identity-verification.pdf`（GMO オンライン本人確認サービス、API 利用、PF事業者の認定、口座開設ユースケース）
+- `references/pdfs/21_guide-public-personal-authentication.pdf`（ダブルスタンダード「公的個人認証を利用したeKYCソリューションのご案内」）および上表掲載の各社サービス紹介資料（`14`, `16`, `17`, `18`, `23`, `26`, `27`, `32`）
 - `references/pdfs/29_guide-trustdock-jpki.pdf`（TRUSTDOCK、SDK / 提供アプリの2形態、SP事業者としての構成図、複数の本人確認方法への対応）
 - `references/pdfs/33_guide-liquid-ekyc.pdf`（LIQUID eKYC。p18〜19 不正検知・表記揺れ、p21「導入までの流れ」＝ NDA・AID開示申請・公的個人認証サービス利用申込・J-LIS 審査約1〜2か月・スケジュール上限）
 - `references/method-map.md`（ヘ方式・カ方式の定義。法令上の名称・時期はこのファイルと `honnin-kakunin-houhou` が唯一の定義箇所）

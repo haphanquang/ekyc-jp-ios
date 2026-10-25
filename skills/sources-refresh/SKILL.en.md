@@ -17,7 +17,7 @@ It does not automatically modify any `SKILL.md`. When there is a CHANGED item, a
 
 ## Procedure
 
-Make each step a todo when executing.
+Make each step a todo when executing (`refresh.sh` runs 4 stages in one pass: `1. Page fetch`, `2. Link diff`, `3. SHA256 comparison`, and `4. e-Gov law revision check`).
 
 1. **Read `references/sources.md`.** Grasp the 2 known primary pages, the PDF list (URLs, acquisition dates, SHA256, used skills), and the lines under `## 未取得` (not yet acquired).
 2. **Re-acquire the 2 primary pages.** Re-fetch the Japanese and English `jpki-introduction` pages (performed by `refresh.sh`).

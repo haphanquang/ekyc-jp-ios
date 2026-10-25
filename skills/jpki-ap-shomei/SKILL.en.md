@@ -1,6 +1,6 @@
 ---
 name: jpki-ap-shomei
-description: Used when implementing My Number Card signing certificate reading and JPKI electronic signature generation on iOS. Covers SELECT of JPKI-AP, VERIFY of signing PIN (6-16 alphanumeric characters), signing with COMPUTE DIGITAL SIGNATURE (the app displays the main text of the server-assembled to-be-signed data and computes the hash itself = WYSIWYS), READ of signing certificate EF (DER), and transmission of signature and certificate to the server. Ka-method iOS implementation. Lock/remaining count UX, server-side signature verification/validity check are out of scope.
+description: Use when implementing My Number Card signing certificate reading and JPKI signature generation on iOS (Ka-method). Covers JPKI-AP SELECT, signing PIN (6-16 uppercase alphanumeric chars) VERIFY, COMPUTE DIGITAL SIGNATURE signing (displaying server-assembled to-be-signed text and computing the hash in-app = WYSIWYS), signing certificate EF (DER) READ, and sending signature and certificate to the server. Lock UX and server-side verification are out of scope.
 ---
 
 # Using Signing Keys and Certificates with JPKI-AP (Signature Generation)
@@ -13,7 +13,7 @@ Method names under the Act on Prevention of Transfer of Criminal Proceeds (Ka-me
 
 - When writing iOS implementation to read the signing certificate and generate a JPKI electronic signature
 - When checking the APDU (CLA INS P1 P2) and input data format of `COMPUTE DIGITAL SIGNATURE`
-- When implementing the VERIFY of the signing PIN (6 to 16 alphanumeric characters) and reading the remaining trial count via SW
+- When implementing the VERIFY of the signing PIN (6 to 16 uppercase alphanumeric characters) and reading the remaining trial count via SW
 - When confirming the division of responsibilities between what is passed to the server (signature value, certificate DER) and what the server prepares (data to be signed)
 
 For lock/remaining count UX, see `pin-lock-handling`. For server-side signature verification, see `signature-verification`. For certificate validity verification, see `jlis-yukousei-kakunin`. For CoreNFC session establishment and APDU transmission/reception, see `ios-corenfc-apdu`.
@@ -37,7 +37,7 @@ Send the following sequentially within a single session. Abort if the response S
 
 - [ ] **1. SELECT JPKI-AP** — `00 A4 04 0C 0A D3 92 F0 00 26 01 00 00 00 01` (AID matches across 3 sources: tex2e, moritamori, kopaneet). If `6A 82`, review the AID / `select-identifiers` in `Info.plist`.
 - [ ] **2. SELECT the EF for signing PIN** — `00 A4 02 0C 02 00 1B` (EF-ID is from tex2e).
-- [ ] **3. VERIFY the PIN** — `00 20 00 80` + ASCII byte array of the PIN (keyref P2=`80` matches across 3 sources). 6 to 16 alphanumeric characters (length matches between zenn.dev/trustdock and tex2e). Check the response SW:
+- [ ] **3. VERIFY the PIN** — `00 20 00 80` + ASCII byte array of the PIN (keyref P2=`80` matches across 3 sources). 6 to 16 uppercase alphanumeric characters (length matches between zenn.dev/trustdock and tex2e). Check the response SW:
   - `90 00`: Verification successful.
   - `63 CX`: Mismatch. The lower nibble `X` is the remaining trial count (ISO/IEC 7816-4 standard value. Primary source for JPKI specifics is `Unverified`). **Do not auto-retry.** Delegate presenting the remaining count, warning before lock, and unlocking flow at lock to `pin-lock-handling`.
   - `69 83`: Locked. See `pin-lock-handling`.
@@ -81,7 +81,7 @@ extension CardReader {
 
 ## Reading the Certificate
 
-The signing certificate is a DER (over 1 KB for RSA-2048), so it must be read using segmented READ.
+Because the signing certificate (EF `00 01`) contains the Basic 4 Information, reading it requires prior **VERIFY of the signing PIN (EF `00 1B`, 6–16 uppercase alphanumeric chars; Steps 2–3 above)** in the same NFC session. Always call `readShomeiCertificate(tag:)` **after** `verifyShomeiPIN`. Also, because it is DER (over 1 KB for RSA-2048), it must be read using segmented READ.
 
 1. **SELECT the EF for signing certificate** — `00 A4 02 0C 02 00 01` (EF-ID is from tex2e).
 2. **READ BINARY the head** — `00 B0 00 00`. Determine the total DER length from the length field (long form) immediately following the ASN.1 SEQUENCE tag at the head of the response.
@@ -90,7 +90,7 @@ The signing certificate is a DER (over 1 KB for RSA-2048), so it must be read us
 ```swift
 extension CardReader {
     func readShomeiCertificate(tag: NFCISO7816Tag) async throws -> Data {
-        try await selectEF(efID: [0x00, 0x01], tag: tag)    // 00 A4 02 0C 02 00 01
+        try await selectEF(efID: [0x00, 0x01], tag: tag)    // 00 A4 02 0C 02 00 01 (call after verifyShomeiPIN in same session)
         let der = try await readSelectedTLV(tag: tag)        // ios-corenfc-apdu: segmented READ up to the total length in the DER header
         return der                                           // Do not retain as DER (discard after server transmission)
     }
@@ -99,7 +99,7 @@ extension CardReader {
 
 The exact termination conditions (`61 xx` / `6C xx` presence, maximum length per EF) for reading over 256 bytes with READ BINARY are `Unverified`. Follow the notes in `ios-corenfc-apdu`.
 
-> Note: Depending on the implementation, there are reports that VERIFY of the **user-authentication (4-digit) PIN** is required before READing the signing certificate (EF `00 01`) (`Unverified Items`). If `63 CX` / `69 82` (security status not satisfied) is returned, question this premise.
+> Note: Because the signing certificate (EF `00 01`) contains the Basic 4 Information (name, address, date of birth, sex), unlike the user-authentication certificate (EF `00 0A`, which requires no PIN), reading EF `00 01` requires prior **VERIFY of the signing PIN (EF `00 1B`, 6–16 uppercase alphanumeric chars)** in the same NFC session. Calling `READ BINARY` before `VERIFY` returns `69 82` (Security status not satisfied).
 
 ## Passing to the Server
 
@@ -126,9 +126,7 @@ The exact termination conditions (`61 xx` / `6C xx` presence, maximum length per
 - <https://zenn.dev/trustdock/articles/66a228895294bc> (TrustDock "Introduction to Public Personal Authentication (JPKI)" — NFC Type-B, ISO 7816 APDU, signing PIN 6-16 alphanumeric chars, locks after 5 failures. Retrieved on 2026-09-08)
 - <https://www.jpki.go.jp/procedure/password.html> (J-LIS "Public Personal Authentication Service Portal Site" — Password for signing certificate (6 to 16 alphanumeric characters) locks upon 5 consecutive incorrect attempts. Retrieved on 2026-09-08)
 
-## Last Verified
-
-2026-09-11
+## Last Verified: 2026-09-11
 
 ## Unverified Items
 
@@ -139,4 +137,4 @@ The exact termination conditions (`61 xx` / `6C xx` presence, maximum length per
 - EF-IDs for signing private key EF `00 1A`, PIN EF `00 1B`, and certificate EF `00 01` (tex2e is a single source).
 - Whether the lower nibble of `63 CX` is the remaining trial count, and whether `69 83` means locked (ISO/IEC 7816-4 standard values. Primary sources for JPKI specifics are `Unverified`). The 5-time failure lock limit for signing has been confirmed on J-LIS `jpki.go.jp` (`pin-lock-handling` / `apdu-cheatsheet.md`).
 - Termination conditions and maximum read length when reading the certificate EF (over 256 bytes) using READ BINARY.
-- **Whether VERIFY of the user-authentication (4-digit) PIN is required beforehand to READ the signing certificate (EF `00 01`).** Several implementations report that "reading the signing certificate requires the user-authentication password" (the user-authentication certificate in `jpki-ap-riyousha` does not require a PIN). If necessary, the design will require two types of PIN input throughout the flow. Requires verification with actual cards / official specs.
+- **Prior VERIFY required to READ the signing certificate (EF `00 01`).** Because the signing certificate contains the Basic 4 Information, reading it requires prior `VERIFY` of the **signing PIN (EF `00 1B`, 6–16 uppercase alphanumeric chars)** in the same NFC session; calling `READ BINARY` before `VERIFY` returns `69 82` (Security status not satisfied) (whereas the user-authentication certificate EF `00 0A` in `jpki-ap-riyousha` does not require a PIN). Therefore, `readShomeiCertificate(tag:)` must be called after Steps 2–3 (`verifyShomeiPIN`), matching tex2e's procedure.

@@ -1,6 +1,6 @@
 ---
 name: ios-security
-description: iOS eKYC security implementation reference. Covers handling of data read from My Number Card (basic 4 information, face photo, individual number, signature values, PINs) on the device. Private keys never leave the IC chip / read data kept in memory only and wiped after server transmission / TLS 1.2+ and App Transport Security / certificate pinning and public key pinning for eKYC server / never log PINs, challenge hashes, signature values, individual numbers, or face photos (PIN logging prohibition including analytics/crash reports) / Keychain storage eligibility / individual number protection (encryption at rest, deletion after purpose fulfilled) / screenshot and screen recording prevention for PIN entry and card data display screens / device integrity checks (optional) / NFC and camera permission wording. Server-side spoofing, camera injection, and replay countermeasures are in ekyc-session-orchestration.
+description: Use when implementing iOS security controls for My Number Card eKYC. Covers in-memory handling and wiping of card data (Basic 4 Info, face photo, My Number, signatures, PINs), TLS 1.2+ and certificate/public-key pinning, prohibiting sensitive data in logs/analytics/crash reports, Keychain rules, and screen capture protection.
 ---
 
 # Handling Card Data and Security on iOS Devices
@@ -35,13 +35,13 @@ The device side does not verify digital signatures or query J-LIS (server / plat
 ```swift
 final class SensitivePayload {
     private(set) var bytes: [UInt8]
-    init(_ bytes: [UInt8]) { self.bytes = bytes }
+    init(_ bytes: [UInt8]) { self.bytes = bytes }        // Caller must not keep other references to the input array (prevents CoW)
 
     /// Must be called after server transmission
     func wipe() {
         bytes.withUnsafeMutableBytes { buf in
             guard let base = buf.baseAddress else { return }
-            memset_s(base, buf.count, 0, buf.count)   // C11 Annex K. Won't be optimized away
+            _ = memset_s(base, buf.count, 0, buf.count)  // C11 Annex K. Won't be optimized away
         }
         bytes.removeAll(keepingCapacity: false)
     }
@@ -63,8 +63,10 @@ import Security     // SecTrust*, SecCertificate*
 func urlSession(_ session: URLSession,
                 didReceive challenge: URLAuthenticationChallenge,
                 completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
-    guard challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust,
-          let trust = challenge.protectionSpace.serverTrust else {
+    guard challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust else {
+        completionHandler(.performDefaultHandling, nil); return
+    }
+    guard let trust = challenge.protectionSpace.serverTrust else {
         completionHandler(.cancelAuthenticationChallenge, nil); return
     }
     var error: CFError?
@@ -175,7 +177,7 @@ PDFs under `references/pdfs/` are third-party works and are not shipped with the
 - <https://developer.apple.com/documentation/os/generating-log-messages-from-your-code> (`Logger` interpolation `privacy:`, dynamic strings/objects are redacted by default while numbers are not, `%{public}` / `%{private}`, `privacy: .private(mask: .hash)`. Retrieved 2026-09-08)
 - <https://mas.owasp.org/MASVS/> (OWASP MASVS. MASVS-STORAGE (sensitive data stored in Keychain or envelope encryption, avoid plaintext persistence), MASVS-NETWORK (TLS, server authentication). Retrieved 2026-09-08)
 - <https://mas.owasp.org/MASTG/tests/ios/MASVS-STORAGE/MASTG-TEST-0052/> (iOS local data storage test. Don't put sensitive data in `UserDefaults` / plist / Core Data plaintext, Keychain `kSecAttrAccessible` should be least privilege. Retrieved 2026-09-08)
-- `ekyc-jp/references/pdfs/33_guide-liquid-ekyc.pdf` (p.10 "JPKI+ (facial) overview," p.19 "Advanced fraud detection functions," p.20 "Liquid PAD / ISO/IEC 30107" — all server-side functions, not device app responsibilities)
+- `references/pdfs/33_guide-liquid-ekyc.pdf` (p.10 "JPKI+ (facial) overview," p.19 "Advanced fraud detection functions," p.20 "Liquid PAD / ISO/IEC 30107" — facial presentation attack detection (PAD for display/photo attacks), camera injection attack detection (hijacking camera control to inject virtual video), and face/identity reuse & warning-list checks; all server-side functions, not device app responsibilities)
 
 ## Last Verified: 2026-09-08
 

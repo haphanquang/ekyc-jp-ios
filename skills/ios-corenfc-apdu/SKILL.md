@@ -20,7 +20,7 @@ JPKI の PIN 照合・電子署名生成の手順が必要なら `jpki-ap-shomei
 ## プロジェクト設定
 
 - [ ] **capability を追加する** — Xcode の Signing & Capabilities で「Near Field Communication Tag Reading」を追加する。これで `com.apple.developer.nfc.readersession.formats` に `TAG` フォーマットが入る。Apple Developer ポータルの App ID でも「NFC Tag Reading」を有効化し、その App ID に紐づく provisioning profile を使う（profile に NFC が無いと実機ビルドが失敗する）。
-- [ ] **SELECT する AID を `Info.plist` に列挙する** — `Info.plist` の `com.apple.developer.nfc.readersession.iso7816.select-identifiers`（文字列配列、iOS 13.0+）に、アプリが SELECT FILE（DF 名）で選択する AP の AID を 16 進文字列で列挙する。ここに無い AID は OS がフィルタし、`sendCommand` の SELECT が通らない／タグが `didDetect` に渡らないことがある。マイナンバーカード各 AP の AID 実値は `references/apdu-cheatsheet.md` を参照（本プラグイン時点で JPKI-AP 以外は `未確認` または 1 ソースのみ。確定してから列挙する）。アプリが SELECT する AID の入手（AID 開示申請）については `platform-jigyousha` を参照。
+- [ ] **SELECT する AID を `Info.plist` に列挙する** — `Info.plist` の `com.apple.developer.nfc.readersession.iso7816.select-identifiers`（文字列配列、iOS 13.0+）に、アプリが SELECT FILE（DF 名）で選択する AP の AID を**スペースなしの連続 16 進文字列**（例: `D392F000260100000001`、`D3921000310001010408`）で列挙する。ここに無い AID は OS がフィルタし、`sendCommand` の SELECT が通らない／タグが `didDetect` に渡らないことがある。マイナンバーカード各 AP の AID 実値は `references/apdu-cheatsheet.md` を参照（JPKI-AP は 3 ソース一致、券面入力補助AP は kopaneet・tex2e の 2 ソースで一致するが J-LIS 一次資料では未確認、それ以外は `未確認`。確定してから列挙する）。アプリが SELECT する AID の入手（AID 開示申請）については `platform-jigyousha` を参照。
 - [ ] **`Info.plist` に `NFCReaderUsageDescription` を設定する** — NFC ハードウェアを使う理由を説明する非空の文字列を入れる。未設定・空文字だとセッション生成直後に `tagReaderSession(_:didInvalidateWithError:)` で失敗する。
 - [ ] **実機で確認する（Simulator 不可）** — CoreNFC は NFC 対応 iPhone の実機でのみ動作する。Simulator ではビルドできても読み取りは動かない。マイナンバーカードは ISO/IEC 14443 **Type-B**。ポーリングは `.iso14443` を指定する（Type A / B とも `.iso14443` に含まれる）。テストには実物のカードが要る。
 
@@ -93,7 +93,7 @@ extension CardReader {
 
     // (B) 生バイト列から作る（Lc は自分で含める）— init?(data:)
     func rawAPDU(_ bytes: [UInt8]) -> NFCISO7816APDU {
-        NFCISO7816APDU(data: Data(bytes))!
+        NFCISO7816APDU(data: Data(bytes))!                   // 4Bヘッダ＋Lc整合が前提（不正長なら nil）
     }
 
     // 送信。async 版は戻り値の型でオーバーロードが決まる
@@ -210,7 +210,7 @@ extension CardReader {
 ## よくある失敗
 
 - **Simulator で試す** — NFC は実機のみ。`NFCTagReaderSession.readingAvailable` が `false` を返す。
-- **AID を `.entitlements` に書く／`Info.plist` に列挙し忘れる** — `select-identifiers` は `Info.plist` のキー（`.entitlements` に入れるのは `readersession.formats` だけ）。`Info.plist` の `select-identifiers` に無い AID を SELECT しようとすると失敗する／タグが `didDetect` に来ない。
+- **AID を `.entitlements` に書く／`Info.plist` に列挙し忘れる／スペースを入れる** — `select-identifiers` は `Info.plist` のキー（`.entitlements` に入れるのは `readersession.formats` だけ）で、AID はスペースなしの連続 16 進文字列（`D392F000260100000001`、`D3921000310001010408` 等）で記載する。`Info.plist` の `select-identifiers` に無い AID を SELECT しようとすると失敗する／タグが `didDetect` に来ない。
 - **provisioning profile に NFC が無い** — App ID で NFC Tag Reading を有効化していないと実機ビルド／実行ができない。
 - **`NFCReaderUsageDescription` 未設定** — セッション生成直後に `didInvalidateWithError` で即終了する。
 - **`pollingOption` の指定ミス** — `.iso14443` 以外だと Type-B のマイナンバーカードが検出されない。
@@ -235,8 +235,8 @@ extension CardReader {
 
 ## 未確認事項
 
-- `Info.plist` の `select-identifiers` に列挙すべきマイナンバーカード各 AP の AID 文字列。JPKI-AP 以外は `references/apdu-cheatsheet.md` でも `未確認` または 1 ソースのみ。実装前に検証すること。
+- `Info.plist` の `select-identifiers` に列挙すべきマイナンバーカード各 AP の AID 文字列（スペースなしの連続 16 進文字列：`D392F000260100000001`、`D3921000310001010408` 等）。`references/apdu-cheatsheet.md` では JPKI-AP（3 ソース一致）と券面入力補助AP（kopaneet・tex2e の 2 ソースで一致、J-LIS 一次資料では未確認）以外は `未確認`。実装前に検証すること。
 - READ BINARY で 256 バイト超を読む際のマイナンバーカードの正確な終了条件（Le=0 で最大長要求ができるか、`61 xx` / `6C xx` を返すか、EF ごとの最大読み取り長）。上記コードは TLV ヘッダの全長で終了し、`62 82` / `6C xx` を ISO/IEC 7816-4 どおりに扱うが、実カードでの挙動は要検証。
-- SELECT（EF 識別子）の P1P2 `00 A4 02 0C` が全 AP で共通か。`apdu-cheatsheet.md` では JPKI-AP の例のみ。
+- SELECT（EF 識別子）の P1P2 `00 A4 02 0C` が全 AP で共通か。`apdu-cheatsheet.md` では JPKI-AP と券面入力補助AP の例のみ。
 - `.iso14443` 指定時にマイナンバーカード（ISO/IEC 14443 Type-B）が確実に `case .iso7816` として渡ってくるか。TrustDock は Type-B と明記するが、Apple ドキュメントは Type A / B の区別を明記していない。
 - APDU の Extended Length（Lc / Le が 3 バイト）にマイナンバーカードが対応するか。本スキルのコードは短 Le を前提にしている。

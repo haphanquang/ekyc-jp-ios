@@ -1,6 +1,6 @@
 ---
 name: ios-security
-description: iOS eKYC セキュリティ の実装リファレンス。マイナンバーカードから読み取ったデータ（基本4情報・顔写真・個人番号・署名値・暗証番号）の端末内での取り扱いを扱う。秘密鍵は IC チップから出ない／読み取りデータはメモリ上のみで保持しサーバー送信後に消去／TLS 1.2+ と App Transport Security／eKYC サーバーへの証明書ピンニング・公開鍵ピンニング／暗証番号・チャレンジハッシュ・署名値・個人番号・顔写真をログに残さない（PIN のログ禁止・分析／クラッシュレポート含む）／Keychain 保存の可否／個人番号の保護（保存時暗号化・目的終了後の削除）／PIN 入力画面とカードデータ表示画面のスクリーンショット・画面収録対策／端末の健全性チェック（任意）／NFC・カメラの権限文言。サーバー側のなりすまし・カメラインジェクション・リプレイ対策は ekyc-session-orchestration。
+description: iOS でマイナンバーカード eKYC のセキュリティ対策を実装する際に使用。カードから読み取ったデータ（基本4情報・顔写真・個人番号・署名値・暗証番号）のメモリ消去、TLS 1.2+ と証明書／公開鍵ピンニング、PIN・個人番号・顔写真等のログ出力禁止、Keychain 保存条件、画面保護（スクリーンショット・画面収録対策）を扱う。
 ---
 
 # iOS 端末でのカードデータとセキュリティの取り扱い
@@ -35,13 +35,13 @@ description: iOS eKYC セキュリティ の実装リファレンス。マイナ
 ```swift
 final class SensitivePayload {
     private(set) var bytes: [UInt8]
-    init(_ bytes: [UInt8]) { self.bytes = bytes }
+    init(_ bytes: [UInt8]) { self.bytes = bytes }        // 呼び出し側で元配列の別参照を残さないこと（CoW 防止）
 
     /// サーバー送信後に必ず呼ぶ
     func wipe() {
         bytes.withUnsafeMutableBytes { buf in
             guard let base = buf.baseAddress else { return }
-            memset_s(base, buf.count, 0, buf.count)   // C11 Annex K。最適化で消えない
+            _ = memset_s(base, buf.count, 0, buf.count)  // C11 Annex K。最適化で消えない
         }
         bytes.removeAll(keepingCapacity: false)
     }
@@ -63,8 +63,10 @@ import Security     // SecTrust*, SecCertificate*
 func urlSession(_ session: URLSession,
                 didReceive challenge: URLAuthenticationChallenge,
                 completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
-    guard challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust,
-          let trust = challenge.protectionSpace.serverTrust else {
+    guard challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust else {
+        completionHandler(.performDefaultHandling, nil); return
+    }
+    guard let trust = challenge.protectionSpace.serverTrust else {
         completionHandler(.cancelAuthenticationChallenge, nil); return
     }
     var error: CFError?
@@ -175,7 +177,7 @@ NotificationCenter.default.addObserver(
 - <https://developer.apple.com/documentation/os/generating-log-messages-from-your-code>（`Logger` 補間の `privacy:`、動的文字列・オブジェクトは既定で伏せられ数値は伏せられない、`%{public}` / `%{private}`、`privacy: .private(mask: .hash)`。取得日 2026-09-08）
 - <https://mas.owasp.org/MASVS/>（OWASP MASVS。MASVS-STORAGE（機微データは Keychain または封筒暗号化で保存、平文の永続化を避ける）、MASVS-NETWORK（TLS・サーバー認証）。取得日 2026-09-08）
 - <https://mas.owasp.org/MASTG/tests/ios/MASVS-STORAGE/MASTG-TEST-0052/>（iOS ローカルデータ保存テスト。`UserDefaults` / plist / Core Data 平文に機微データを置かない、Keychain の `kSecAttrAccessible` は最小権限。取得日 2026-09-08）
-- `ekyc-jp/references/pdfs/33_guide-liquid-ekyc.pdf`（p.10「JPKI+（容貌）概要」、p.19「高度な不正検知判定機能」、p.20「Liquid PAD / ISO/IEC 30107」— 容貌真贋判定（ディスプレイ攻撃・写真攻撃の PAD）、カメラインジェクション攻撃判定（カメラ制御をハッキングし仮想映像に差し替える攻撃）、顔／本人特定事項の使いまわし・警告リスト判定。いずれもサーバー側機能で端末アプリの責務ではない）
+- `references/pdfs/33_guide-liquid-ekyc.pdf`（p.10「JPKI+（容貌）概要」、p.19「高度な不正検知判定機能」、p.20「Liquid PAD / ISO/IEC 30107」— 容貌真贋判定（ディスプレイ攻撃・写真攻撃の PAD）、カメラインジェクション攻撃判定（カメラ制御をハッキングし仮想映像に差し替える攻撃）、顔／本人特定事項の使いまわし・警告リスト判定。いずれもサーバー側機能で端末アプリの責務ではない）
 
 ## 最終確認日: 2026-09-08
 

@@ -24,7 +24,7 @@ if [ ! -s "$tmp/live_urls.txt" ]; then
   echo "!! ページから PDF リンクを 1 件も抽出できませんでした。ページ構造が変わった可能性があります。"
   exit 1
 fi
-grep -oE 'https?://[^ |)]+\.pdf' sources.md | sort -u > "$tmp/known_urls.txt"
+grep -oE 'https://www\.digital\.go\.jp/[^ |)]+\.pdf' sources.md | sort -u > "$tmp/known_urls.txt"
 
 echo "-- 新規（sources.md に無い）--"
 comm -23 "$tmp/live_urls.txt" "$tmp/known_urls.txt" || true
@@ -68,13 +68,26 @@ echo "== e-Gov 法令リビジョンの確認（hourei-eKYC.md との突合。�
 # 同じ LawId が複数節に現れる（現行版と未施行版）ため、記録リビジョンは第 4 引数の節
 # （`## <番号>.` 見出し）内の「取得リビジョン」行からのみ読む。
 check_law() {
-  local lawid="$1" asof="$2" label="$3" sec="$4" url recorded live
+  local lawid="$1" asof="${2:-}" label="${3:-}" sec="${4:-}" url recorded live
+  if [ "$#" -eq 2 ]; then
+    asof=""
+    label="$2"
+    sec=""
+  fi
   url="https://laws.e-gov.go.jp/api/2/law_data/${lawid}"
   [ -n "$asof" ] && url="${url}?asof=${asof}"
-  recorded=$(awk -v s="## ${sec}." 'index($0, s) == 1 { f = 1; next } f && /^## / { exit } f && /取得リビジョン/ { print; exit }' hourei-eKYC.md \
-    | grep -oE "${lawid}_[0-9]{8}_[0-9A-Za-z]+" | head -1 || true)
+  if [ -n "$sec" ]; then
+    recorded=$(awk -v s="## ${sec}." 'index($0, s) == 1 { f = 1; next } f && /^## / { exit } f && /取得リビジョン/ { print; exit }' hourei-eKYC.md \
+      | grep -oE "${lawid}_[0-9]{8}_[0-9A-Za-z]+" | head -1 || true)
+  else
+    recorded=$(grep -hoE "${lawid}_[0-9]{8}_[0-9A-Za-z]+" hourei-eKYC.md sources.md | head -1 || true)
+  fi
   if [ -z "$recorded" ]; then
-    echo "?? 記録リビジョンが見つからない: ${label}（hourei-eKYC.md の「## ${sec}.」節に ${lawid} の取得リビジョン行が無い）"
+    if [ -n "$sec" ]; then
+      echo "?? 記録リビジョンが見つからない: ${label}（hourei-eKYC.md の「## ${sec}.」節に ${lawid} の取得リビジョン行が無い）"
+    else
+      echo "?? 記録リビジョンが見つからない: ${label}（hourei-eKYC.md / sources.md に ${lawid} の取得リビジョン行が無い）"
+    fi
     return
   fi
   if ! curl -fsSL -A "$UA" "$url" -o "$tmp/law.json"; then
@@ -98,6 +111,7 @@ check_law "420M60000F5A001" "2027-04-01" "犯収法施行規則（2027-04-01 未
 check_law "417M60000008167" ""           "携帯法施行規則（現行）"                3
 check_law "414AC0000000153" ""           "公的個人認証法（現行）"                4
 check_law "407M50400000010" ""           "古物営業法施行規則（現行）"            5
+check_law 324AC0000000108 "L7 古物営業法（本法）"
 
 echo
 echo "次の手順:"

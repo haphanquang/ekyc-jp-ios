@@ -17,7 +17,7 @@ PDF は第三者の著作物のためリポジトリに含めません。`refres
 | # | ページ | URL | 取得日 | 備考 |
 |---|---|---|---|---|
 | P1 | 公的個人認証サービス（JPKI）日本語版 | https://www.digital.go.jp/policies/mynumber/private-business/jpki-introduction | 2026-09-07 | plugin 内は `jpki-introduction.ja.md` |
-| P2 | 同 英語版 | https://www.digital.go.jp/en/policies/mynumber/private-business/jpki-introduction | 2026-09-07 | 参考。`reference/jpki-introduction.en.md`（plugin 外） |
+| P2 | 同 英語版 | https://www.digital.go.jp/en/policies/mynumber/private-business/jpki-introduction | 2026-09-07 | 参考。`references/jpki-introduction.en.md` |
 
 ## 法令（e-Gov 法令検索）
 
@@ -33,8 +33,8 @@ PDF は第三者の著作物のためリポジトリに含めません。`refres
 | L6 | 古物営業法施行規則（現行） | 407M50400000010 | 407M50400000010_20260812_508M60400000017 | https://laws.e-gov.go.jp/law/407M50400000010 | 2026-10-05 | honnin-kakunin-houhou |
 | L7 | 古物営業法（本法） | 324AC0000000108 | 324AC0000000108_20250601_504AC0000000068 | https://laws.e-gov.go.jp/law/324AC0000000108 | 2026-10-05 | honnin-kakunin-houhou |
 
-L7（古物営業法 本法）は `refresh.sh` の突合対象外（`check_law` は各節の最初の「取得リビジョン」行のみを読むため）。
-`sources-refresh` の際に `https://laws.e-gov.go.jp/api/2/law_revisions/324AC0000000108` を手動で確認する。
+L5（犯収法 本法）は `hourei-eKYC.md` に条文抜粋・取得リビジョンを持たないため `refresh.sh` の自動突合対象外（L1〜L4・L6・L7 は `refresh.sh` で自動突合）。
+`sources-refresh` の際に必要に応じ `https://laws.e-gov.go.jp/api/2/law_revisions/419AC0000000022` を確認する。
 
 ## PDF 資料
 
@@ -49,7 +49,7 @@ L7（古物営業法 本法）は `refresh.sh` の突合対象外（`check_law` 
 | 02 | デジタル社会の実現に向けた重点計画　工程表 | pdfs/02_priority-plan-roadmap-digital-society.pdf | https://www.digital.go.jp/assets/contents/node/basic_page/field_ref_resources/5ecac8cc-50f1-4168-b989-2bcaabffe870/019e531c/20220607_policies_priority_outline_07.pdf | 2026-09-07 | a86cf6e238193e98e4ddfffac753a66c6783248dc4f6dadb95292a76dc3e4a05 | （未使用） |
 | 03 | 公開鍵暗号方式 | pdfs/03_public-key-cryptography.pdf | https://www.digital.go.jp/assets/contents/node/basic_page/field_ref_resources/1f2fb150-febe-4bee-b691-f02f68c4e8d4/7c53ec45/20230310_private-businessjpki-introduction_outline_01.pdf | 2026-09-07 | b2820806bd566d6eb87705d82ec4c83b55e5dbf7b2020c8dcbbec85e08ce5604 | jpki-overview |
 | 04 | 民間事業者における公的個人認証サービスの活用（プラットフォーム事業者制度） | pdfs/04_jpki-platform-operator-system.pdf | https://www.digital.go.jp/assets/contents/node/information/field_ref_resources/348cf54f-0c15-4b98-bb43-3171f7c092f7/0568b799/20241119_news_mynumber_outline_03.pdf | 2026-09-07 | e00cdaa38315752c30a3d09888d7f389bba417d67ca2e968cd15e0ce0f8eae6b | jpki-overview, platform-jigyousha, jlis-yukousei-kakunin |
-| 05 | 公的個人認証サービス利用のための民間事業者向けガイドライン（第1.8版） | pdfs/05_private-sector-guidelines-v1.8.pdf | https://www.digital.go.jp/assets/contents/node/basic_page/field_ref_resources/1f2fb150-febe-4bee-b691-f02f68c4e8d4/e550d3de/20260413_policies_mynumber_private-business_outline_01.pdf | 2026-09-07 | 1f7a6c58ebe167c92b6bb5cce0988db23dda618ba86ea758491b084530d93039 | honnin-kakunin-houhou, kihon-4-jouhou-doui, doui-jouhou-kanri |
+| 05 | 公的個人認証サービス利用のための民間事業者向けガイドライン（第1.8版） | pdfs/05_private-sector-guidelines-v1.8.pdf | https://www.digital.go.jp/assets/contents/node/basic_page/field_ref_resources/1f2fb150-febe-4bee-b691-f02f68c4e8d4/e550d3de/20260413_policies_mynumber_private-business_outline_01.pdf | 2026-09-07 | 1f7a6c58ebe167c92b6bb5cce0988db23dda618ba86ea758491b084530d93039 | honnin-kakunin-houhou, kihon-4-jouhou-doui, doui-jouhou-kanri, jpki-overview, platform-jigyousha |
 | 06 | 電子証明書が失効する場合とその対応 | pdfs/06_certificate-expiry-what-to-do.pdf | https://www.digital.go.jp/assets/contents/node/basic_page/field_ref_resources/1f2fb150-febe-4bee-b691-f02f68c4e8d4/6e4fa365/20221219_private-businessjpki-introduction_outline_01.pdf | 2026-09-07 | 921e5b82ffc9022f4fa7e3e1ada16a19471c1ddfae2718e817c32ed82515bf7f | jlis-yukousei-kakunin, pin-lock-handling |
 | 07 | 電子証明書の種類 | pdfs/07_types-of-electronic-certificate.pdf | https://www.digital.go.jp/assets/contents/node/basic_page/field_ref_resources/1f2fb150-febe-4bee-b691-f02f68c4e8d4/e376536f/20221219_private-businessjpki-introduction_outline_02.pdf | 2026-09-07 | ac31e4968f06127bf23979a9c0efb18ebabd169373a7ebd1fe259f155728e3d3 | mynumber-card-ic, signature-verification |
 | 08 | 公的個人認証サービスを利用した最新の利用者情報（4情報）提供サービス | pdfs/08_latest-information-4-types.pdf | https://www.digital.go.jp/assets/contents/node/basic_page/field_ref_resources/3f10dd8b-8c2a-4585-9cdc-674ad2112731/dad77a76/20230516_policies_mynumber_private-business_outline_02.pdf | 2026-09-07 | e762edadd1f8b65ae147dce0202de39ee6400dac4ad76c12f7e125dad24a8696 | kihon-4-jouhou-doui |
@@ -65,7 +65,7 @@ L7（古物営業法 本法）は `refresh.sh` の突合対象外（`check_law` 
 | 18 | iTrust 本人確認サービスのご案内 | pdfs/18_guide-itrust-identity-verification.pdf | https://www.digital.go.jp/assets/contents/node/basic_page/field_ref_resources/d046094e-9570-49fa-8158-b912b86593c7/87cd07fe/20221007_policies_mynumber_mynumbercard-user-list_outline_04.pdf | 2026-09-07 | 21c78d399530069001da948213be613e4c5f3f0d4da2da85d33fcae6af5fb447 | platform-jigyousha |
 | 19 | ふるさと納税「ワンストップ特例申請」のオンライン化 | pdfs/19_guide-hometown-tax-one-stop.pdf | https://www.digital.go.jp/assets/contents/node/basic_page/field_ref_resources/1f2fb150-febe-4bee-b691-f02f68c4e8d4/f348c809/20260728_policies_mynumber_mynumbercard-user-list_outline_05.pdf | 2026-09-07 | 7ef842f5b586c69cd621bc9144a2f9eb6348720486a0634786dfac006fb7d6b8 | （未使用） |
 | 20 | TISI株式会社「マイナンバーカード本人確認サービス」のご案内 | pdfs/20_guide-tisi-my-number-card-identity-verification.pdf | https://www.digital.go.jp/assets/contents/node/basic_page/field_ref_resources/8dc4190e-109e-4b13-96a0-0dc42f09dbfa/e659a99e/20260903_policies_mynumber_private-business_faq_platformer-list_outline_01.pdf | 2026-09-07 | b77f6b15379b0d00afe776453dc19c92862c69540778371d3eee383935c7e36f | （未使用） |
-| 21 | 公的個人認証を利用したeKYCソリューションのご案内 | pdfs/21_guide-public-personal-authentication.pdf | https://www.digital.go.jp/assets/contents/node/basic_page/field_ref_resources/1f2fb150-febe-4bee-b691-f02f68c4e8d4/17bd4282/20241217_policies_mynumber_mynumbercard-user-list_outline_04.pdf | 2026-09-07 | 319a47120226874f650b6f502c9e3054afccc5076b58fba5441990ae4a63a0b5 | jpki-overview, ios-nfc-ux-errors |
+| 21 | 公的個人認証を利用したeKYCソリューションのご案内 | pdfs/21_guide-public-personal-authentication.pdf | https://www.digital.go.jp/assets/contents/node/basic_page/field_ref_resources/1f2fb150-febe-4bee-b691-f02f68c4e8d4/17bd4282/20241217_policies_mynumber_mynumbercard-user-list_outline_04.pdf | 2026-09-07 | 319a47120226874f650b6f502c9e3054afccc5076b58fba5441990ae4a63a0b5 | jpki-overview, ios-nfc-ux-errors, platform-jigyousha |
 | 22 | myVerifist&キャッシュレスサービスのご案内 | pdfs/22_guide-myverifist-cashless.pdf | https://www.digital.go.jp/assets/contents/node/basic_page/field_ref_resources/1f2fb150-febe-4bee-b691-f02f68c4e8d4/beaa4c40/20241217_policies_mynumber_mynumbercard-user-list_outline_05.pdf | 2026-09-07 | f7a4c2ed872d4468df611cdc54bd13c73e8a6240a50a5ce17546a1a3082522ac | （未使用） |
 | 23 | POCKETSIGN Platformのご案内 | pdfs/23_guide-pocketsign-platform.pdf | https://www.digital.go.jp/assets/contents/node/basic_page/field_ref_resources/1f2fb150-febe-4bee-b691-f02f68c4e8d4/b63b21ef/20260601_policies_mynumber_private-business_faq_platformer-list_outline_01.pdf | 2026-09-07 | b5d8955d6bf927c0abe16c35cb2313b5a0b50109e47412dc67192f406b55b69c | platform-jigyousha |
 | 24 | クラウドサインのご案内 | pdfs/24_guide-cloudsign.pdf | https://www.digital.go.jp/assets/contents/node/basic_page/field_ref_resources/1f2fb150-febe-4bee-b691-f02f68c4e8d4/45db0a72/20250109_policies_mynumber_mynumbercard-user-list_outline_01.pdf | 2026-09-07 | 706f7a5c2ca13e4efc14d17e9eb31e722a63d5bf6c09309115dd773162427258 | （未使用） |

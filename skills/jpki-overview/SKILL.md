@@ -108,10 +108,12 @@ J-LIS に対する電子証明書検証手数料は、有効性確認の件数�
 - `references/pdfs/01_overview-public-personal-authentication.pdf`（公的個人認証制度の概要、署名検証者モデル、失効条件）
 - `references/pdfs/03_public-key-cryptography.pdf`（公開鍵暗号方式、署名用／利用者証明用の認証フロー）
 - `references/pdfs/04_jpki-platform-operator-system.pdf`（プラットフォーム事業者制度、SP事業者との関係、J-LIS 側手続き）
+- `references/pdfs/05_private-sector-guidelines-v1.8.pdf`（公的個人認証サービス利用のための民間事業者向けガイドライン 第1.8版）
 - `references/pdfs/21_guide-public-personal-authentication.pdf`（SP事業者から見た導入フロー例）
+- `references/pdfs/29_guide-trustdock-jpki.pdf`（TRUSTDOCK 公的個人認証サービスのご案内、SP事業者としての構成例）
 
 ## 最終確認日: 2026-09-11
 
 ## 未確認事項
 
-- SP事業者が PF事業者経由で導入する場合の J-LIS 側手続き（AID開示申請・利用申込・審査）に要する具体的な期間。読み取った一次資料に明記がないため断定しない。`platform-jigyousha` で PF事業者資料（`references/pdfs/04`, `05`, `21`, `29` 等）を確認して補完すること。
+- SP事業者が PF事業者経由で導入する場合の J-LIS 側手続き（AID開示申請・利用申込・審査）に要する具体的な期間。読み取った一次資料に明記がないため断定しない。`platform-jigyousha` で PF事業者資料（`references/pdfs/04_jpki-platform-operator-system.pdf`、`references/pdfs/05_private-sector-guidelines-v1.8.pdf`、`references/pdfs/21_guide-public-personal-authentication.pdf`、`references/pdfs/29_guide-trustdock-jpki.pdf` 等）を確認して補完すること。

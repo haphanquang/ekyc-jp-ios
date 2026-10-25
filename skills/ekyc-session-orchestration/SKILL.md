@@ -29,10 +29,10 @@ description: サーバー側で 1 回の eKYC セッションを設計・実装�
 
 | 状態 | 何が起きた | 次に許される遷移 | タイムアウト |
 |---|---|---|---|
-| `created` | アプリがセッション開始を要求。サーバーが session token を発行し、要求元のアプリインスタンスに束縛。まだ nonce は無い | `nonce_issued` / `expired` | 全体 TTL |
-| `nonce_issued` | サーバーが CSPRNG で nonce を生成してセッションに束縛し、署名対象データ（本文 ＋ nonce の to-be-signed）を用意してアプリへ返した | `card_read` / `rejected` / `expired` | nonce TTL（短。例: 数分） |
-| `card_read` | アプリが IC チップ読取と暗証番号 VERIFY を完了（ヘ方式時は容貌撮影もこの段で完了）。まだ署名は届いていない | `signed` / `rejected` / `expired` | 全体 TTL |
-| `signed` | アプリが nonce 入りデータへの電子署名（＋証明書 DER、ヘ方式時は署名付き容貌画像）をサーバーへ送信した | `verifying` / `rejected` / `expired` | 全体 TTL |
+| `created` | アプリがセッション開始を要求。サーバーが session token を発行し、要求元の `(user_id / applicant_id, operation_type, app_instance_id)` に束縛。まだ nonce は無い | `nonce_issued` / `expired` | 全体 TTL |
+| `nonce_issued` | サーバーが CSPRNG で nonce を生成してセッションおよび `(user_id / applicant_id, operation_type, app_instance_id)` に束縛し、署名対象データ（本文 ＋ nonce の to-be-signed）を用意してアプリへ返した | `card_read` / `signed` / `rejected` / `expired` | nonce TTL（短。例: 数分） |
+| `card_read` | アプリが IC チップ読取と暗証番号 VERIFY を完了（ヘ方式時は容貌撮影＋サーバー側 PAD 判定も完了）。なお純粋な JPKI（カ方式／`jpki-ap-shomei`・`jpki-ap-riyousha`）では 1 回の NFC かざしで PIN `VERIFY`・署名生成・証明書読取が不可分に完了するため、独立通信せず `nonce_issued` → `signed` 直接遷移（または `{ signature, certificate }` 到着時に `card_read` ＋ `signed` を同時記録）してよい。ヘ方式等では容貌撮影とサーバー側 PAD（`card_read`）がカードかざし前の短い署名用 `nonce` TTL を消費しない設計にする | `signed` / `rejected` / `expired` | 全体 TTL |
+| `signed` | アプリが nonce 入りデータへの電子署名（＋証明書 DER、ヘ方式時は署名付き容貌画像）をサーバーへ送信した（純粋な JPKI の 1 回 NFC かざしでは `nonce_issued` → `signed` の直接遷移、または `card_read` ＋ `signed` の一括記録を許容し、状態飛ばしとして拒否しない） | `verifying` / `rejected` / `expired` | 全体 TTL |
 | `verifying` | サーバーが署名検証・証明書チェーン・有効期限・**nonce 突合**・基本4情報突合を実行中（`signature-verification`） | `validity_checked` / `rejected` / `expired` | 処理タイムアウト＋全体 TTL |
 | `validity_checked` | PF事業者 API 経由で電子証明書の有効性確認が完了し「有効」だった（`jlis-yukousei-kakunin`） | `completed` / `rejected` / `expired` | 処理タイムアウト＋全体 TTL |
 | `completed` | 全ステップ成功。確認記録を確定し、session token を失効 | （終端） | — |
@@ -40,15 +40,15 @@ description: サーバー側で 1 回の eKYC セッションを設計・実装�
 | `expired` | 全体 TTL または nonce TTL を超過。事由を記録し session token を失効 | （終端） | — |
 
 - **全体 TTL は短く保つ**（IC 読取・撮影・通信の現実的な所要時間 ＋ 余裕。長時間開いたセッションは攻撃者の作業時間になる）。具体値は運用・離脱率とのトレードオフで決め、`未確認事項`に残す。
-- 状態を飛ばす遷移（`created` → `signed` 等）、後退する遷移、終端からの遷移はすべて拒否し `rejected` として監査に残す。
-- `verifying` / `validity_checked` での失敗は再試行の余地があるもの（ネットワーク・5xx）と確定失敗（署名不一致・失効）を区別する。確定失敗は即 `rejected`。再試行は `jlis-yukousei-kakunin` の有界リトライ設計に従い、上限到達で `rejected`。
+- 状態を飛ばす不正な遷移（`created` → `signed` 等）、後退する遷移、終端からの遷移はすべて拒否し `rejected` として監査に残す。ただし純粋な JPKI（カ方式／`jpki-ap-shomei`・`jpki-ap-riyousha`）では 1 回の NFC セッション内で PIN `VERIFY`・署名生成・証明書読取が不可分に実行されるため、`nonce_issued` → `signed` の直接遷移（または `{ signature, certificate }` 受信時に `card_read` ＋ `signed` を一括記録する遷移）は正当な遷移であり、状態飛ばしとして拒否してはならない。
+- `verifying` / `validity_checked` での失敗は再試行の余地があるもの（ネットワーク・5xx）と確定失敗（署名不一致・失効）を区別する。確定失敗は即 `rejected`。再試行は `jlis-yukousei-kakunin` の有界リトライ設計に従い、上限到達で `rejected`。このとき、原子的な nonce 消費（`signature-verification`）と受信した `signed` ペイロード／冪等状態（`verifying` への遷移）の保存は**同一の原子的 DB トランザクション**で行い、下流の `jlis-yukousei-kakunin` 呼び出しが一時的な 5xx／ネットワークエラーで失敗した際に、同じ `Idempotency-Key` でのリトライが「nonce 消費済み」で失敗せず `verifying` から再開できるようにする。
 - **滞留セッションの回収（reaper）**: `created`〜`validity_checked` のどの状態でも、作成時刻からの全体 TTL・`nonce_issued` からの nonce TTL・各処理状態の処理タイムアウトを**バックグラウンドの定期ジョブ**でも検査し、超過したセッションを `expired`（処理中に下流が応答しない場合は `rejected`）へ落として監査エントリを残す。プロセス再起動・クラッシュ・下流の無応答で `verifying` / `validity_checked` のまま宙に浮くセッションを残さない。終端化のたびに session token を失効させる。
 
 ## nonce と端末バインディング
 
 ### nonce / チャレンジ
 
-- **nonce はサーバーが生成する。** CSPRNG（暗号論的に安全な乱数生成器）で十分な長さ（例: 128〜256bit）を取り、`nonce_issued` の状態に入るときにそのセッション ID へ束縛する。
+- **nonce はサーバーが生成する。** CSPRNG（暗号論的に安全な乱数生成器）で十分な長さ（例: 128〜256bit）を取り、`nonce_issued` の状態に入るときにそのセッション ID および `(user_id / applicant_id, operation_type, app_instance_id)` の組へ束縛する（アカウント間セッション固定／差し替え攻撃を防ぐため、`app_instance_id` だけでなく主体・操作種別にも必ず束縛する）。
 - **アプリは nonce を発明しない。** アプリが署名するのは、サーバーが「本文（申込内容のハッシュ等）＋ その nonce」から組み立てた署名対象データ（またはそのハッシュ）だけ（`jpki-ap-shomei` / `jpki-ap-riyousha` の前提と一致させる。生バイト列を渡すか SHA-256 ハッシュを渡すか、DigestInfo でラップするかはアプリ側スキルの `未確認事項` とすり合わせる）。
 - **単回・短 TTL。** nonce は 1 セッションの 1 回の署名にだけ使える。使用済み・期限切れ・別セッション発行の nonce を含む署名は `verifying` で失敗させる。消費は確認と同じ原子的操作（条件付き UPDATE / compare-and-set）で行い、検証失敗時も消費済みのままにする（`signature-verification` 手順 4）。
 - nonce をログ・URL・エラーメッセージにそのまま出さない（監査ログには識別子／ハッシュで残す）。
@@ -56,7 +56,7 @@ description: サーバー側で 1 回の eKYC セッションを設計・実装�
 
 ### 端末バインディング
 
-- `created` でサーバーが **session token** を発行し、要求元のアプリインスタンス（インストール単位）に結び付ける。以後のすべての状態変更呼び出しでこの token を要求し、**発行時と異なるコンテキストからの使用（別インスタンス、想定外の経路）は拒否**して `rejected` にする。
+- `created` でサーバーが **session token** を発行し、単なるアプリインスタンス（`app_instance_id`）だけでなく **`(user_id / applicant_id, operation_type, app_instance_id)` の組**にサーバー側で束縛する（アカウント間のセッション固定／バインディング攻撃の防止）。以後のすべての状態変更呼び出しでこの token と束縛コンテキストの一致を要求し、**発行時と異なるコンテキストからの使用（別アカウント／申請者、別操作種別、別インスタンス、想定外の経路）は拒否**して `rejected` にする。
 - **端末バインディングだけでは中継（リレー）を防げない。** session token は bearer なので、転送されればどの端末からでも使える。**口座開設等の eKYC では、Apple の App Attest（`DCAppAttestService` の `attestKey(_:clientDataHash:)` / `generateAssertion(_:clientDataHash:)`）によるアプリインスタンス検証を既定にする**（DeviceCheck の `DCDevice` は用途が異なり単独では不足）。サーバーが発行した **challenge をこのセッションの nonce と同一の値にコミット**し、アプリは `clientDataHash` にそれを含めて assertion を作り、サーバーが challenge の一致・アテステーション署名（Apple ルートへの連鎖）・カウンタ単調増加を検証する。これで「正規アプリの、この端末インスタンスが、このセッションの nonce に対して」署名したことまで縛れる。非対応端末（古い OS 等）向けのフォールバックを持つ場合は、そのセッションを目視審査キューへ回すなど扱いを分ける。attestation object / authenticator data の各フィールド検証・カウンタ許容差・キー失効時の再登録・Apple ルート証明書のピン留めは Apple の一次ドキュメントで実装前に確認すること（`未確認事項`）。
 - 端末バインディングは「アプリが正規」を示すだけで、「カードと PIN を持つ人間が本人」を示すものではない。後者は JPKI の署名検証と有効性確認、および（ヘ方式時は）容貌の突合で担保する。
 
@@ -72,7 +72,7 @@ description: サーバー側で 1 回の eKYC セッションを設計・実装�
 ## 冪等性
 
 - **状態変更する各呼び出し（開始、署名提出、再検証トリガ等）に Idempotency-Key を要求する。** アプリがリトライ時に同じ key を送れるようにし、サーバーは key ＋ セッション ID ＋ 対象状態の組で「最初の結果」を記録する。
-- **同じ key の再送は最初の結果をそのまま返す。** 2 度目の呼び出しで状態を二重に前進させない（`signed` を 2 回受けて 2 回検証しない、`completed` を 2 回確定しない）。
+- **同じ key の再送は最初の結果をそのまま返す（または未完了の下流処理を再開する）。** 2 度目の呼び出しで状態を二重に前進させない（`signed` を 2 回受けて 2 回検証しない、`completed` を 2 回確定しない）。特に署名提出時は、**原子的な nonce 消費（`signature-verification`）と受信した `signed` ペイロード／冪等状態（`verifying`）の永続化を同一の原子的 DB トランザクションで実行**する。これにより、下流の `jlis-yukousei-kakunin` が一時的な 5xx・ネットワークエラーで失敗しても、同じ `Idempotency-Key` によるリトライが「nonce 消費済み」エラーにならず `verifying` から有効性確認を再開できる。
 - 処理中に同じ key が来た場合は「処理中」を返し、並行実行しない（セッション単位のロック）。
 - 確定した結果（`rejected` / `completed` / 有効性確認の判定）はリトライで別の結果に化けさせない（`jlis-yukousei-kakunin` の「結果を別の結果に化けさせない」と同じ原則）。
 - PF事業者 API 呼び出しにも別途 Idempotency-Key を伝播し、二重課金・二重記録を防ぐ（`jlis-yukousei-kakunin`）。
@@ -88,7 +88,7 @@ description: サーバー側で 1 回の eKYC セッションを設計・実装�
   - **容貌パッシブ判定** — ランダムアクション（表情筋 ＋ フラッシュ）を省いても真贋を確認できる有償オプション。スコアが低い場合は目視確認へ（同 p10）。
   - 過去ユーザー同一人物判定・顔／本人特定事項の使いまわし判定・警告リスト判定（約 10,000 件の容貌データ等）との突合（同 p19）。
 - **PAD（Presentation Attack Detection）の国際規格 `ISO/IEC 30107`** は実在の標準。LIQUID は「Liquid PAD」が第三者評価機関 Fime 社から `ISO/IEC 30107` の公式確認書を受領したとしている（同 p20）。自前実装・他ベンダー採用いずれでも、真贋判定の評価軸として `ISO/IEC 30107` を基準にできる。
-- 設計上の扱い: 容貌撮影を含むフローでは `card_read` の完了条件に「サーバー側 liveness / 真贋判定に合格」を含め、不合格は `rejected`。スコアが閾値未満のグレーゾーンは目視審査キューへ回し、自動で `completed` にしない。判定結果（スコア、判定モデル、警告リスト該当有無）を監査ログに残す。
+- 設計上の扱い: 容貌撮影を含むフロー（ヘ方式、または容貌撮影＋サーバー側 PAD を組み合わせるフロー）では `card_read` の完了条件に「サーバー側 liveness / 真贋判定（PAD）に合格」を含め、不合格は `rejected`。このとき、容貌撮影とサーバー側 PAD（`card_read`）がカードかざし前の短い署名用 `nonce` TTL を食い潰して期限切れにしないよう、撮影・PAD 完了後に署名用 `nonce` を払い出すか TTL を分離する。スコアが閾値未満のグレーゾーンは目視審査キューへ回し、自動で `completed` にしない。判定結果（スコア、判定モデル、警告リスト該当有無）を監査ログに残す。
 - 容貌画像そのものの保存可否・期間は `doui-jouhou-kanri` を参照。
 
 ## 監査
