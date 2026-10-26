@@ -24,7 +24,7 @@ if [ ! -s "$tmp/live_urls.txt" ]; then
   echo "!! ページから PDF リンクを 1 件も抽出できませんでした。ページ構造が変わった可能性があります。"
   exit 1
 fi
-grep -oE 'https://www\.digital\.go\.jp/[^ |)]+\.pdf' sources.md | sort -u > "$tmp/known_urls.txt"
+grep -oE 'https?://[^ |)]+\.pdf' sources.md | sort -u > "$tmp/known_urls.txt"
 
 echo "-- 新規（sources.md に無い）--"
 comm -23 "$tmp/live_urls.txt" "$tmp/known_urls.txt" || true
