@@ -50,7 +50,7 @@ For app-side IC reading and signature generation, refer to `jpki-ap-shomei` / `j
 
 - **The server generates the nonce.** Use a CSPRNG to draw sufficient length (e.g., 128-256 bits) and bind it to the session ID and the tuple `(user_id / applicant_id, operation_type, app_instance_id)` upon entering `nonce_issued` (bind to the principal and operation type, not just `app_instance_id`, to prevent cross-account session fixation/binding attacks).
 - **The app does not invent the nonce.** The app only signs the to-be-signed data (or its hash) assembled by the server from "the body (hash of application contents, etc.) + the nonce" (match the premise in `jpki-ap-shomei` / `jpki-ap-riyousha`. Reconcile whether to pass raw bytes, SHA-256 hash, or wrap in DigestInfo with `Unverified Items` in the app-side skills).
-- **Single-use, short TTL.** The nonce can only be used for one signature in one session. Fail the `verifying` step if a signature contains a used, expired, or other-session nonce. Consume it via atomic operation (conditional UPDATE / compare-and-set) matching the check, leaving it consumed even on verification failure (step 4 of `signature-verification`).
+- **Single-use, short TTL.** The nonce can only be used for one signature in one session. Fail the `verifying` step if a signature contains a used, expired, or other-session nonce. Consume it via atomic operation (conditional UPDATE / compare-and-set) matching the check, leaving it consumed even on verification failure (Step 1 of `signature-verification`). **Recommended TTL Standards**: An overall session TTL of **5–10 minutes** and a signing nonce TTL of **3–5 minutes** are strongly recommended as standard baselines. Keeping TTLs tight minimizes the operational window for Man-in-the-Middle (MITM) and relay attackers attempting to intercept or proxy a victim's active signing session.
 - Do not output nonces as-is in logs, URLs, or error messages (leave as identifier/hash in audit logs).
 - **The body (to-be-signed) should be concrete wording where "what the user signed" carries meaning (WYSIWYS).** Include transaction/consent contents in human-readable form, like "Consent to identity verification" or "Application for ordinary deposit account at XX Bank". Do not have them sign bare random values or session IDs alone. If an attacker tricks a victim into signing "the body of the attacker's session", discrepancies with the victim's intent can be detected during review/audit. **The default exchange is "the server returns a to-be-signed byte array (canonical form) containing the body and nonce to the app, the app displays the body on screen, and the app itself calculates SHA-256 and signs"** (`jpki-ap-shomei` "Premise"). Because the server verifies against its own held to-be-signed, it fails if the app hashed something else. Configurations passing only the hash are treated as exceptions because users cannot confirm the signed contents and could be made to sign anything upon server/channel compromise. Fix the canonical form (encoding, delimiters) of to-be-signed between server and app, and reconcile with the hash format in `Unverified Items`. The signature is meaningful only against this body.
 
@@ -124,9 +124,7 @@ PDFs under `references/pdfs/` are third-party works and are not shipped with the
 - <https://developer.apple.com/documentation/devicecheck/dcappattestservice> (Apple "DCAppAttestService" — App Attest's `generateKey()` / `attestKey(_:clientDataHash:)` / `generateAssertion(_:clientDataHash:)`. Retrieved 2026-09-08, HTTP 200)
 - <https://developer.apple.com/documentation/devicecheck/validating-apps-that-connect-to-your-server> (Apple "Validating apps that connect to your server" — Verification of server-issued challenge, verification of assertion counter. Retrieved 2026-09-08, HTTP 200)
 
-## Last Verified
-
-2026-09-11
+## Last Verified: 2026-09-11
 
 ## Unverified Items
 

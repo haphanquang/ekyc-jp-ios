@@ -143,9 +143,7 @@ PDFs under `references/pdfs/` are third-party works and are not shipped with the
 - `references/pdfs/33_guide-liquid-ekyc.pdf` (LIQUID eKYC. p18-19 Fraud detection/notation fluctuation, p21 "Flow to introduction" = NDA, AID disclosure application, Public Personal Authentication Service usage application, J-LIS examination about 1-2 months, schedule upper limit)
 - `references/method-map.md` (Definitions of He-method/Ka-method. The legal names and timing are uniquely defined in this file and `honnin-kakunin-houhou`)
 
-## Last Verified
-
-2026-09-11
+## Last Verified: 2026-09-11
 
 ## Unverified Items
 

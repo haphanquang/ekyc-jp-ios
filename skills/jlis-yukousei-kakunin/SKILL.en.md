@@ -40,6 +40,7 @@ There are two methods for referring to revocation information: "CRL provision me
 
 - For eKYC (like opening an account), you want to check the **latest status at the time of application**, so the highly real-time **OCSP responder method is often suitable**. If using the CRL method, record the `thisUpdate` / `nextUpdate` of the referenced CRL (or the reference time provided by the PF operator) and the acquisition time in the audit log, to be able to explain the time lag.
 - **If using the CRL method and `nextUpdate` is before the current time (expired CRL), treat it as fail-closed.** Do not interpret being absent from an old revocation list as "valid". If the PF operator indicates a reference time, judge based on that.
+- **Fail-Closed criteria for the OCSP Responder Method**: If the responder response exhibits: (1) `nextUpdate` prior to current time (expired response), (2) certificate status other than `good` (e.g., `unknown` or `certificateHold`), (3) failure in verifying the signature of BasicOCSPResponse or untrusted responder certificate, or (4) network timeout / HTTP 5xx errors, **all must be treated as fail-closed (unverifiable/invalid) and the session must never proceed to completed**.
 - Regardless of the method, the in-house server implementation aggregates to "receiving the judgment result and reference ID from the PF operator API, and falling into the branching below".
 
 ## Branching on Revocation and User-Facing Messages
@@ -111,9 +112,7 @@ PDFs under `references/pdfs/` are third-party works and are not shipped with the
 
 (Note) Revocation reasons and reason codes are consolidated in PDF 06 which summarizes the primary descriptions. See `platform-jigyousha` for operator lists and implementation examples.
 
-## Last Verified
-
-2026-09-11
+## Last Verified: 2026-09-11
 
 ## Unverified Items
 

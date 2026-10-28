@@ -149,9 +149,7 @@ PDFs under `references/pdfs/` are third-party works and are not shipped with the
 - `references/jpki-introduction.ja.md` (§6.1 "Latest User Information (4 Attributes) Provision Service" started May 16, 2023, §6.1.1 "User Consent Acquisition Support Service" started October 29, 2024. Digital Agency, acquired 2026-09-07).
 - Live URL: <https://www.digital.go.jp/policies/mynumber/private-business/jpki-introduction> (Acquired 2026-09-07)
 
-## Last Verified
-
-2026-09-11
+## Last Verified: 2026-09-11
 
 ## Unverified Items
 

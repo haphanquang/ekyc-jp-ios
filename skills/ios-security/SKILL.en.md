@@ -30,7 +30,7 @@ The device side does not verify digital signatures or query J-LIS (server / plat
 - **Pass the PIN only to the VERIFY APDU sent to the card.** Never send it to servers, analytics SDKs, logs, or the pasteboard. Do not save it in Keychain (including a biometrically protected "remember PIN" feature), UserDefaults, or files. Use `isSecureTextEntry` for the input field and discard the PIN as soon as the VERIFY response arrives. If a design sends the PIN to a server or stores it, correct it as an error.
 - Basic 4 information, face photo images, individual numbers, challenge/to-be-signed data, and signature values read from the card are **temporary data for sending to the server** (the PIN is not sent, as stated above). Hold as `Data` / `String` and discard immediately after server transmission (or session termination).
 - Limit retention to the scope of one request. On retry, re-read from the card.
-- If possible, receive in a fixed-length buffer (`[UInt8]`), zero-fill after use, then release. However, since Swift's `String` / `Data` copies can be distributed, zeroing is not a complete guarantee. The top priority is "don't store it in the first place / don't log it."
+- If possible, receive in a fixed-length buffer (`ContiguousArray<UInt8>` or `UnsafeMutableRawBufferPointer`), zero-fill after use, then release. Because Swift's `String` / `Array` uses CoW (Copy-on-Write) where retaining references risks zeroing only the duplicate copy, promptly discard the original reference. The top priority is "don't store it in the first place / don't log it."
 
 ```swift
 final class SensitivePayload {

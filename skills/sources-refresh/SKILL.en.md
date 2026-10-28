@@ -73,9 +73,7 @@ The script prints its messages in Japanese. The first column shows them verbatim
 - Public Personal Authentication Service (For private businesses): https://www.digital.go.jp/policies/mynumber/private-business/jpki-introduction (Verified 2026-09-08)
 - e-Gov Law Search API v2: https://laws.e-gov.go.jp/api/2/law_data/ (Destination for matching revision IDs. Verified 2026-09-10)
 
-## Last Verified
-
-2026-09-11
+## Last Verified: 2026-09-11
 
 ## Unverified Items
 

@@ -112,9 +112,7 @@ PDFs under `references/pdfs/` are third-party works and are not shipped with the
 - `references/pdfs/21_guide-public-personal-authentication.pdf` (Example of introduction flow from the perspective of an SP operator)
 - `references/pdfs/29_guide-trustdock-jpki.pdf` (Guide to TRUSTDOCK Public Personal Authentication Service, configuration example as an SP operator)
 
-## Last Verified
-
-2026-09-11
+## Last Verified: 2026-09-11
 
 ## Unverified Items
 

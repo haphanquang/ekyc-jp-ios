@@ -84,7 +84,7 @@
 | チャレンジレスポンス | チャレンジレスポンス | サーバーが与えたチャレンジ（nonce）にカード内秘密鍵で署名させ、対応する証明書で検証する当人認証方式。 | jpki-ap-riyousha, ekyc-session-orchestration |
 | 証明書チェーン | しょうめいしょチェーン | エンドエンティティ証明書からトラストアンカーまでの検証経路。JPKI では自己署名の単一階層 CA（詳細は signature-verification 参照）。 | signature-verification |
 | 証明書ピンニング | しょうめいしょピンニング | 通信先・検証対象の証明書や公開鍵をアプリに埋め込み、想定外の証明書を拒否する対策。 | ios-security, signature-verification |
-| Keychain | キーチェーン | iOS の資格情報保管領域。カード由来データや鍵の一時保管に用い、保護属性を適切に設定する。 | ios-security |
+| Keychain | キーチェーン | iOS の資格情報保管領域。カード由来データや鍵の一時保管に用い、保護属性を適切に設定する。暗証番号（PIN）の保存は固く禁止（不変のルール4）。 | ios-security |
 | Secure Enclave | セキュアエンクレーブ | Apple デバイスの分離されたセキュリティ用サブシステム。鍵の生成・保管に用いる。 | ios-security |
 | READ BINARY | リードバイナリ | 選択中の EF の内容を読み出す APDU コマンド。長い証明書等はオフセットを進めて分割読み出しする。 | ios-corenfc-apdu, jpki-ap-shomei |
 | TLV | ティーエルブイ | Tag-Length-Value。ICカード内データの構造化表現。券面系 AP のデータ解析で用いる。詳細タグは apdu-cheatsheet.md 参照。 | kenmen-nyuryoku-hojo-ap, kenmen-jikou-kakunin-ap |

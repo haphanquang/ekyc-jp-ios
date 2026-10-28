@@ -40,7 +40,8 @@ VERIFY response SW1SW2. Values are ISO/IEC 7816-4 standard values; primary sourc
 | `90 00` | Verification successful | Proceed to next step. May clear remaining count display |
 | `63 CX` | PIN mismatch. Lower nibble `X` is remaining retry count (e.g., `63 C2` is 2 remaining. Treat `63 C0` as 0 remaining = locked) | Display remaining count. Warn when `X` is small. **Do not auto-resend** |
 | `63 00` | Mismatch (possibly behavior not returning remaining count) | Treat remaining count as unknown; warn cautiously. Present that next attempt may be the last |
-| `69 83` | Authentication method locked (blocked) | Further VERIFY is futile. Close PIN entry field and transition to lock release guidance |
+| `69 83`, `69 84` | Authentication method blocked (locked) / Referenced data invalidated | Further VERIFY is futile. Close PIN entry field and transition to lock release guidance |
+| `67 00` | Wrong length | Suspect implementation bug such as Lc mismatch. Do not assume user attempt was consumed |
 | `6A 88` | Referenced data not found (keyref/EF mismatch, etc.) | Suspect implementation bug. Review SELECTed AP/EF. Do not prompt user to re-enter PIN |
 | `6A 82` | File/AP not found | Review AID, EF, and `select-identifiers` in `Info.plist` (`ios-corenfc-apdu`) |
 | Other | Unknown SW | Do not assume PIN error. Treat as unknown cause; do not assume retry count was consumed |
@@ -92,7 +93,7 @@ func interpret(sw1: UInt8, sw2: UInt8) -> VerifyOutcome {
     switch (sw1, sw2) {
     case (0x90, 0x00):
         return .ok
-    case (0x69, 0x83), (0x63, 0xC0):                   // 63 C0 = 0 remaining (next VERIFY will be 69 83)
+    case (0x69, 0x83), (0x69, 0x84), (0x63, 0xC0):     // 69 83 / 69 84 = locked, 63 C0 = 0 remaining
         return .locked
     case (0x63, let low) where (low & 0xF0) == 0xC0:
         return .mismatch(remaining: Int(low & 0x0F))   // 63 CX

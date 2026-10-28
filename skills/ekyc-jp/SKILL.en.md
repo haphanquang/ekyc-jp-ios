@@ -92,9 +92,7 @@ This skill does not hold detailed knowledge. Refer to each skill and `references
 - `references/jpki-introduction.ja.md` — Digital Agency "Identity Verification by Public Personal Authentication Service (JPKI)"
 - Live URL: <https://www.digital.go.jp/policies/mynumber/private-business/jpki-introduction> (Acquired 2026-09-08)
 
-## Last Verified
-
-2026-09-08
+## Last Verified: 2026-09-08
 
 ## Unverified Items
 

@@ -76,7 +76,7 @@ Primary article excerpt: `references/hourei-eKYC.md` §2 (Revision `420M60000F5A
 
 Official name: Ordinance for Enforcement of the Act on Identification, etc. by Mobile Voice Communications Carriers of their Subscribers, etc. and for Prevention of Improper Use of Mobile Voice Communications Services. Primary article excerpt: `references/hourei-eKYC.md` §3 (Revision `417M60000008167_20260806_508M60000008099`).
 
-- **The revision has already been enforced on April 1, 2026** (the **transitional measures** for some methods under the old rules last **until September 30, 2026**). The previous version of this skill stated "scheduled for revision in April 2026 / unverified", but this was incorrect; it is already an effective provision.
+- **The revision has already been enforced on April 1, 2026** (the **transitional measures** for some methods under the old rules **expired on September 30, 2026**). The previous version of this skill stated "scheduled for revision in April 2026 / unverified", but this was incorrect; it is already an effective provision.
 - Applicable article: Article 3, Paragraph 1, Item 1 (At the time of concluding a contract / natural persons). The method designations are **10 items from i (イ) to nu (ヌ)**. Different designations apply at the time of transfer (Article 11) and lending (Article 19).
 - **Methods of transmitting images of documents no longer remain** (ha and ni are transmissions of IC chip record information).
 - Main designations: **ha (ハ)** = transmission of a facial image + IC chip record information of a photo identity verification document (IC reading + facial photo), **chi (チ)** = transmission of specified electronic records (certified programs under Article 18-3, Paragraph 1 of the My Number Use Act) = smartphone-mounted My Number Card, **to (ト)** = transmission of electronic signature information + reception of electronic certificates. For a list of each item, see the table "Mobile Phone Fraud Prevention Act" in `references/method-map.md`.
@@ -84,7 +84,7 @@ Official name: Ordinance for Enforcement of the Act on Identification, etc. by M
 
 ### Secondhand Articles Dealer Act
 
-Primary article excerpts: `references/hourei-eKYC.md` §5 (Ordinance for Enforcement of the Secondhand Articles Dealer Act, revision `407M50400000010_20260812_508M60400000017`; Secondhand Articles Dealer Act, `324AC0000000108_20250601_504AC0000000068`; acquired 2026-10-05). For the item-by-item correspondence table with the Act on Prevention of Transfer of Criminal Proceeds, see "## 古物営業法" in `references/method-map.md`.
+Primary article excerpts: `references/hourei-eKYC.md` §5 (Ordinance for Enforcement of the Secondhand Articles Dealer Act, revision `407M50400000010_20260812_508M60400000017`; Secondhand Articles Dealer Act, `324AC0000000108_20250601_504AC0000000068`; acquired 2026-10-05). For the item-by-item correspondence table with the Act on Prevention of Transfer of Criminal Proceeds, see "## Secondhand Articles Dealer Act" in `references/method-map.en.md`.
 
 - The verification duty is Article 15, Paragraph 1 of the Secondhand Articles Dealer Act (any of Items 1–4). **Article 15, Paragraph 3 of the Enforcement Ordinance, delegated by Item 4, has 13 items, 一 to 十三** (kanji numerals; a separate system from the i, ro… designations of the Act on Prevention of Transfer of Criminal Proceeds). The matters to verify are **address, name, occupation and age**.
 - Main correspondences: **Item 11 ≈ ka (new nu) = JPKI**, **Item 9 ≈ he (new ha) = IC reading + face image**, Item 8 ≈ ho (document image + face image), Item 4 ≈ chi (new ho) = IC / image transmission or sending a copy of the residence certificate, etc. + non-forwardable mail (not the to type), Item 5 ≈ ri (new ka is limited to persons not subject to the Basic Resident Register Act or who have moved overseas), Item 12 ≈ yo (new ru).
@@ -115,7 +115,7 @@ Identify the applicable law and select a method to implement from the available 
 - [ ] Choose a method to use under the Act on Prevention of Transfer of Criminal Proceeds: Public Personal Authentication (JPKI = current ka / new nu, **verify signature verifier requirements**) / IC reading + facial photographing (current he / new ha) / face-to-face IC reading + card-face matching (new i) / transmission of smartphone-mounted My Number Card (current ru / new to) / IC reading + bank inquiry / sending originals of copy of resident register, etc. + non-forwardable mail (for those without IC).
 - [ ] If the Mobile Phone Fraud Prevention Act is the basis: **The revision is already enforced (2026-04-01)**. Choose from IC reading + facial photo (current ha), IC chip record + non-forwardable mail (current ni), restricted delivery mail (current he), electronic signature (current to), transmission of smartphone-mounted My Number Card (current chi).
 - [ ] If the My Number Act / My Number collection is the basis: Presentation/IC reading of Individual Number Card (card-face verification AP + card-face input-assist AP), or Public Personal Authentication (details must be confirmed in the Ordinance for Enforcement of the My Number Use Act, refer to `mynumber-card-ic` / `kenmen-jikou-kakunin-ap`).
-- [ ] If the Secondhand Articles Dealer Act is the basis: Choose from Article 15, Paragraph 3 of the Enforcement Ordinance (JPKI = Item 11, **limited to signature verifiers**, occupation included in the signed data / IC reading + face image = Item 9, etc.; "## 古物営業法" in `references/method-map.md`). There is no type that transmits the smartphone-embedded card's specified electromagnetic record. Note that no 2027 amendment is registered on e-Gov (as of 2026-10-05).
+- [ ] If the Secondhand Articles Dealer Act is the basis: Choose from Article 15, Paragraph 3 of the Enforcement Ordinance (JPKI = Item 11, **limited to signature verifiers**, occupation included in the signed data / IC reading + face image = Item 9, etc.; "## Secondhand Articles Dealer Act" in `references/method-map.en.md`). There is no type that transmits the smartphone-embedded card's specified electromagnetic record. Note that no 2027 amendment is registered on e-Gov (as of 2026-10-05).
 - [ ] For each selected method, conduct a final verification of the enforcement date and method designation with `references/method-map.md` and e-Gov primary articles, and transcribe unverified items into the design documents.
 - [ ] Evaluate the trade-off between implementation cost and drop-off rate (`## Recommendations in This App`).
 
@@ -124,7 +124,7 @@ Identify the applicable law and select a method to implement from the available 
 **The ka method (Public Personal Authentication / JPKI = current ka, new nu from 2027 onwards) should be fundamentally placed at the center.**
 
 - The four basic attributes (name, residence, date of birth, gender) can be obtained with a signing certificate, and it will be retained after the April 2027 revision (new nu). Inquire to J-LIS about validity (via a PF operator) and verify the electronic signature (`jpki-overview` / `jlis-yukousei-kakunin`).
-- The Act on Prevention of Transfer of Criminal Proceeds, the Mobile Phone Fraud Prevention Act (current to) and the Secondhand Articles Dealer Act (Enforcement Ordinance Article 15, Paragraph 3, Item 11) all have a JPKI method, making it easy to maintain a single flow across laws. However, under the Secondhand Articles Dealer Act the electronic signature must cover a record of address, name, occupation and age ("## 古物営業法" in `references/method-map.md`).
+- The Act on Prevention of Transfer of Criminal Proceeds, the Mobile Phone Fraud Prevention Act (current to) and the Secondhand Articles Dealer Act (Enforcement Ordinance Article 15, Paragraph 3, Item 11) all have a JPKI method, making it easy to maintain a single flow across laws. However, under the Secondhand Articles Dealer Act the electronic signature must cover a record of address, name, occupation and age ("## Secondhand Articles Dealer Act" in `references/method-map.en.md`).
 - **However, note the proviso**: To use it for transaction verification, the company must be a signature verifier (see "## To use the ka method (JPKI)..." above).
 
 **As a drop-off rate countermeasure, prepare the he method (IC chip reading + facial photographing = current he, new ha from 2027 onwards) as a fallback in conjunction.**
@@ -152,9 +152,7 @@ PDFs under `references/pdfs/` are third-party works and are not shipped with the
 - `references/pdfs/05_private-sector-guidelines-v1.8.pdf` (Guidelines for Private Business Operators Version 1.8, 2026-04-13) — Four basic attributes and fees for JPKI.
 - `references/jpki-introduction.ja.md` (§6 Functional Enhancements. Digital Agency, acquired 2026-09-07) — Latest 4 attributes provision service, smartphone-mounted electronic certificates.
 
-## Last Verified
-
-2026-10-05
+## Last Verified: 2026-10-05
 
 (The Secondhand Articles Dealer Act section was verified against the e-Gov primary text. Other sections remain as verified on 2026-09-11.)
 
