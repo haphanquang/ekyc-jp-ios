@@ -34,7 +34,7 @@ description: サーバー側で 1 回の eKYC セッションを設計・実装�
 | `card_read` | アプリが IC チップ読取と暗証番号 VERIFY を完了（ヘ方式時は容貌撮影＋サーバー側 PAD 判定も完了）。なお純粋な JPKI（カ方式／`jpki-ap-shomei`・`jpki-ap-riyousha`）では 1 回の NFC かざしで PIN `VERIFY`・署名生成・証明書読取が不可分に完了するため、独立通信せず `nonce_issued` → `signed` 直接遷移（または `{ signature, certificate }` 到着時に `card_read` ＋ `signed` を同時記録）してよい。ヘ方式等では容貌撮影とサーバー側 PAD（`card_read`）がカードかざし前の短い署名用 `nonce` TTL を消費しない設計にする | `signed` / `rejected` / `expired` | 全体 TTL |
 | `signed` | アプリが nonce 入りデータへの電子署名（＋証明書 DER、ヘ方式時は署名付き容貌画像）をサーバーへ送信した（純粋な JPKI の 1 回 NFC かざしでは `nonce_issued` → `signed` の直接遷移、または `card_read` ＋ `signed` の一括記録を許容し、状態飛ばしとして拒否しない） | `verifying` / `rejected` / `expired` | 全体 TTL |
 | `verifying` | サーバーが署名検証・証明書チェーン・有効期限・**nonce 突合**・基本4情報突合を実行中（`signature-verification`） | `validity_checked` / `rejected` / `expired` | 処理タイムアウト＋全体 TTL |
-| `validity_checked` | PF事業者 API 経由で電子証明書の有効性確認が完了し「有効」だった（`jlis-yukousei-kakunin`） | `completed` / `rejected` / `expired` | 処理タイムアウト＋全体 TTL |
+| `validity_checked` | PF事業者 API 経由で電子証明書の有効性確認が完了し「有効」だった（`jlis-yukousei-kakunin`）。失効・期限切れ・ネットワークエラー・タイムアウト時は fail-closed で `rejected` に落とし、決して `completed` に進めない | `completed` / `rejected` / `expired` | 処理タイムアウト＋全体 TTL |
 | `completed` | 全ステップ成功。確認記録を確定し、session token を失効 | （終端） | — |
 | `rejected` | いずれかのステップが失敗（署名不一致・nonce 不一致・失効・4情報不一致・liveness 不合格・タイムアウト等）。事由を記録し session token を失効 | （終端） | — |
 | `expired` | 全体 TTL または nonce TTL を超過。事由を記録し session token を失効 | （終端） | — |
@@ -48,16 +48,16 @@ description: サーバー側で 1 回の eKYC セッションを設計・実装�
 
 ### nonce / チャレンジ
 
-- **nonce はサーバーが生成する。** CSPRNG（暗号論的に安全な乱数生成器）で十分な長さ（例: 128〜256bit）を取り、`nonce_issued` の状態に入るときにそのセッション ID および `(user_id / applicant_id, operation_type, app_instance_id)` の組へ束縛する（アカウント間セッション固定／差し替え攻撃を防ぐため、`app_instance_id` だけでなく主体・操作種別にも必ず束縛する）。
+- **nonce はサーバーが生成する。** CSPRNG（暗号論的に安全な乱数生成器）で金融グレードに適合する最低 256bit（32バイト）の暗号論的エントロピーを取り、`nonce_issued` の状態に入るときにそのセッション ID および `(user_id / applicant_id, operation_type, app_instance_id)` の組へ束縛する（アカウント間セッション固定／差し替え攻撃を防ぐため、`app_instance_id` だけでなく主体・操作種別にも必ず束縛する）。
 - **アプリは nonce を発明しない。** アプリが署名するのは、サーバーが「本文（申込内容のハッシュ等）＋ その nonce」から組み立てた署名対象データ（またはそのハッシュ）だけ（`jpki-ap-shomei` / `jpki-ap-riyousha` の前提と一致させる。生バイト列を渡すか SHA-256 ハッシュを渡すか、DigestInfo でラップするかはアプリ側スキルの `未確認事項` とすり合わせる）。
-- **単回・短 TTL。** nonce は 1 セッションの 1 回の署名にだけ使える。使用済み・期限切れ・別セッション発行の nonce を含む署名は `verifying` で失敗させる。消費は確認と同じ原子的操作（条件付き UPDATE / compare-and-set）で行い、検証失敗時も消費済みのままにする（`signature-verification` 手順 1）。**TTL の推奨基準**: セッション全体の TTL は **5〜10分**、署名用 nonce の TTL は **3〜5分** を標準的な推奨値とする。短時間に限定することで、中間者（MITM）や中継（リレー）攻撃者が被害者の署名セッションを横取り・転送して不正利用するタイムウィンドウを最小化する。
+- **単回・短 TTL。** nonce は 1 セッションの 1 回の署名にだけ使える。使用済み・期限切れ・別セッション発行の nonce を含む署名は `verifying` で失敗させる。消費は確認と同じ原子的操作（条件付き UPDATE / compare-and-set）で行い、検証失敗時も消費済みのままにする（`signature-verification` 手順 1）。**TTL の推奨基準**: セッション全体の TTL は **5〜10分**、署名用 nonce の TTL は **3〜5分（最大でも 5分以下）** を厳格な標準推奨値とする。短時間に限定することで、中間者（MITM）や中継（リレー）攻撃者が被害者の署名セッションを横取り・転送して不正利用するタイムウィンドウを最小化する。
 - nonce をログ・URL・エラーメッセージにそのまま出さない（監査ログには識別子／ハッシュで残す）。
 - **本文（署名対象）は「利用者が何に署名したか」が意味を持つ具体的な文言にする（WYSIWYS）。** 「本人確認への同意」「◯◯銀行 普通預金口座開設の申込」等、取引・同意の内容を人間可読の形で含める。裸のランダム値やセッション ID だけに署名させない。攻撃者が被害者のカードに「攻撃者のセッションの本文」を署名させても、本文が被害者の意図と食い違えば審査・監査で検知できる。**既定の受け渡しは「サーバーは本文と nonce を含む to-be-signed バイト列（正準形式）をアプリへ返し、アプリが本文を画面表示し、アプリ自身が SHA-256 を計算して署名する」**（`jpki-ap-shomei`「前提」）。サーバーは自分が保持する to-be-signed で検証するので、アプリが別の内容をハッシュしていれば検証で落ちる。ハッシュだけを渡す構成は、利用者が署名内容を確認できず、サーバーやその経路の侵害で任意の内容に署名させられるため例外扱いにする。to-be-signed の正準形式（エンコード・区切り）はサーバーとアプリで固定し、`未確認事項` のハッシュ形式とすり合わせる。署名は、この本文に対してのみ意味を持つ。
 
 ### 端末バインディング
 
 - `created` でサーバーが **session token** を発行し、単なるアプリインスタンス（`app_instance_id`）だけでなく **`(user_id / applicant_id, operation_type, app_instance_id)` の組**にサーバー側で束縛する（アカウント間のセッション固定／バインディング攻撃の防止）。以後のすべての状態変更呼び出しでこの token と束縛コンテキストの一致を要求し、**発行時と異なるコンテキストからの使用（別アカウント／申請者、別操作種別、別インスタンス、想定外の経路）は拒否**して `rejected` にする。
-- **端末バインディングだけでは中継（リレー）を防げない。** session token は bearer なので、転送されればどの端末からでも使える。**口座開設等の eKYC では、Apple の App Attest（`DCAppAttestService` の `attestKey(_:clientDataHash:)` / `generateAssertion(_:clientDataHash:)`）によるアプリインスタンス検証を既定にする**（DeviceCheck の `DCDevice` は用途が異なり単独では不足）。サーバーが発行した **challenge をこのセッションの nonce と同一の値にコミット**し、アプリは `clientDataHash` にそれを含めて assertion を作り、サーバーが challenge の一致・アテステーション署名（Apple ルートへの連鎖）・カウンタ単調増加を検証する。これで「正規アプリの、この端末インスタンスが、このセッションの nonce に対して」署名したことまで縛れる。非対応端末（古い OS 等）向けのフォールバックを持つ場合は、そのセッションを目視審査キューへ回すなど扱いを分ける。attestation object / authenticator data の各フィールド検証・カウンタ許容差・キー失効時の再登録・Apple ルート証明書のピン留めは Apple の一次ドキュメントで実装前に確認すること（`未確認事項`）。
+- **端末バインディングだけでは中継（リレー）を防げない。** session token は bearer なので、転送されればどの端末からでも使える。**口座開設等の eKYC では、プラットフォームに応じた端末整合性アテステーション検証を既定にする**。iOS では Apple の App Attest（`DCAppAttestService` の `attestKey(_:clientDataHash:)` / `generateAssertion(_:clientDataHash:)`、DeviceCheck の `DCDevice` は用途が異なり単独では不足）、Android では **Google Play Integrity API**（または Key Attestation）を用いる。サーバーが発行した **challenge をこのセッションの nonce（または `nonce || user_id || operation_type` のハッシュ）と同一の値にコミット**し、iOS では `clientDataHash` に、Android では `requestHash` にそれを含めて assertion / token を作り、サーバーが challenge の一致・アテステーション署名（Apple ルートへの連鎖、Google Play Integrity API レスポンス検証）・カウンタ単調増加・端末適合性（`MEETS_STRONG_INTEGRITY` / `MEETS_DEVICE_INTEGRITY` 等）を検証する。これで「正規アプリの、この端末インスタンスが、このセッションの nonce に対して」署名したことまで縛れる。非対応端末（古い OS 等）向けのフォールバックを持つ場合は、そのセッションを目視審査キューへ回すなど扱いを分ける。attestation object / authenticator data の各フィールド検証・カウンタ許容差・キー失効時の再登録・Apple ルート証明書のピン留め・Play Integrity 判定基準は各社の一次ドキュメントで実装前に確認すること（`未確認事項`）。
 - 端末バインディングは「アプリが正規」を示すだけで、「カードと PIN を持つ人間が本人」を示すものではない。後者は JPKI の署名検証と有効性確認、および（ヘ方式時は）容貌の突合で担保する。
 
 ## リプレイ・中継対策
@@ -65,7 +65,7 @@ description: サーバー側で 1 回の eKYC セッションを設計・実装�
 - **nonce の単回性 ＋ 短 TTL**（上記）。同じ nonce・同じ署名値が二度出てきたら再利用として `rejected`。過去に受理した署名のハッシュを一定期間記録し、突合する。
 - **署名結果を「このセッションの nonce」に束縛。** `verifying` で、署名対象データに含まれる nonce が「サーバーが当該セッションに払い出した値そのもの」であることを照合する（`signature-verification` の nonce 突合ステップ）。別セッションで正当に作られた署名をこのセッションに持ち込めない。
 - **タイムスタンプ／有効期限チェック。** セッション作成時刻・nonce 発行時刻を記録し、各遷移で全体 TTL / nonce TTL を検査する。クロックはサーバー基準。
-- **アプリインスタンス束縛（App Attest）を既定にする**（上記「端末バインディング」）。転送された署名 blob ＋ token を非正規アプリから持ち込む経路は、challenge ＝ nonce のアテステーション検証で塞ぐ。
+- **アプリインスタンス束縛（App Attest / Play Integrity API）を既定にする**（上記「端末バインディング」）。転送された署名 blob ＋ token を非正規アプリから持ち込む経路は、challenge ＝ nonce のアテステーション検証で塞ぐ。
 - **中継（リレー）攻撃の残余リスク。** 攻撃者が**実物のカードと正しい PIN を制御**して被害者の手続きに割り込むケースは、nonce の単回性・App Attest だけでは防げない（正規アプリ・正規端末で攻撃者自身が操作している）。この残余リスクは、JPKI ＋ 容貌（ヘ方式）による顔の突合や、繰り返しの当人認証（`jpki-ap-riyousha`）、および WYSIWYS な本文（上記）で低減する設計にする。方法の選定と号記号は `honnin-kakunin-houhou` を参照（ここで再導出しない）。
 - セッション token・nonce・署名対象データはすべてサーバー保持。アプリが自己申告した状態（「liveness は端末で確認済み」等）を信用して遷移しない。
 

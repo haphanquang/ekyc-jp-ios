@@ -60,20 +60,29 @@ In jpki-introduction §7.2.5 "Inquiries regarding services provided by platform 
 
 | Operator | Department in charge (Listed in §7.2.5) | Service introduction material (`references/pdfs/`) |
 |---|---|---|
-| Liquid, Inc. | Customer Success Dept. eKYC charge | `33_guide-liquid-ekyc.pdf` (LIQUID eKYC) |
-| TRUSTDOCK Inc. | (Not listed) | `29_guide-trustdock-jpki.pdf` (TRUSTDOCK Public Personal Authentication) |
-| PocketSign Inc. | (Not listed) | `23_guide-pocketsign-platform.pdf` (POCKETSIGN Platform) |
-| GMO GlobalSign K.K. | GMO Online Identity Verification Service Inquiry Window | `15_guide-identity-verification.pdf` (GMO Online Identity Verification Service) |
-| Double Standard Inc. | Data Management Group / Data Management Dept. | `21_guide-public-personal-authentication.pdf` (Guide to eKYC Solution Using JPKI) |
-| NEC Corporation | Social Public Integration Management Div. New Business Creation Group | `16_guide-my-number-card-certification-service.pdf` (My Number Card Certification Service) |
-| Cybertrust Japan Co., Ltd. | Trust Service Management Dept. | `18_guide-itrust-identity-verification.pdf` (iTrust Identity Verification Service) |
+| ICT Town Development Common Platform Promotion Organization | Technical Dept. | `13_guide-mytap.pdf` (myTAP) |
 | NTT DATA Corporation | Social Infrastructure Solution Sector Digital Community Div. | `14_guide-bizpico.pdf` (BizPICO) |
+| GMO GlobalSign K.K. | GMO Online Identity Verification Service Inquiry Window | `15_guide-identity-verification.pdf` (GMO Online Identity Verification Service) |
+| NEC Corporation | Social Public Integration Management Div. New Business Creation Group | `16_guide-my-number-card-certification-service.pdf` (My Number Card Certification Service) |
 | Cyber Links Co., Ltd. | Public Cloud Div. Public Sales Dept. Planning and Sales Sec. | `17_guide-maina-sign.pdf` (Myna Sign) |
-| ACSiON, Ltd. | Sales Dept. | `27_guide-acsion-jpki.pdf` (ACSiON Public Personal Authentication Service) |
+| Cybertrust Japan Co., Ltd. | Trust Service Management Dept. | `18_guide-itrust-identity-verification.pdf` (iTrust Identity Verification Service) |
+| Workthy Inc. | Financial Business Team | `19_guide-hometown-tax-one-stop.pdf` (Online Hometown Tax "One-Stop Special Exception Application") |
+| TISI Inc. | Financial Div. 1 Financial Business Promotion & Sales Management Dept. Financial Business Planning & Sales Sec. My Number Card Identity Verification Service Contact | `20_guide-tisi-my-number-card-identity-verification.pdf` (My Number Card Identity Verification Service) |
+| Double Standard Inc. | Data Management Group / Data Management Dept. | `21_guide-public-personal-authentication.pdf` (Guide to eKYC Solution Using JPKI) |
+| Flight Solutions Inc. | Product & Financial Service Div. | `22_guide-myverifist-cashless.pdf` (myVerifist & Cashless Services) |
+| PocketSign Inc. | (Not listed) | `23_guide-pocketsign-platform.pdf` (POCKETSIGN Platform) |
+| Bengo4.com, Inc. | CloudSign Business Div. | `24_guide-cloudsign.pdf` (CloudSign) |
+| milabo Inc. | Sales Dept. | `25_guide-mila-e-certification.pdf` (mila-e Authentication) |
 | NTT DOCOMO BUSINESS, Inc. | Business Solution Div. Social Innovation Dept. | `26_guide-smartlita.pdf` (SmartLiTA) |
+| ACSiON, Ltd. | Sales Dept. | `27_guide-acsion-jpki.pdf` (ACSiON Public Personal Authentication Service) |
+| CrowdShip Co., Ltd. | (Not listed) | `28_guide-crowdshiptrust.pdf` (CrowdShipTrust) |
+| TRUSTDOCK Inc. | (Not listed) | `29_guide-trustdock-jpki.pdf` (TRUSTDOCK Public Personal Authentication) |
+| MynaWallet Inc. | Development Dept. | `30_guide-maina-wallet.pdf` (Myna Wallet) |
+| JMDC Inc. | Insurance Div. | `31_insurance-division-guide.pdf` (Public Personal Authentication Service Using JMDC's Digital Authentication App) |
 | Primagest, Inc. | New Business Promotion Dept. | `32_guide-pridest-trust-services.pdf` (Primagest Trust Services) |
+| Liquid, Inc. | Customer Success Dept. eKYC charge | `33_guide-liquid-ekyc.pdf` (LIQUID eKYC) |
 
-- Other operators listed in §7.2.5 (partial): ICT Town Development Common Platform Promotion Organization (myTAP), TOPPAN Inc., Nomura Research Institute, Ltd., Workthy Inc., TISI Inc., Flight Solutions Inc. (myVerifist), Bengo4.com, Inc. (CloudSign), milabo Inc. (mila-e Authentication), MRSO Inc., CrowdShip Co., Ltd. (CrowdShipTrust), MynaWallet Inc., JMDC Inc., AIFUL CORPORATION.
+- Other operators listed in §7.2.5 (4 companies with inquiry contact/URL only, no brochure PDF): TOPPAN Inc. (Hybrid BPO Div.), Nomura Research Institute, Ltd. (Social DX Div.), MRSO Inc. (IT Div. System Development Dept.), AIFUL CORPORATION (Digital Promotion Dept. 1).
 - Note: Some PF operators do not provide validity verification functions as a platform for SP operators (end of §7.2.5). First, confirm whether the candidate for delegation has a "provision for SP operators".
 
 ## Selection Criteria for Operators
@@ -138,7 +147,7 @@ PDFs under `references/pdfs/` are third-party works and are not shipped with the
 - `references/pdfs/04_jpki-platform-operator-system.pdf` (Platform operator system, delegation of competent minister certification/notification to the agency, split-the-bill effect)
 - `references/pdfs/05_private-sector-guidelines-v1.8.pdf` (Guidelines for Private Operators Using the Public Personal Authentication Service, Version 1.8, pages 40–42 "C. Certification Procedure")
 - `references/pdfs/15_guide-identity-verification.pdf` (GMO Online Identity Verification Service, API usage, PF operator certification, account opening use case)
-- `references/pdfs/21_guide-public-personal-authentication.pdf` (Double Standard "Guide to eKYC Solution Using JPKI") and other operator service introduction materials listed in the table above (`14`, `16`, `17`, `18`, `23`, `26`, `27`, `32`)
+- `references/pdfs/21_guide-public-personal-authentication.pdf` (Double Standard "Guide to eKYC Solution Using JPKI") and service introduction materials of companies listed in the table above (`13`–`33`)
 - `references/pdfs/29_guide-trustdock-jpki.pdf` (TRUSTDOCK, 2 formats: SDK / provided app, configuration diagram as an SP operator, support for multiple identity verification methods)
 - `references/pdfs/33_guide-liquid-ekyc.pdf` (LIQUID eKYC. p18-19 Fraud detection/notation fluctuation, p21 "Flow to introduction" = NDA, AID disclosure application, Public Personal Authentication Service usage application, J-LIS examination about 1-2 months, schedule upper limit)
 - `references/method-map.md` (Definitions of He-method/Ka-method. The legal names and timing are uniquely defined in this file and `honnin-kakunin-houhou`)
@@ -148,7 +157,7 @@ PDFs under `references/pdfs/` are third-party works and are not shipped with the
 ## Unverified Items
 
 - Specific time of CRL updates ("every day at XX:XX", etc.): Primary sources only state "updated on a daily basis (once a day, etc.)", and the specific time is unverified.
-- Cross-sectional comparison of each PF operator's support status: Support for IC reading of He-method/Ka-method, whether CRL / OCSP can be selected, support for the latest 4 attributes provision service, SDK / API provision format, fee structure, handling of NDA templates. Since there is no cross-sectional list for each company in §7.2.5 or the guide materials read, all of them "require confirmation with each company".
+- Cross-sectional comparison of each PF operator's support status: Support for IC reading methods (He-method / Ka-method), choice between CRL / OCSP, SDK vs. API provision format, pricing structure, and handling of NDA templates all "require confirmation with each company" (*For support for the latest 4 attributes provision service, a cross-sectional list of 11 companies—Nomura RI, TOPPAN, NEC, NTT DATA, Cloudship, Cybertrust, Workthy, PocketSign, ICT Machizukuri, Primagest, and Double Standard—is confirmed in PDF 10 "List of Platform Operators Supporting the Service Providing the Latest User Information (Four Attributes)").
 - Total lead time for SP operators: "Maximum 6 months from the month the verification environment is provided (IC reading method is +2 months, maximum 8 months)" and "J-LIS examination about 1 to 2 months" are both based on LIQUID (PDF 33 p21). Since procedure names, formats, and required periods differ for other PF operators, it cannot be generalized as is.
 - Exact formats and submission destinations of "Application documents for AID disclosure" and "Application documents for using the Public Personal Authentication Service", and to what extent the PF operator acts as an agent/substitute for the application (whether the SP operator submits it themselves or via the PF operator): LIQUID materials only state "submit". Needs confirmation.
 - Relationship between the Digital Authentication App / My Number Card Face-to-Face Verification App / MynaPortal Linkage, etc., and the "CoreNFC direct reading by app + delegation to PF operator" configuration assumed by this skill: Out of scope of this skill. If it affects the design, confirm with primary sources.

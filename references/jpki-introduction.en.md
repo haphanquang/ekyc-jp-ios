@@ -274,7 +274,7 @@ Please refer to the following for sample notifications regarding consent procedu
 
 ##### Contact Information
 
-For inquiries regarding this service, please contact us via the link below. Forms: [[Digital Agency] Inquiry Form Regarding the Use of My Number Card (Public Personal Authentication Service)](https://forms.office.com/pages/responsepage.aspx?id=_6DkBnJJi0qvMEVxNh0TRNJv3cv0c0FBhtslb22zQ4BUOTZQWFpGVFBISlVCVlpHRUZFOUVTVDdFVy4u&route=shorturl) *Please select "Four Basic Attributes Provision Service" under question "5. Please select the subject of your inquiry." in the form.
+For inquiries regarding this service, please contact us via the link below. Forms: [(Digital Agency) Inquiry Form Regarding the Use of My Number Card (Public Personal Authentication Service)](https://forms.office.com/pages/responsepage.aspx?id=_6DkBnJJi0qvMEVxNh0TRNJv3cv0c0FBhtslb22zQ4BUOTZQWFpGVFBISlVCVlpHRUZFOUVTVDdFVy4u&route=shorturl) *Please select "Four Basic Attributes Provision Service" under question "5. Please select the subject of your inquiry." in the form.
 
 ### 6.2. Installing My Number Card Functions (Electronic Certificates) on Smartphones (Launched May 11, 2023)
 
@@ -301,7 +301,7 @@ For general inquiries about the My Number Card, please check [Inquiries Regardin
 
 #### 7.2.2. Introducing the Public Personal Authentication Service
 
-For inquiries regarding the introduction of the Public Personal Authentication Service, please contact us via the [[Digital Agency] Inquiry Form Regarding the Use of My Number Card (Public Personal Authentication Service)](https://forms.office.com/pages/responsepage.aspx?id=_6DkBnJJi0qvMEVxNh0TRNJv3cv0c0FBhtslb22zQ4BUOTZQWFpGVFBISlVCVlpHRUZFOUVTVDdFVy4u&route=shorturl). We also accept inquiries from organizations wishing to request a briefing session or consultation. Briefing sessions are held for organizations so that as many private-sector businesses as possible can use the Public Personal Authentication Service, introducing useful information for evaluating adoption such as overviews of the My Number Card and the Public Personal Authentication Service, use cases, latest trends, and an overview of Mynaportal.
+For inquiries regarding the introduction of the Public Personal Authentication Service, please contact us via the [(Digital Agency) Inquiry Form Regarding the Use of My Number Card (Public Personal Authentication Service)](https://forms.office.com/pages/responsepage.aspx?id=_6DkBnJJi0qvMEVxNh0TRNJv3cv0c0FBhtslb22zQ4BUOTZQWFpGVFBISlVCVlpHRUZFOUVTVDdFVy4u&route=shorturl). We also accept inquiries from organizations wishing to request a briefing session or consultation. Briefing sessions are held for organizations so that as many private-sector businesses as possible can use the Public Personal Authentication Service, introducing useful information for evaluating adoption such as overviews of the My Number Card and the Public Personal Authentication Service, use cases, latest trends, and an overview of Mynaportal.
 
 #### 7.2.3. Competent Minister Certification in the Public Personal Authentication Service
 

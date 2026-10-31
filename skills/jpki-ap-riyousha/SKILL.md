@@ -23,7 +23,7 @@ nonce の発行・セッション状態管理は `ekyc-session-orchestration`、
 - `ios-corenfc-apdu` を完了していること（`NFCTagReaderSession` の確立、`NFCISO7816Tag` への `connect`、`sendCommand`、256 バイト超の分割 READ、`Info.plist` の `select-identifiers` への AID 列挙）。
 - APDU のバイト列は `references/apdu-cheatsheet.md` に記録済みの形のみを使う。`未確認` の項目は実装前に検証する。
 - **チャレンジ（nonce）はサーバーが生成する。** サーバーがセッションごとに乱数を発行し、アプリはそれ（またはそのハッシュ）に署名するだけ。アプリが nonce を発行しない。
-- 署名アルゴリズムは RSA-2048 / PKCS#1 v1.5 / SHA-256（`未確認`：現行仕様・他ハッシュ対応は要検証。`apdu-cheatsheet.md`）。パディングはカード内部で行われる。
+- 署名アルゴリズムは RSA-2048 / PKCS#1 v1.5 / SHA-256（`未確認`：現行仕様・他ハッシュ対応は要検証。`references/apdu-cheatsheet.md`）。パディングはカード内部で行われる。
 - 利用者証明用電子証明書には**基本4情報（氏名・住所・生年月日・性別）が入っていない**。持っているのは発行番号と有効期間のみ（`references/jpki-introduction.ja.md` §5.2.2）。
 
 ## 署名用との違い
@@ -32,7 +32,7 @@ nonce の発行・セッション状態管理は `ekyc-session-orchestration`、
 |---|---|---|
 | 主な用途 | サイトへのログイン等の当人認証（繰り返し利用）| 申込・契約など電子文書の作成・送信（真正性の証明）|
 | 暗証番号 | 4桁 数字（桁数は zenn.dev/trustdock・tex2e で一致）| 6〜16桁 英数字 |
-| ロック回数 | 3（確認済：J-LIS `jpki.go.jp`。`apdu-cheatsheet.md`）| 5（確認済：J-LIS `jpki.go.jp`）|
+| ロック回数 | 3（確認済：J-LIS `jpki.go.jp`。`references/apdu-cheatsheet.md`）| 5（確認済：J-LIS `jpki.go.jp`）|
 | 基本4情報 | 保持しない（発行番号・有効期間のみ）| 保持する |
 | サーバーの検証 | チャレンジ署名の検証 ＋ 発行番号の照合で本人（同一カード）を特定 | 署名検証 ＋ 基本4情報の照合 |
 | 失効条件 | 有効期間満了、本人死亡・国外転出等（基本4情報の変更では失効しない）| 上記に加え基本4情報の変更（引越し・婚姻等）|
@@ -46,10 +46,10 @@ tex2e によれば、チャレンジレスポンスに使う APDU 自体は署�
 サーバーがセッションに紐づくチャレンジ（nonce）を発行済みである前提。1 セッション内で下記を順に送り、各ステップの応答 SW が `90 00` でなければ中断する。
 
 - [ ] **1. JPKI-AP を SELECT** — `00 A4 04 0C 0A D3 92 F0 00 26 01 00 00 00 01`（AID は tex2e・moritamori・kopaneet の 3 ソースで一致）。`6A 82` なら AID / `Info.plist` の `select-identifiers` を見直す。
-- [ ] **2. 利用者証明用暗証番号の EF を SELECT** — `00 A4 02 0C 02 00 18`（EF-ID `00 18` は tex2e が「認証用PIN」として記載。`（1ソースのみ・要検証）`。`apdu-cheatsheet.md`）。
+- [ ] **2. 利用者証明用暗証番号の EF を SELECT** — `00 A4 02 0C 02 00 18`（EF-ID `00 18` は tex2e が「認証用PIN」として記載。`（1ソースのみ・要検証）`。`references/apdu-cheatsheet.md`）。
 - [ ] **3. 利用者証明用暗証番号を VERIFY** — `00 20 00 80` ＋ 暗証番号 4 桁の ASCII バイト列（keyref P2=`80` は 3 ソース一致。tex2e の例は `00 20 00 80 04 31 32 33 34`）。応答 SW を確認する:
   - `90 00`: 照合成功。
-  - `63 CX`: 不一致。下位ニブル `X` が残り試行回数（ISO/IEC 7816-4 標準値。JPKI 固有の一次ソースは `未確認`）。**自動リトライしない。** 残回数の提示・ロック手前の警告・解錠導線は `pin-lock-handling` に委譲する。利用者証明用のロック回数は 3 回（確認済：J-LIS `jpki.go.jp`。`pin-lock-handling` / `apdu-cheatsheet.md`）。
+  - `63 CX`: 不一致。下位ニブル `X` が残り試行回数（ISO/IEC 7816-4 標準値。JPKI 固有の一次ソースは `未確認`）。**自動リトライしない。** 残回数の提示・ロック手前の警告・解錠導線は `pin-lock-handling` に委譲する。利用者証明用のロック回数は 3 回（確認済：J-LIS `jpki.go.jp`。`pin-lock-handling` / `references/apdu-cheatsheet.md`）。
   - `69 83`: ロック済み。`pin-lock-handling` 参照。
 - [ ] **4. 利用者証明用秘密鍵の EF を SELECT** — `00 A4 02 0C 02 00 17`（EF-ID `00 17` は tex2e が「認証用秘密鍵」として記載。`（1ソースのみ・要検証）`。MSE / Manage Security Environment は tex2e の手順には無い。`未確認`）。
 - [ ] **5. チャレンジに署名する（COMPUTE DIGITAL SIGNATURE）** — `80 2A 00 80` ＋ サーバーのチャレンジから作った署名対象データ。tex2e は利用者証明用（認証用）でも署名用と同じ `80 2A 00 80` を使い、SHA-256 の DigestInfo プレフィックス（RFC 8017 準拠）`30 31 30 0D 06 09 60 86 48 01 65 03 04 02 01 05 00 04 20` に 32 バイトのハッシュを連結して Lc=`33` で送る。チャレンジレスポンスに `80 2A 00 80` を使う点・入力を DigestInfo とする点はいずれも **tex2e 1 ソースのみ・要検証**。応答データが RSA-2048 の署名値（256 バイト・要検証）、末尾 SW が `90 00`。
@@ -132,7 +132,7 @@ extension CardReader {
 
 ## 未確認事項
 
-- 利用者証明用（tex2e 表記「認証用」）の秘密鍵 EF `00 17`・暗証番号 EF `00 18`・証明書 EF `00 0A` はいずれも（1ソースのみ・要検証：tex2e）（`apdu-cheatsheet.md` と同確度）。実装前に検証すること。
+- 利用者証明用（tex2e 表記「認証用」）の秘密鍵 EF `00 17`・暗証番号 EF `00 18`・証明書 EF `00 0A` はいずれも（1ソースのみ・要検証：tex2e）（`references/apdu-cheatsheet.md` と同確度）。実装前に検証すること。
 - 署名用・利用者証明用の両電子証明書が同一カード由来であることを、PF事業者の紐付け（シリアル対応）機能で確認できるか。できない場合、登録時の同一性は「同じ NFC セッション・同じ nonce で両方の署名が得られた」ことで担保する。
 - チャレンジレスポンスを COMPUTE DIGITAL SIGNATURE `80 2A 00 80` で行うか、`INTERNAL AUTHENTICATE`（`00 88 …`）等の別コマンドか。tex2e は認証用でも `80 2A 00 80` を示すが 1 ソースのみ。
 - 手順 5 に渡す入力形式（サーバーのチャレンジ＝生 nonce をそのまま署名するのか、SHA-256 ハッシュか、DigestInfo でラップするか、ハッシュ長）。サーバー仕様（`ekyc-session-orchestration`）と要すり合わせ。

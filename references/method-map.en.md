@@ -233,6 +233,7 @@ not the to (ト) type (bank inquiry / small-amount transfer)**. Other than that,
   <https://laws.e-gov.go.jp/law/414AC0000000153> (Public Personal Authentication Act),
   <https://laws.e-gov.go.jp/law/407M50400000010> (Ordinance for Enforcement of the Secondhand Articles Dealer Act),
   <https://laws.e-gov.go.jp/law/324AC0000000108> (Secondhand Articles Dealer Act).
+- Ministerial Meeting on Crime Countermeasures, "Comprehensive Measures to Protect the Public from Fraud" (Decided June 18, 2024 (Reiwa 6)) — Government policy decision establishing the principle of unifying non-face-to-face identity verification for mobile phone subscriptions and financial account opening to IC chip reading of My Number Cards, etc. (phasing out image transmission methods).
 - National Police Agency (NPA) JAFIC "Q&A on the Ordinance for Enforcement of the Act on Prevention of Transfer of Criminal Proceeds Amended in 2026 (Reiwa 8) (Promulgated March 6, 2026)"
   (`260306qa.pdf`) <https://www.npa.go.jp/sosikihanzai/jafic/hourei/data/260306qa.pdf> —
   Enforcement date "April 1, 2027 (Reiwa 9)" (Q2), IC chip reading / card-face matching, JPKI (Public Personal Authentication Service), non-resident foreign nationals, etc.,

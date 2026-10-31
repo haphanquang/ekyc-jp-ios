@@ -204,8 +204,8 @@ extension CardReader {
 - **Do not silently break the loop for values other than `90 00`.** If you exit with `69 82` (security status not satisfied), you will return a partially cut certificate as a normal value. For `62 82` (end of file), use the returned data, for `6C xx`, resend exactly once with the indicated Le, and for anything else, throw. The SW at termination and maximum length per EF that the My Number Card actually returns is `Unverified` (see below).
 - For EFs that do not have a TLV at the beginning (e.g., the four basic attributes in the card-face input-assist application where 2 bytes precede `FF 20` on some cards), do not use `readSelectedTLV`, but follow the instructions in each AP's skill.
 - The `readBinary` / `readSelectedTLV` / `tlvTotalLength` above have been verified in Swift 6 language mode using a mock card for "EFs with padding, `62 82`, `6C xx`, intermediate `69 82`, and multi-byte tag `FF 20`" (2026-09-25). Behavior with actual cards requires separate verification.
-- Whether the P1P2 for SELECT (`00 A4 04 0C` / `00 A4 02 0C`) is common across all APs should be checked against the certainty table in `apdu-cheatsheet.md`.
-- **JPKI-specific APDUs (PIN verification via VERIFY, signature generation via COMPUTE DIGITAL SIGNATURE) are out of scope of this skill.** See `apdu-cheatsheet.md` for byte arrays, `jpki-ap-shomei` for signing procedures, and `jpki-ap-riyousha` for user-authentication procedures. This skill only covers the generic transport layer.
+- Whether the P1P2 for SELECT (`00 A4 04 0C` / `00 A4 02 0C`) is common across all APs should be checked against the certainty table in `references/apdu-cheatsheet.md`.
+- **JPKI-specific APDUs (PIN verification via VERIFY, signature generation via COMPUTE DIGITAL SIGNATURE) are out of scope of this skill.** See `references/apdu-cheatsheet.md` for byte arrays, `jpki-ap-shomei` for signing procedures, and `jpki-ap-riyousha` for user-authentication procedures. This skill only covers the generic transport layer.
 
 ## Common Failures
 
@@ -237,6 +237,6 @@ extension CardReader {
 
 - AID strings of each My Number Card AP that should be listed in `select-identifiers` in `Info.plist` (contiguous hex strings without spaces: `D392F000260100000001`, `D3921000310001010408`, etc.). In `references/apdu-cheatsheet.md`, `JPKI-AP` (3 sources) and `券面入力補助AP` (matches across 2 public sources, `kopaneet` & `tex2e`, though unconfirmed in J-LIS primary docs) are recorded while others are marked `未確認` (unverified). Verify before implementation.
 - Exact termination conditions for the My Number Card when reading more than 256 bytes with READ BINARY (whether maximum length can be requested with Le=0, whether it returns `61 xx` / `6C xx`, maximum read length per EF). The above code terminates at the total length of the TLV header and handles `62 82` / `6C xx` according to ISO/IEC 7816-4, but actual behavior on physical cards requires verification.
-- Whether the P1P2 `00 A4 02 0C` for SELECT (EF identifier) is common across all APs. `apdu-cheatsheet.md` only has examples for JPKI-AP and the card-face input-assist AP.
+- Whether the P1P2 `00 A4 02 0C` for SELECT (EF identifier) is common across all APs. `references/apdu-cheatsheet.md` only has examples for JPKI-AP and the card-face input-assist AP.
 - Whether the My Number Card (ISO/IEC 14443 Type-B) is reliably passed as `case .iso7816` when `.iso14443` is specified. TrustDock specifies Type-B, but Apple documentation does not explicitly distinguish between Type A / B.
 - Whether the My Number Card supports APDU Extended Length (Lc / Le being 3 bytes). The code in this skill assumes a short Le.

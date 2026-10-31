@@ -30,21 +30,59 @@ The device side does not verify digital signatures or query J-LIS (server / plat
 - **Pass the PIN only to the VERIFY APDU sent to the card.** Never send it to servers, analytics SDKs, logs, or the pasteboard. Do not save it in Keychain (including a biometrically protected "remember PIN" feature), UserDefaults, or files. Use `isSecureTextEntry` for the input field and discard the PIN as soon as the VERIFY response arrives. If a design sends the PIN to a server or stores it, correct it as an error.
 - Basic 4 information, face photo images, individual numbers, challenge/to-be-signed data, and signature values read from the card are **temporary data for sending to the server** (the PIN is not sent, as stated above). Hold as `Data` / `String` and discard immediately after server transmission (or session termination).
 - Limit retention to the scope of one request. On retry, re-read from the card.
-- If possible, receive in a fixed-length buffer (`ContiguousArray<UInt8>` or `UnsafeMutableRawBufferPointer`), zero-fill after use, then release. Because Swift's `String` / `Array` uses CoW (Copy-on-Write) where retaining references risks zeroing only the duplicate copy, promptly discard the original reference. The top priority is "don't store it in the first place / don't log it."
+- For highly sensitive data such as PINs, to eliminate the risk of duplicate memory remaining due to Swift's `String` / `Array` Copy-on-Write (CoW) mechanism, handle them using an unmanaged native heap buffer (`SecureBytes` managing `UnsafeMutablePointer<UInt8>`), and securely zero-fill and release them immediately after use using `memset_s`. The top priority is "don't store it in the first place / don't log it."
 
 ```swift
-final class SensitivePayload {
-    private(set) var bytes: [UInt8]
-    init(_ bytes: [UInt8]) { self.bytes = bytes }        // Caller must not keep other references to the input array (prevents CoW)
+import Darwin
+import Foundation
 
-    /// Must be called after server transmission
-    func wipe() {
-        bytes.withUnsafeMutableBytes { buf in
-            guard let base = buf.baseAddress else { return }
-            _ = memset_s(base, buf.count, 0, buf.count)  // C11 Annex K. Won't be optimized away
+/// Secure native heap buffer avoiding Swift Array/String Copy-on-Write (CoW)
+public final class SecureBytes: @unchecked Sendable {
+    private var buffer: UnsafeMutablePointer<UInt8>?
+    public private(set) var count: Int
+    private let lock = NSLock()
+
+    public init(count: Int) {
+        self.count = count
+        if count > 0 {
+            self.buffer = UnsafeMutablePointer<UInt8>.allocate(capacity: count)
+            self.buffer?.initialize(repeating: 0, count: count)
+        } else {
+            self.buffer = nil
         }
-        bytes.removeAll(keepingCapacity: false)
     }
+
+    public convenience init(copying bytes: [UInt8]) {
+        self.init(count: bytes.count)
+        if let buffer = self.buffer, !bytes.isEmpty {
+            bytes.withUnsafeBufferPointer { src in
+                guard let base = src.baseAddress else { return }
+                buffer.initialize(from: base, count: bytes.count)
+            }
+        }
+    }
+
+    public func withUnsafeBytes<R>(_ body: (UnsafeBufferPointer<UInt8>) throws -> R) rethrows -> R {
+        lock.lock()
+        defer { lock.unlock() }
+        guard let buffer = buffer else {
+            return try body(UnsafeBufferPointer(start: nil, count: 0))
+        }
+        return try body(UnsafeBufferPointer(start: buffer, count: count))
+    }
+
+    /// Must be called after server transmission or when done (C11 memset_s prevents compiler optimization removal)
+    public func wipe() {
+        lock.lock()
+        defer { lock.unlock() }
+        if let buffer = buffer, count > 0 {
+            _ = memset_s(buffer, count, 0, count)
+            buffer.deallocate()
+            self.buffer = nil
+            self.count = 0
+        }
+    }
+
     deinit { wipe() }
 }
 ```

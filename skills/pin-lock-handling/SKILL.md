@@ -103,6 +103,19 @@ func interpret(sw1: UInt8, sw2: UInt8) -> VerifyOutcome {
         return .other(sw1: sw1, sw2: sw2)
     }
 }
+
+/// 空の VERIFY APDU（Lc = 0）を用いて、試行回数を消費せずに残り回数・ロック状態を確認する（ISO/IEC 7816-4 §7.5.2）。
+/// セッション切断後の状態再取得などに使用。
+func checkRemainingAttempts(pinEFID: [UInt8], tag: NFCISO7816Tag) async throws -> VerifyOutcome {
+    let selectCmd = NFCISO7816APDU(data: Data([0x00, 0xA4, 0x02, 0x0C, 0x02] + pinEFID))!
+    let (_, sw1Sel, sw2Sel) = try await tag.sendCommand(apdu: selectCmd)
+    guard sw1Sel == 0x90, sw2Sel == 0x00 else {
+        return .other(sw1: sw1Sel, sw2: sw2Sel)
+    }
+    let emptyVerify = NFCISO7816APDU(data: Data([0x00, 0x20, 0x00, 0x80, 0x00]))!
+    let (_, sw1, sw2) = try await tag.sendCommand(apdu: emptyVerify)
+    return interpret(sw1: sw1, sw2: sw2)
+}
 ```
 
 入力欄は `.numberPad`（4 桁・12 桁・14 桁）／`.asciiCapable`（署名用）、`isSecureTextEntry = true`、`textContentType` は設定しない（パスワード自動入力・保存の対象にしない）。上記のコードは 2026-09-25 に Swift 6 言語モードでテスト済み（全角入力・桁数違反・`63 C0` / `63 C2` / `63 00` / `69 83`）。

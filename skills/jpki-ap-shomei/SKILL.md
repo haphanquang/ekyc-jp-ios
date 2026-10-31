@@ -29,7 +29,7 @@ description: マイナンバーカードの署名用電子証明書 読み取り
   3. アプリは `SHA256.hash(data: toBeSigned)`（CryptoKit）で自らハッシュを計算し、それを手順 5 の DigestInfo に入れる。
   - 当該セッション以外の経路（プッシュ通知・URL スキーム・他アプリ・WebView 等）から来たハッシュやデータには署名しない。
   - サーバーが生ハッシュしか返せない構成は例外扱いとし、その場合も本文は必ず表示する。サーバー側の組み立ては `ekyc-session-orchestration` / `signature-verification`。
-- 署名アルゴリズムは RSA-2048 / PKCS#1 v1.5 / SHA-256（`未確認`：現行仕様・他ハッシュ対応は要検証。`apdu-cheatsheet.md`）。パディングはカード内部で行われる。
+- 署名アルゴリズムは RSA-2048 / PKCS#1 v1.5 / SHA-256（`未確認`：現行仕様・他ハッシュ対応は要検証。`references/apdu-cheatsheet.md`）。パディングはカード内部で行われる。
 
 ## 署名生成の手順
 
@@ -135,6 +135,6 @@ READ BINARY で 256 バイト超を読む際のマイナンバーカードの正
 - 署名前の MSE（Manage Security Environment）等の前処理の要否。tex2e の手順には無い。
 - 署名アルゴリズム（RSA-2048 / PKCS#1 v1.5 / SHA-256）の現行仕様、他ハッシュ・鍵長への対応。
 - 署名用秘密鍵 EF `00 1A`・暗証番号 EF `00 1B`・証明書 EF `00 01` の EF-ID（tex2e 1 ソース）。
-- `63 CX` の下位ニブルが残り試行回数か、`69 83` がロックか（ISO/IEC 7816-4 標準値。JPKI 固有の一次ソースは `未確認`）。署名用の失敗ロック回数 5 回は J-LIS `jpki.go.jp` で確認済（`pin-lock-handling` / `apdu-cheatsheet.md`）。
+- `63 CX` の下位ニブルが残り試行回数か、`69 83` がロックか（ISO/IEC 7816-4 標準値。JPKI 固有の一次ソースは `未確認`）。署名用の失敗ロック回数 5 回は J-LIS `jpki.go.jp` で確認済（`pin-lock-handling` / `references/apdu-cheatsheet.md`）。
 - READ BINARY で証明書 EF（256 バイト超）を読む際の終了条件と最大読み取り長。
 - **署名用電子証明書（EF `00 01`）の READ に必要な事前 VERIFY。** 署名用電子証明書は基本4情報を含むため、読み出しには同一 NFC セッション内で**署名用暗証番号（EF `00 1B`、6〜16桁 英大文字・数字）**の VERIFY が必要であり、未照合のまま `READ BINARY` を呼ぶと `69 82`（Security status not satisfied）が返る（`jpki-ap-riyousha` の利用者証明用証明書 EF `00 0A` は暗証番号不要）。したがって `readShomeiCertificate(tag:)` は手順 2〜3（`verifyShomeiPIN`）の後に呼ぶ（tex2e の手順と一致）。

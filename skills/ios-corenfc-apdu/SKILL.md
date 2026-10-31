@@ -204,8 +204,8 @@ extension CardReader {
 - **`90 00` 以外で黙ってループを抜けない。** `69 82`（セキュリティ状態不満足）等で抜けると、途中で切れた証明書を正常値として返してしまう。`62 82`（ファイル終端）は返ったデータを使い、`6C xx` は示された Le で 1 回だけ再送し、それ以外は throw する。マイナンバーカードが実際に返す終了時の SW・EF ごとの最大長は `未確認`（下記参照）。
 - 先頭に TLV が無い EF（例: 一部のカードで `FF 20` の前に 2 バイト付く券面入力補助AP の基本4情報）は `readSelectedTLV` を使わず、各 AP のスキルの指示に従う。
 - 上記の `readBinary` / `readSelectedTLV` / `tlvTotalLength` は、モックのカードで「パディング付き EF・`62 82`・`6C xx`・途中の `69 82`・複数バイトタグ `FF 20`」を Swift 6 言語モードで検証済み（2026-09-25）。実カードでの挙動は別途確認する。
-- SELECT の P1P2（`00 A4 04 0C` / `00 A4 02 0C`）が全 AP で共通かは `apdu-cheatsheet.md` の確度表に従う。
-- **JPKI 固有の APDU（VERIFY による暗証番号照合、COMPUTE DIGITAL SIGNATURE による署名生成）は本スキルの対象外。** バイト列は `apdu-cheatsheet.md`、手順は署名用が `jpki-ap-shomei`、利用者証明用が `jpki-ap-riyousha` を参照。本スキルは汎用のトランスポート層だけを扱う。
+- SELECT の P1P2（`00 A4 04 0C` / `00 A4 02 0C`）が全 AP で共通かは `references/apdu-cheatsheet.md` の確度表に従う。
+- **JPKI 固有の APDU（VERIFY による暗証番号照合、COMPUTE DIGITAL SIGNATURE による署名生成）は本スキルの対象外。** バイト列は `references/apdu-cheatsheet.md`、手順は署名用が `jpki-ap-shomei`、利用者証明用が `jpki-ap-riyousha` を参照。本スキルは汎用のトランスポート層だけを扱う。
 
 ## よくある失敗
 
@@ -237,6 +237,6 @@ extension CardReader {
 
 - `Info.plist` の `select-identifiers` に列挙すべきマイナンバーカード各 AP の AID 文字列（スペースなしの連続 16 進文字列：`D392F000260100000001`、`D3921000310001010408` 等）。`references/apdu-cheatsheet.md` では JPKI-AP（3 ソース一致）と券面入力補助AP（kopaneet・tex2e の 2 ソースで一致、J-LIS 一次資料では未確認）以外は `未確認`。実装前に検証すること。
 - READ BINARY で 256 バイト超を読む際のマイナンバーカードの正確な終了条件（Le=0 で最大長要求ができるか、`61 xx` / `6C xx` を返すか、EF ごとの最大読み取り長）。上記コードは TLV ヘッダの全長で終了し、`62 82` / `6C xx` を ISO/IEC 7816-4 どおりに扱うが、実カードでの挙動は要検証。
-- SELECT（EF 識別子）の P1P2 `00 A4 02 0C` が全 AP で共通か。`apdu-cheatsheet.md` では JPKI-AP と券面入力補助AP の例のみ。
+- SELECT（EF 識別子）の P1P2 `00 A4 02 0C` が全 AP で共通か。`references/apdu-cheatsheet.md` では JPKI-AP と券面入力補助AP の例のみ。
 - `.iso14443` 指定時にマイナンバーカード（ISO/IEC 14443 Type-B）が確実に `case .iso7816` として渡ってくるか。TrustDock は Type-B と明記するが、Apple ドキュメントは Type A / B の区別を明記していない。
 - APDU の Extended Length（Lc / Le が 3 バイト）にマイナンバーカードが対応するか。本スキルのコードは短 Le を前提にしている。

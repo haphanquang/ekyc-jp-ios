@@ -29,7 +29,7 @@ For lock/remaining count UX, see `pin-lock-handling`. For server-side signature 
   3. The app calculates the hash itself using `SHA256.hash(data: toBeSigned)` (CryptoKit), and puts it into the DigestInfo in step 5.
   - Do not sign hashes or data arriving from routes outside that session (push notifications, URL schemes, other apps, WebViews, etc.).
   - Configurations where the server can only return raw hashes are treated as exceptions, and even in that case, the main text must always be displayed. For server-side assembly, see `ekyc-session-orchestration` / `signature-verification`.
-- The signature algorithm is RSA-2048 / PKCS#1 v1.5 / SHA-256 (`Unverified`: current specification / support for other hashes requires verification. `apdu-cheatsheet.md`). Padding is performed inside the card.
+- The signature algorithm is RSA-2048 / PKCS#1 v1.5 / SHA-256 (`Unverified`: current specification / support for other hashes requires verification. `references/apdu-cheatsheet.md`). Padding is performed inside the card.
 
 ## Signature Generation Procedure
 
@@ -135,6 +135,6 @@ The exact termination conditions (`61 xx` / `6C xx` presence, maximum length per
 - Necessity of preprocessing such as MSE (Manage Security Environment) before signing. Not in tex2e's procedure.
 - Current specifications of the signature algorithm (RSA-2048 / PKCS#1 v1.5 / SHA-256), and support for other hashes/key lengths.
 - EF-IDs for signing private key EF `00 1A`, PIN EF `00 1B`, and certificate EF `00 01` (tex2e is a single source).
-- Whether the lower nibble of `63 CX` is the remaining trial count, and whether `69 83` means locked (ISO/IEC 7816-4 standard values. Primary sources for JPKI specifics are `Unverified`). The 5-time failure lock limit for signing has been confirmed on J-LIS `jpki.go.jp` (`pin-lock-handling` / `apdu-cheatsheet.md`).
+- Whether the lower nibble of `63 CX` is the remaining trial count, and whether `69 83` means locked (ISO/IEC 7816-4 standard values. Primary sources for JPKI specifics are `Unverified`). The 5-time failure lock limit for signing has been confirmed on J-LIS `jpki.go.jp` (`pin-lock-handling` / `references/apdu-cheatsheet.md`).
 - Termination conditions and maximum read length when reading the certificate EF (over 256 bytes) using READ BINARY.
 - **Prior VERIFY required to READ the signing certificate (EF `00 01`).** Because the signing certificate contains the Basic 4 Information, reading it requires prior `VERIFY` of the **signing PIN (EF `00 1B`, 6–16 uppercase alphanumeric chars)** in the same NFC session; calling `READ BINARY` before `VERIFY` returns `69 82` (Security status not satisfied) (whereas the user-authentication certificate EF `00 0A` in `jpki-ap-riyousha` does not require a PIN). Therefore, `readShomeiCertificate(tag:)` must be called after Steps 2–3 (`verifyShomeiPIN`), matching tex2e's procedure.

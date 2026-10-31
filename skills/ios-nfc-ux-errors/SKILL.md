@@ -40,6 +40,7 @@ description: iOS で NFC 読み取り UX とエラーメッセージ 日本語 �
 - 成功時・失敗時とも `session.invalidate()` でセッションを閉じる。利用者に理由を見せたいときは `session.invalidate(errorMessage:)` を使うと、システムのスキャンシート上に赤字で文言が表示される。
 - 上表の詳細な文言・画面遷移は自前の UI 側で出す。システムシートの文言は短く、アプリ内の結果画面で「なぜ失敗したか」「次にどうするか」を丁寧に示す（PDF 33 の「失敗の理由を具体的に提示する」）。
 - デリゲートのコールバックはセッションのキューで呼ばれる。UI 更新は `DispatchQueue.main` へ回す（`ios-corenfc-apdu`）。
+- **ハプティクス・効果音の重複発火を避ける**: `NFCTagReaderSession` はタグ検出時やセッション終了時（`invalidate()` による成功チェックマーク、`invalidate(errorMessage:)` によるエラー表示）に iOS システム標準の効果音およびハプティクス（振動）を自動制御する。スキャンシート表示中にアプリ側から `UINotificationFeedbackGenerator` 等を手動発火させると振動が衝突・二重化するため、システムに任せる。
 
 ## アンテナ位置と持ち方
 

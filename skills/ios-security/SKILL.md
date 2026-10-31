@@ -30,21 +30,59 @@ description: iOS でマイナンバーカード eKYC のセキュリティ対策
 - **暗証番号はカードへの VERIFY APDU にだけ渡す。** サーバー・分析 SDK・ログ・ペーストボードへ一切送らない。Keychain（生体認証で保護した「暗証番号を記憶する」機能を含む）・UserDefaults・ファイルに保存しない。入力欄は `isSecureTextEntry`、VERIFY の応答を受けたら即破棄する。暗証番号をサーバーへ送る設計・保存する設計が出たら誤りとして正す。
 - カードから読み取る基本4情報・顔写真画像・個人番号・チャレンジ／署名対象データ・署名値は、**サーバーへ送るための一時データ**（暗証番号は上記のとおり送らない）。`Data` / `String` で保持し、サーバー送信（またはセッション終了）直後に破棄する。
 - 保持は 1 リクエストの範囲に限定する。リトライ時は再度カードから読み直す。
-- 可能なら固定長バッファ（`ContiguousArray<UInt8>` や `UnsafeMutableRawBufferPointer`）で受け、使用後にゼロ埋めしてから解放する。Swift の `String` / `Array` は CoW（Copy-on-Write）により参照が残ると複製側のみゼロ化される危険があるため、元参照を速やかに破棄する。最優先は「そもそも保存しない・ログに出さない」。
+- 暗証番号等の極めて機密性の高いデータは、Swift の `String` / `Array` の CoW（Copy-on-Write）によるメモリ複製残存リスクを排除するため、ネイティブヒープ（`UnsafeMutablePointer<UInt8>`）を直接管理する `SecureBytes` バッファ等で扱い、使用直後に `memset_s` で確実にゼロ埋め消去して解放する。最優先は「そもそも保存しない・ログに出さない」。
 
 ```swift
-final class SensitivePayload {
-    private(set) var bytes: [UInt8]
-    init(_ bytes: [UInt8]) { self.bytes = bytes }        // 呼び出し側で元配列の別参照を残さないこと（CoW 防止）
+import Darwin
+import Foundation
 
-    /// サーバー送信後に必ず呼ぶ
-    func wipe() {
-        bytes.withUnsafeMutableBytes { buf in
-            guard let base = buf.baseAddress else { return }
-            _ = memset_s(base, buf.count, 0, buf.count)  // C11 Annex K。最適化で消えない
+/// Swift の Array/String の Copy-on-Write (CoW) を回避する安全なネイティブヒープバッファ
+public final class SecureBytes: @unchecked Sendable {
+    private var buffer: UnsafeMutablePointer<UInt8>?
+    public private(set) var count: Int
+    private let lock = NSLock()
+
+    public init(count: Int) {
+        self.count = count
+        if count > 0 {
+            self.buffer = UnsafeMutablePointer<UInt8>.allocate(capacity: count)
+            self.buffer?.initialize(repeating: 0, count: count)
+        } else {
+            self.buffer = nil
         }
-        bytes.removeAll(keepingCapacity: false)
     }
+
+    public convenience init(copying bytes: [UInt8]) {
+        self.init(count: bytes.count)
+        if let buffer = self.buffer, !bytes.isEmpty {
+            bytes.withUnsafeBufferPointer { src in
+                guard let base = src.baseAddress else { return }
+                buffer.initialize(from: base, count: bytes.count)
+            }
+        }
+    }
+
+    public func withUnsafeBytes<R>(_ body: (UnsafeBufferPointer<UInt8>) throws -> R) rethrows -> R {
+        lock.lock()
+        defer { lock.unlock() }
+        guard let buffer = buffer else {
+            return try body(UnsafeBufferPointer(start: nil, count: 0))
+        }
+        return try body(UnsafeBufferPointer(start: buffer, count: count))
+    }
+
+    /// サーバー送信後または利用終了後に必ず呼ぶ（C11 memset_s で最適化消去を防ぎ確実にゼロ埋め）
+    public func wipe() {
+        lock.lock()
+        defer { lock.unlock() }
+        if let buffer = buffer, count > 0 {
+            _ = memset_s(buffer, count, 0, count)
+            buffer.deallocate()
+            self.buffer = nil
+            self.count = 0
+        }
+    }
+
     deinit { wipe() }
 }
 ```

@@ -103,6 +103,19 @@ func interpret(sw1: UInt8, sw2: UInt8) -> VerifyOutcome {
         return .other(sw1: sw1, sw2: sw2)
     }
 }
+
+/// Checks the remaining attempts / lock status without consuming attempts using an empty VERIFY APDU (Lc = 0, ISO/IEC 7816-4 §7.5.2).
+/// Used for recovering status after session disconnection, etc.
+func checkRemainingAttempts(pinEFID: [UInt8], tag: NFCISO7816Tag) async throws -> VerifyOutcome {
+    let selectCmd = NFCISO7816APDU(data: Data([0x00, 0xA4, 0x02, 0x0C, 0x02] + pinEFID))!
+    let (_, sw1Sel, sw2Sel) = try await tag.sendCommand(apdu: selectCmd)
+    guard sw1Sel == 0x90, sw2Sel == 0x00 else {
+        return .other(sw1: sw1Sel, sw2: sw2Sel)
+    }
+    let emptyVerify = NFCISO7816APDU(data: Data([0x00, 0x20, 0x00, 0x80, 0x00]))!
+    let (_, sw1, sw2) = try await tag.sendCommand(apdu: emptyVerify)
+    return interpret(sw1: sw1, sw2: sw2)
+}
 ```
 
 The input field should use `.numberPad` (4, 12, or 14 digits) / `.asciiCapable` (for signature), `isSecureTextEntry = true`, and `textContentType` should not be set (do not target for automatic password entry/saving). The above code was tested in Swift 6 language mode on 2026-09-25 (full-width input, digit count violations, `63 C0` / `63 C2` / `63 00` / `69 83`).

@@ -40,6 +40,7 @@ Cast `error` from `didInvalidateWithError` to `error as? NFCReaderError` and bra
 - Close the session with `session.invalidate()` on both success and failure. When you want to show the reason to the user, `session.invalidate(errorMessage:)` displays the message in red on the system scan sheet.
 - The detailed messages and screen transitions from the table above should be shown in your own UI. Keep system sheet messages short; show "why it failed" and "what to do next" thoroughly on in-app result screens (PDF 33's "present specific failure reasons").
 - Delegate callbacks are called on the session's queue. Dispatch UI updates to `DispatchQueue.main` (`ios-corenfc-apdu`).
+- **Avoid duplicate haptic/audio feedback**: `NFCTagReaderSession` automatically controls iOS system standard sound and haptic feedback upon tag detection and session dismissal (`invalidate()` displays a success checkmark with success chime/haptic, `invalidate(errorMessage:)` displays an error indicator with error haptic). Do not manually trigger `UINotificationFeedbackGenerator` from the app while the system scan sheet is displayed, to avoid haptic collisions.
 
 ## Antenna Position and How to Hold
 

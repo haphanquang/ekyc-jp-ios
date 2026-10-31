@@ -1,6 +1,6 @@
 # Primary Legal Text Excerpts for eKYC-Related Laws and Ordinances (e-Gov Law Search)
 
-Last Verified: 2026-09-11 (§5 Enforcement Rules of the Secondhand Articles Dealer Act is 2026-10-05)
+Last Verified: 2026-09-11 (§5 Ordinance for Enforcement of the Secondhand Articles Dealer Act is 2026-10-05)
 
 This file contains excerpts retrieved from the primary source (e-Gov Law Search API) used by `method-map.md` and `skills/honnin-kakunin-houhou/SKILL.md` to establish method designations and effective dates. **Method designations shift with legal amendments.**
 Before implementation or legal determination, always re-verify the text of the relevant revision on e-Gov Law Search below.
@@ -10,7 +10,7 @@ Retrieval method: e-Gov Law Search API v2 `https://laws.e-gov.go.jp/api/2/law_da
 
 ---
 
-## 1. Enforcement Rules of the Act on Prevention of Transfer of Criminal Proceeds (Current / In Force)
+## 1. Ordinance for Enforcement of the Act on Prevention of Transfer of Criminal Proceeds (Current / In Force)
 
 - LawId: `420M60000F5A001`
 - Retrieved Revision: `420M60000F5A001_20260806_508M60000F5A006` (reflects amendments in force up to August 6, 2026 [Reiwa 8])
@@ -55,7 +55,7 @@ Design the two in separate stores (`signature-verification` / `doui-jouhou-kanri
 
 ---
 
-## 2. Enforcement Rules of the Act on Prevention of Transfer of Criminal Proceeds (Effective April 1, 2027 / Version Not Yet in Force)
+## 2. Ordinance for Enforcement of the Act on Prevention of Transfer of Criminal Proceeds (Effective April 1, 2027 / Version Not Yet in Force)
 
 - LawId: `420M60000F5A001`
 - Retrieved Revision: `420M60000F5A001_20270401_508M60000F5A005`
@@ -63,7 +63,7 @@ Design the two in separate stores (`signature-verification` / `doui-jouhou-kanri
   **No. 5** (promulgated June 26, 2026; effective April 1, 2027; status on e-Gov = not yet in force)
 - e-Gov: <https://laws.e-gov.go.jp/law/420M60000F5A001?asof=2027-04-01>
 
-> Note: Among the 2026 (Reiwa 8) amendments, there is also a separate "Ordinance No. 1," and the Q&A (`260306qa.pdf`) by the National Police Agency (JAFIC) provides explanations based on Ordinance No. 1. What e-Gov indicates as the amending order for the 2027-04-01 revision is Ordinance No. 5 (promulgated June 26, 2026). The relationship between the two (whether a series of amendments or overlapping partial amendments) needs verification in the main text of the Enforcement Rules and the side-by-side comparison of old and new provisions. **Provisions prior to enforcement may be further amended.**
+> Note: Among the 2026 (Reiwa 8) amendments, there is also a separate "Ordinance No. 1," and the Q&A (`260306qa.pdf`) by the National Police Agency (JAFIC) provides explanations based on Ordinance No. 1. What e-Gov indicates as the amending order for the 2027-04-01 revision is Ordinance No. 5 (promulgated June 26, 2026). The relationship between the two (whether a series of amendments or overlapping partial amendments) needs verification in the main text of the Ordinance for Enforcement and the side-by-side comparison of old and new provisions. **Provisions prior to enforcement may be further amended.**
 
 ### Article 6, Paragraph 1, Item 1 (From April 1, 2027 Onward)
 
@@ -114,9 +114,9 @@ The method designations are **14 sub-items from (i) (イ) to (ka) (カ)** (final
 
 ---
 
-## 3. Enforcement Rules of the Mobile Phone Fraud Prevention Act (Current / In Force)
+## 3. Ordinance for Enforcement of the Mobile Phone Fraud Prevention Act (Current / In Force)
 
-Official Title: Enforcement Rules of the Act on Identification, etc. by Mobile Voice Communications Carriers of Their Subscribers, etc. and for Prevention of Improper Use of Mobile Voice Communications Services
+Official Title: Ordinance for Enforcement of the Act on Identification, etc. by Mobile Voice Communications Carriers of Their Subscribers, etc. and for Prevention of Improper Use of Mobile Voice Communications Services
 
 - LawId: `417M60000008167`
 - Retrieved Revision: `417M60000008167_20260806_508M60000008099`
@@ -165,14 +165,14 @@ The current method designations are **10 sub-items from (i) (イ) to (nu) (ヌ)*
 
 ---
 
-## 5. Enforcement Rules of the Secondhand Articles Dealer Act (Current / In Force)
+## 5. Ordinance for Enforcement of the Secondhand Articles Dealer Act (Current / In Force)
 
 - LawId: `407M50400000010` (1995 [Heisei 7] National Public Safety Commission Rules No. 10)
 - Retrieved Revision: `407M50400000010_20260812_508M60400000017` (reflects amendments in force up to August 12, 2026 [Reiwa 8] = 2026 [Reiwa 8] National Public Safety Commission Rules No. 17)
 - e-Gov: <https://laws.e-gov.go.jp/law/407M50400000010>
 - Retrieval Date: 2026-10-05 (e-Gov Law Search API v2 `law_data/407M50400000010`)
 - **Presence of amendments not yet in force (e-Gov as of 2026-10-05)**: All 39 revisions returned by `law_revisions/407M50400000010` are already in force (1 `CurrentEnforced`, 38 `PreviousEnforced`), and there are no revisions not yet in force (`UnEnforced`). `law_data/407M50400000010?asof=2027-04-01` also returned the same current revision.
-  → Any amendment to the Enforcement Rules of the Secondhand Articles Dealer Act corresponding to the amendment of the Enforcement Rules of the Act on Prevention of Transfer of Criminal Proceeds effective April 1, 2027 **is not registered on e-Gov as of 2026-10-05** (whether there will be future amendments is unverified).
+  → Any amendment to the Ordinance for Enforcement of the Secondhand Articles Dealer Act corresponding to the amendment of the Ordinance for Enforcement of the Act on Prevention of Transfer of Criminal Proceeds effective April 1, 2027 **is not registered on e-Gov as of 2026-10-05** (whether there will be future amendments is unverified).
 - The main text of Article 15 is identical to the immediately preceding 7 revisions (`…_20260710_508M60400000014`, `…_20260601_508M60400000013`, `…_20260501_508M60400000007`, `…_20251001_507M60400000017`, `…_20251001_507M60400000014`, `…_20250628_507M60400000011`, `…_20250501_507M60400000005`) (compared via API on 2026-10-05).
 - Related: Secondhand Articles Dealer Act (Principal Act) LawId `324AC0000000108`, reference revision of the Principal Act `324AC0000000108_20250601_504AC0000000068` (`CurrentEnforced` on e-Gov, no revisions not yet in force; retrieved 2026-10-05). <https://laws.e-gov.go.jp/law/324AC0000000108>
 
@@ -215,7 +215,7 @@ Item numbers are in Kanji numerals (Paragraph 3 has **13 items from Item 1 (一)
 >
 > **Item 11 (十一)** Receiving provision from the counterparty of a signing certificate issued by the Japan Agency for Local Authority Information Systems (J-LIS) pursuant to the provisions of Article 3, Paragraph 6 or Article 16-2, Paragraph 6 of the Act on Certification Business of the Japan Agency for Local Authority Information Systems Regarding Electronic Signatures, etc. (Act No. 153 of 2002; hereinafter referred to as the "Public Personal Authentication Act" in this Item and the following Item) as well as a record by electromagnetic means of the address, name, occupation, and age of said counterparty on which an electronic signature prescribed in Article 2, Paragraph 1 of the Public Personal Authentication Act has been performed (limited to cases where said secondhand articles dealer is a signature verifier prescribed in Article 17, Paragraph 4 of the Public Personal Authentication Act).
 >
-> **Item 12 (十二)** Receiving provision from the counterparty of an electronic certificate issued by a person accredited by the Prime Minister and the Minister for Internal Affairs and Communications as listed in Article 17, Paragraph 1, Item 5 of the Public Personal Authentication Act who is a signature verifier prescribed in Paragraph 4 of the same Article, and used for a specified certification business (meaning a specified certification business prescribed in Article 2, Paragraph 3 of the Act on Electronic Signatures and Certification Business (Act No. 102 of 2000; hereinafter referred to as the "Electronic Signature Act" in this Item)) performed by said accredited person (limited to one issued after verification of the authenticity of the user (meaning a user prescribed in Article 2, Paragraph 2 of the Electronic Signature Act) pertaining to said counterparty is performed by a method prescribed in the items of Article 5, Paragraph 1 of the Enforcement Rules of the Act on Electronic Signatures and Certification Business (2001 Ordinance of the Ministry of Internal Affairs and Communications, Ministry of Justice, and Ministry of Economy, Trade and Industry No. 2)), as well as a record by electromagnetic means of the address, name, occupation, and age of said counterparty on which an electronic signature prescribed in Article 2, Paragraph 1 of the Electronic Signature Act has been performed.
+> **Item 12 (十二)** Receiving provision from the counterparty of an electronic certificate issued by a person accredited by the Prime Minister and the Minister for Internal Affairs and Communications as listed in Article 17, Paragraph 1, Item 5 of the Public Personal Authentication Act who is a signature verifier prescribed in Paragraph 4 of the same Article, and used for a specified certification business (meaning a specified certification business prescribed in Article 2, Paragraph 3 of the Act on Electronic Signatures and Certification Business (Act No. 102 of 2000; hereinafter referred to as the "Electronic Signature Act" in this Item)) performed by said accredited person (limited to one issued after verification of the authenticity of the user (meaning a user prescribed in Article 2, Paragraph 2 of the Electronic Signature Act) pertaining to said counterparty is performed by a method prescribed in the items of Article 5, Paragraph 1 of the Ordinance for Enforcement of the Act on Electronic Signatures and Certification Business (2001 Ordinance of the Ministry of Internal Affairs and Communications, Ministry of Justice, and Ministry of Economy, Trade and Industry No. 2)), as well as a record by electromagnetic means of the address, name, occupation, and age of said counterparty on which an electronic signature prescribed in Article 2, Paragraph 1 of the Electronic Signature Act has been performed.
 >
 > **Item 13 (十三)** Assigning an identification code (meaning an identification code prescribed in Article 2, Paragraph 3 of the Act on Prohibition of Unauthorized Computer Access (Act No. 128 of 1999)) to a person for whom measures listed in Article 15, Paragraph 1, Items 1 to 3 of the Act or the preceding items have been taken, and ascertaining that the measures listed in these provisions have already been taken for the counterparty by receiving transmission thereof or by another method capable of identifying the person for whom the measures listed in these provisions were taken and making it difficult for a third party to impersonate that person.
 
@@ -239,10 +239,10 @@ Item numbers are in Kanji numerals (Paragraph 3 has **13 items from Item 1 (一)
 >
 > **Item 7 (七)** Books
 
-→ Item 11 (十一) (JPKI) of Article 15, Paragraph 3 of the Enforcement Rules of the Secondhand Articles Dealer Act, like Article 6, Paragraph 1, Item 1 (ka) (カ) (new (nu) (ヌ) in the 2027 version) of the Enforcement Rules of the Act on Prevention of Transfer of Criminal Proceeds, is **"limited to cases where said secondhand articles dealer is a signature verifier prescribed in Article 17, Paragraph 4 of the Public Personal Authentication Act."**
+→ Item 11 (十一) (JPKI) of Article 15, Paragraph 3 of the Ordinance for Enforcement of the Secondhand Articles Dealer Act, like Article 6, Paragraph 1, Item 1 (ka) (カ) (new (nu) (ヌ) in the 2027 version) of the Ordinance for Enforcement of the Act on Prevention of Transfer of Criminal Proceeds, is **"limited to cases where said secondhand articles dealer is a signature verifier prescribed in Article 17, Paragraph 4 of the Public Personal Authentication Act."**
 The target signing certificate is one based on Article 3, Paragraph 6 (signing certificate for Individual Number Card) **or** Article 16-2, Paragraph 6 (signing certificate for mobile terminal equipment) of the Public Personal Authentication Act (article headings of the same Act confirmed via `law_data/414AC0000000153` on 2026-10-05). The target of the electronic signature is "a record by electromagnetic means of the **address, name, occupation, and age** of said counterparty," which differs from "information regarding specific transactions, etc." under the Act on Prevention of Transfer of Criminal Proceeds.
 
-→ The terms "card-substitute electromagnetic record (カード代替電磁的記録)" and "specific electromagnetic record (特定電磁的記録)" do not appear anywhere in the full text of the Enforcement Rules (revision retrieved on 2026-10-05). A method of receiving transmission of a specific electromagnetic record of a My Number Card installed on a smartphone — corresponding to current (ru) (ル) (new (to) (ト) in the 2027 version) of the Act on Prevention of Transfer of Criminal Proceeds — **does not exist** in Article 15, Paragraph 3.
+→ The terms "card-substitute electromagnetic record (カード代替電磁的記録)" and "specific electromagnetic record (特定電磁的記録)" do not appear anywhere in the full text of the Ordinance for Enforcement (revision retrieved on 2026-10-05). A method of receiving transmission of a specific electromagnetic record of a My Number Card installed on a smartphone — corresponding to current (ru) (ル) (new (to) (ト) in the 2027 version) of the Act on Prevention of Transfer of Criminal Proceeds — **does not exist** in Article 15, Paragraph 3.
 
 ### Reference: Related Provisions of the Secondhand Articles Dealer Act (Principal Act) (Revision `324AC0000000108_20250601_504AC0000000068`)
 
@@ -278,7 +278,7 @@ The target signing certificate is one based on Article 3, Paragraph 6 (signing c
 
 > A secondhand articles dealer or secondhand articles market operator must keep the books, etc. under the preceding two Articles at their business office or secondhand articles market for three years from the day of the final entry, or preserve the record by electromagnetic means under the preceding two Articles for three years from the day of making said record so that it can be immediately displayed in writing at their business office or secondhand articles market.
 
-→ The recording obligation under the Secondhand Articles Dealer Act is not a "confirmation record" under the Act on Prevention of Transfer of Criminal Proceeds (Article 6 of the Act on Prevention of Transfer of Criminal Proceeds), but an entry in **books, etc.** (Article 16 of the Principal Act: the counterparty's address, name, occupation, and age, and the category and method of measures taken) and preservation for **3 years** from the final entry date (or recording date for electromagnetic records) (Article 18, Paragraph 1 of the Principal Act). Details of the format and entry method for books, etc. under the Enforcement Rules are unverified in this retrieval.
+→ The recording obligation under the Secondhand Articles Dealer Act is not a "confirmation record" under the Act on Prevention of Transfer of Criminal Proceeds (Article 6 of the Act on Prevention of Transfer of Criminal Proceeds), but an entry in **books, etc.** (Article 16 of the Principal Act: the counterparty's address, name, occupation, and age, and the category and method of measures taken) and preservation for **3 years** from the final entry date (or recording date for electromagnetic records) (Article 18, Paragraph 1 of the Principal Act). Details of the format and entry method for books, etc. under the Ordinance for Enforcement are unverified in this retrieval.
 
 ---
 
@@ -286,6 +286,6 @@ The target signing certificate is one based on Article 3, Paragraph 6 (signing c
 
 - **Article-by-article collation of branch numbers and requirements** of each sub-item of Article 6, Paragraph 1, Item 1 of the 2027 version (remains a summary of e-Gov API excerpts). However, new (nu) (ヌ) = JPKI and the target person limitation of new (wa) (ワ) and new (ka) (カ) were confirmed verbatim on 2026-10-05 (§2).
 - Relationship between "Ordinance No. 1" and "Ordinance No. 5" of the 2026 (Reiwa 8) amendments (JAFIC is based on Ordinance No. 1; the 2027-04-01 revision on e-Gov is Ordinance No. 5).
-- **Article-by-article text of the Supplementary Provisions (effective date and transitional measures)** of the Enforcement Rules of the Mobile Phone Fraud Prevention Act.
-- Each item of Article 15, Paragraph 3 of the Enforcement Rules of the Secondhand Articles Dealer Act was retrieved verbatim in §5 (2026-10-05). However, any amendment to the Enforcement Rules of the Secondhand Articles Dealer Act linked to the April 2027 amendment of the Act on Prevention of Transfer of Criminal Proceeds is not registered on e-Gov (as of 2026-10-05), and whether there will be future amendments is unverified. Details of the format and entry method (on the Enforcement Rules side) for books, etc. (Article 16 of the Principal Act) are also unverified.
-- Identity verification methods at the time of Individual Number (My Number) acquisition under the Enforcement Rules of the Number Use Act (outside the scope of this retrieval).
+- **Article-by-article text of the Supplementary Provisions (effective date and transitional measures)** of the Ordinance for Enforcement of the Mobile Phone Fraud Prevention Act.
+- Each item of Article 15, Paragraph 3 of the Ordinance for Enforcement of the Secondhand Articles Dealer Act was retrieved verbatim in §5 (2026-10-05). However, any amendment to the Ordinance for Enforcement of the Secondhand Articles Dealer Act linked to the April 2027 amendment of the Act on Prevention of Transfer of Criminal Proceeds is not registered on e-Gov (as of 2026-10-05), and whether there will be future amendments is unverified. Details of the format and entry method (on the Ordinance for Enforcement side) for books, etc. (Article 16 of the Principal Act) are also unverified.
+- Identity verification methods at the time of Individual Number (My Number) acquisition under the Ordinance for Enforcement of the Number Use Act (outside the scope of this retrieval).

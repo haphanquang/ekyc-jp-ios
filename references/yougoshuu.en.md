@@ -1,6 +1,6 @@
 # Glossary (yougoshuu)
 
-Last Verified: 2026-09-08
+Last Verified: 2026-10-05
 
 > This file is the shared terminology reference for all skills in the `ekyc-jp` plugin.
 > Once all 19 skills were complete, it was supplemented with the terms that actually appear in each skill.
@@ -27,6 +27,7 @@ Last Verified: 2026-09-08
 | OCSP (OCSP) | オーシーエスピー | A protocol for querying the validity of an individual certificate in real time. | jlis-yukousei-kakunin |
 | Act on Prevention of Transfer of Criminal Proceeds (犯収法) | はんしゅうほう | The Act on Prevention of Transfer of Criminal Proceeds. | honnin-kakunin-houhou |
 | Method "ka" (カ方式) | カほうしき | An identity verification method using the JPKI signing certificate (currently Article 6, Paragraph 1, Item 1 (ka) of the Ordinance for Enforcement of the Act on Prevention of Transfer of Criminal Proceeds; from April 2027, new (nu)). Limited to cases where the specified business operator is the signature verifier (proviso). *Method designations and timing are based on `method-map.md` / `hourei-eKYC.md` as the authoritative sources. | honnin-kakunin-houhou |
+| Method "ho" (ホ方式) | ホほうしき | An identity verification method by transmitting images of photo ID + capturing the person's appearance (selfie). Scheduled to be abolished on 2027-04-01 under the Act on Prevention of Transfer of Criminal Proceeds due to spoofing risks (based on the 2024 Ministerial Decision). *Method designations and timing are based on `method-map.md` as the authoritative source. | honnin-kakunin-houhou |
 | Method "he" (ヘ方式) | ヘほうしき | IC reading of an identity document + capturing the person's appearance. *Method designations and timing are based on `method-map.md` as the authoritative source. | honnin-kakunin-houhou, kenmen-nyuryoku-hojo-ap |
 | Method "ru" (ル方式) | ルほうしき | A method using card-substitute electromagnetic records (Apple Wallet, etc.). *Method designations and timing are based on `method-map.md` as the authoritative source. | honnin-kakunin-houhou |
 | Non-forwardable mail (転送不要郵便) | てんそうふようゆうびん | Mail that is not permitted to be forwarded. Used to confirm that an address actually exists. | honnin-kakunin-houhou |

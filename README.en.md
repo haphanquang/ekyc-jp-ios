@@ -155,8 +155,8 @@ The router states these five rules:
 
 1. **Never query J-LIS directly.** Certificate validity is checked only through a platform operator.
 2. **Legal names and dates have one source.** Only `honnin-kakunin-houhou` and
-   [`references/method-map.md`](references/method-map.md) state method names and effective dates.
-3. **Refresh before answering time-sensitive questions.** If `references/sources.md` is about three
+   [`references/method-map.en.md`](references/method-map.en.md) state method names and effective dates.
+3. **Refresh before answering time-sensitive questions.** If `references/sources.en.md` is about three
    months old or more, or the question is about 2026–2027 timing, run `sources-refresh` first.
 4. **The PIN goes only to the card's VERIFY command.** It is never sent to a server, logged or stored.
 5. **Chain-verify a certificate to the JPKI CA before you trust it.** A signature that verifies
@@ -182,17 +182,17 @@ The plugin recommends:
 | Phonetic reading of the name added to the basic attributes | 2026-05-26 |
 | Anti-money-laundering law: photo-of-document methods removed, method letters renumbered | 2027-04-01 |
 
-Details: `honnin-kakunin-houhou`, [`method-map.md`](references/method-map.md), [`hourei-eKYC.md`](references/hourei-eKYC.md).
+Details: `honnin-kakunin-houhou`, [`method-map.en.md`](references/method-map.en.md), [`hourei-eKYC.en.md`](references/hourei-eKYC.en.md).
 
 ## Reference files
 
 | Path | Contents |
 |---|---|
-| [`references/method-map.md`](references/method-map.md) | Verification methods, current and 2027 |
-| [`references/hourei-eKYC.md`](references/hourei-eKYC.md) | Law extracts from e-Gov, with revision IDs |
-| [`references/apdu-cheatsheet.md`](references/apdu-cheatsheet.md) | AIDs, file IDs, APDUs, status words, each with a confidence marker |
-| [`references/yougoshuu.md`](references/yougoshuu.md) | Glossary (about 90 terms) |
-| [`references/sources.md`](references/sources.md) | Source list: URL, fetch date, checksum, citing skills |
+| [`references/method-map.en.md`](references/method-map.en.md) | Verification methods, current and 2027 |
+| [`references/hourei-eKYC.en.md`](references/hourei-eKYC.en.md) | Law extracts from e-Gov, with revision IDs |
+| [`references/apdu-cheatsheet.en.md`](references/apdu-cheatsheet.en.md) | AIDs, file IDs, APDUs, status words, each with a confidence marker |
+| [`references/yougoshuu.en.md`](references/yougoshuu.en.md) | Glossary (about 90 terms) |
+| [`references/sources.en.md`](references/sources.en.md) | Source list: URL, fetch date, checksum, citing skills |
 | `references/refresh.sh` | Re-fetch script used by `sources-refresh`; downloads the 33 source PDFs into `references/pdfs/` |
 | [`evals/`](evals/README.md) | 115 triggering cases: 4 should-fire and 2 should-not-fire per skill |
 
@@ -223,7 +223,7 @@ Built from public material by the Digital Agency, MIC, J-LIS, the National Polic
 the Financial Services Agency, the e-Gov law portal and vendor documentation. Each skill lists
 its own sources. The 33 source PDFs are third-party documents whose copyright stays with their
 publishers, so they are not included in this repository. Their URLs and checksums are in
-[`references/sources.md`](references/sources.md); run `bash references/refresh.sh` to download
+[`references/sources.en.md`](references/sources.en.md) (and `references/sources.md`); run `bash references/refresh.sh` to download
 them into `references/pdfs/`.
 
 ## License

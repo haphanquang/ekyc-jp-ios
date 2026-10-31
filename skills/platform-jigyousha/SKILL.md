@@ -60,20 +60,29 @@ jpki-introduction §7.2.5「プラットフォーム事業者の提供サービ�
 
 | 事業者 | 担当部署（§7.2.5 記載） | サービス紹介資料（`references/pdfs/`） |
 |---|---|---|
-| 株式会社Liquid | カスタマーサクセス部 eKYC担当 | `33_guide-liquid-ekyc.pdf`（LIQUID eKYC） |
-| 株式会社TRUSTDOCK | （記載なし） | `29_guide-trustdock-jpki.pdf`（TRUSTDOCK公的個人認証） |
-| ポケットサイン株式会社 | （記載なし） | `23_guide-pocketsign-platform.pdf`（POCKETSIGN Platform） |
-| GMOグローバルサイン株式会社 | GMOオンライン本人確認サービス問い合わせ窓口 | `15_guide-identity-verification.pdf`（GMOオンライン本人確認サービス） |
-| 株式会社ダブルスタンダード | データマネジメントグループ／データマネジメント部 | `21_guide-public-personal-authentication.pdf`（公的個人認証を利用したeKYCソリューションのご案内） |
-| 日本電気株式会社（NEC） | 社会公共インテグレーション統括部 新事業創出グループ | `16_guide-my-number-card-certification-service.pdf`（マイナンバーカード認証サービス） |
-| サイバートラスト株式会社 | トラストサービスマネジメント部 | `18_guide-itrust-identity-verification.pdf`（iTrust 本人確認サービス） |
+| 一般社団法人ICTまちづくり共通プラットフォーム推進機構 | 技術部門 | `13_guide-mytap.pdf`（myTAP） |
 | 株式会社NTTデータ | 社会基盤ソリューション事業本部 デジタルコミュニティ事業部 | `14_guide-bizpico.pdf`（BizPICO） |
+| GMOグローバルサイン株式会社 | GMOオンライン本人確認サービス問い合わせ窓口 | `15_guide-identity-verification.pdf`（GMOオンライン本人確認サービス） |
+| 日本電気株式会社（NEC） | 社会公共インテグレーション統括部 新事業創出グループ | `16_guide-my-number-card-certification-service.pdf`（マイナンバーカード認証サービス） |
 | 株式会社サイバーリンクス | 公共クラウド事業部 公共営業部 企画営業課 | `17_guide-maina-sign.pdf`（マイナサイン） |
-| 株式会社ACSiON | 営業部 | `27_guide-acsion-jpki.pdf`（ACSiON公的個人認証サービス） |
+| サイバートラスト株式会社 | トラストサービスマネジメント部 | `18_guide-itrust-identity-verification.pdf`（iTrust 本人確認サービス） |
+| 株式会社Workthy | 金融事業チーム | `19_guide-hometown-tax-one-stop.pdf`（ふるさと納税「ワンストップ特例申請」のオンライン化） |
+| TISI株式会社 | 金融第1事業本部 金融ビジネス推進・営業統括部 金融ビジネス企画営業部 マイナンバーカード本人確認サービス担当窓口 | `20_guide-tisi-my-number-card-identity-verification.pdf`（マイナンバーカード本人確認サービス） |
+| 株式会社ダブルスタンダード | データマネジメントグループ／データマネジメント部 | `21_guide-public-personal-authentication.pdf`（公的個人認証を利用したeKYCソリューションのご案内） |
+| 株式会社フライトソリューションズ | プロダクト＆フィナンシャルサービス事業部 | `22_guide-myverifist-cashless.pdf`（myVerifist&キャッシュレスサービス） |
+| ポケットサイン株式会社 | （記載なし） | `23_guide-pocketsign-platform.pdf`（POCKETSIGN Platform） |
+| 弁護士ドットコム株式会社 | クラウドサイン事業本部 | `24_guide-cloudsign.pdf`（クラウドサイン） |
+| 株式会社ミラボ | 営業部 | `25_guide-mila-e-certification.pdf`（mila-e認証） |
 | NTTドコモビジネス株式会社 | ビジネスソリューション本部 ソーシャルイノベーション部 | `26_guide-smartlita.pdf`（SmartLiTA） |
+| 株式会社ACSiON | 営業部 | `27_guide-acsion-jpki.pdf`（ACSiON公的個人認証サービス） |
+| クラウドシップ株式会社 | （記載なし） | `28_guide-crowdshiptrust.pdf`（CrowdShipTrust） |
+| 株式会社TRUSTDOCK | （記載なし） | `29_guide-trustdock-jpki.pdf`（TRUSTDOCK公的個人認証） |
+| マイナウォレット株式会社 | 開発部 | `30_guide-maina-wallet.pdf`（マイナウォレット） |
+| 株式会社JMDC | インシュアランス本部 | `31_insurance-division-guide.pdf`（JMDCのデジタル認証アプリを活用した公的個人認証サービス） |
 | 株式会社プリマジェスト | 新規事業推進部 | `32_guide-pridest-trust-services.pdf`（Primagest Trust Services） |
+| 株式会社Liquid | カスタマーサクセス部 eKYC担当 | `33_guide-liquid-ekyc.pdf`（LIQUID eKYC） |
 
-- §7.2.5 に掲載されているその他の事業者（一部）: 一般社団法人ICTまちづくり共通プラットフォーム推進機構（myTAP）、TOPPAN株式会社、株式会社野村総合研究所、株式会社Workthy、TISI株式会社、株式会社フライトソリューションズ（myVerifist）、弁護士ドットコム株式会社（クラウドサイン）、株式会社ミラボ（mila-e認証）、マーソ株式会社、クラウドシップ株式会社（CrowdShipTrust）、マイナウォレット株式会社、株式会社JMDC、アイフル株式会社。
+- §7.2.5 に掲載されているその他の事業者（資料掲載なし・問合せ先のみの4社）: TOPPAN株式会社（ハイブリッドBPO統括本部）、株式会社野村総合研究所（ソーシャルDX事業部）、マーソ株式会社（IT本部システム開発部）、アイフル株式会社（デジタル推進1部）。
 - 注意: PF事業者の中には、SP事業者向けに有効性確認機能をプラットフォームとして提供していない事業者もいる（§7.2.5 末尾）。委託先候補が「SP事業者向け提供あり」かを最初に確認すること。
 
 ## 事業者の選定基準
@@ -138,7 +147,7 @@ PF事業者と契約し、その SDK / API 経由で有効性確認を委託す�
 - `references/pdfs/04_jpki-platform-operator-system.pdf`（プラットフォーム事業者制度、主務大臣認定・機構への届出の委託、割り勘効果）
 - `references/pdfs/05_private-sector-guidelines-v1.8.pdf`（公的個人認証サービス利用のための民間事業者向けガイドライン 第1.8版 40〜42ページ「ウ 認定手続」）
 - `references/pdfs/15_guide-identity-verification.pdf`（GMO オンライン本人確認サービス、API 利用、PF事業者の認定、口座開設ユースケース）
-- `references/pdfs/21_guide-public-personal-authentication.pdf`（ダブルスタンダード「公的個人認証を利用したeKYCソリューションのご案内」）および上表掲載の各社サービス紹介資料（`14`, `16`, `17`, `18`, `23`, `26`, `27`, `32`）
+- `references/pdfs/21_guide-public-personal-authentication.pdf`（ダブルスタンダード「公的個人認証を利用したeKYCソリューションのご案内」）および上表掲載の各社サービス紹介資料（`13`〜`33`）
 - `references/pdfs/29_guide-trustdock-jpki.pdf`（TRUSTDOCK、SDK / 提供アプリの2形態、SP事業者としての構成図、複数の本人確認方法への対応）
 - `references/pdfs/33_guide-liquid-ekyc.pdf`（LIQUID eKYC。p18〜19 不正検知・表記揺れ、p21「導入までの流れ」＝ NDA・AID開示申請・公的個人認証サービス利用申込・J-LIS 審査約1〜2か月・スケジュール上限）
 - `references/method-map.md`（ヘ方式・カ方式の定義。法令上の名称・時期はこのファイルと `honnin-kakunin-houhou` が唯一の定義箇所）
@@ -148,7 +157,7 @@ PF事業者と契約し、その SDK / API 経由で有効性確認を委託す�
 ## 未確認事項
 
 - CRL の更新時刻の具体（「毎日◯時」等）: 一次資料は「1日単位で更新（1日1回等）」と記すのみで、具体的な時刻は未確認。
-- 各 PF事業者の対応状況の横断比較: ヘ方式・カ方式の IC読取対応可否、CRL / OCSP のいずれを選べるか、最新4情報提供サービス対応可否、SDK / API の提供形態、料金体系、NDA 雛形の扱い。§7.2.5 および読んだガイド資料に個社横断の一覧がないため、いずれも「各社に要確認」。
+- 各 PF事業者の対応状況の横断比較: ヘ方式・カ方式の IC読取対応可否、CRL / OCSP のいずれを選べるか、SDK / API の提供形態、料金体系、NDA 雛形の扱いはいずれも「各社に要確認」（※最新4情報提供サービス対応可否については、PDF 10『最新の利用者情報（4情報）提供サービスに対応しているプラットフォーム事業者一覧』にて野村総研・TOPPAN・NEC・NTTデータ・クラウドシップ・サイバートラスト・Workthy・ポケットサイン・ICTまちづくり共通プラットフォーム推進機構・プリマジェスト・ダブルスタンダードの11社が横断確認可能）。
 - SP事業者の総リードタイム: 「検証環境提供月から最大6か月以内（IC読取方式は+2か月で最大8か月以内）」「J-LIS 審査約1〜2か月」はいずれも LIQUID（PDF 33 p21）の記載。他の PF事業者では手続き名・様式・所要期間が異なるため、そのまま一般化できない。
 - 「AID開示にかかる申請書類」「公的個人認証サービス利用申込にかかる申請書類」の正確な様式・提出先、および PF事業者が申請をどこまで代理・代行するか（SP事業者自身が提出するのか、PF事業者経由か）: LIQUID 資料は「提出」とのみ記載。要確認。
 - デジタル認証アプリ／マイナンバーカード対面確認アプリ／マイナポータル連携等と、本スキルが前提とする「アプリによる CoreNFC 直接読取＋PF事業者委託」構成との関係: 本スキルの対象外。設計に影響する場合は一次資料で確認すること。
