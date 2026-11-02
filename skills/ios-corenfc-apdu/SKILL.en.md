@@ -222,7 +222,7 @@ extension CardReader {
 - **Unconditionally using the first tag in `didDetect`** — Select the ISO 7816 tag with `case .iso7816`, and call `invalidate(errorMessage:)` if it doesn't match.
 - **Not retrying when the card moves away / Retrying too much** — A throw from `sendCommand` requires redoing the session. Do not automatically retry operations involving PIN verification (`pin-lock-handling`).
 
-## Sources
+## References
 
 - <https://developer.apple.com/documentation/corenfc/nfctagreadersession> (`init(pollingOption:delegate:queue:)`, `PollingOption` (`.iso14443` / `.iso15693` / `.iso18092`), `connect(to:) async throws`, `invalidate()` / `invalidate(errorMessage:)`, `restartPolling()`, `readingAvailable`, required entitlements and `NFCReaderUsageDescription`. Retrieved on 2026-09-08)
 - <https://developer.apple.com/documentation/corenfc/nfciso7816tag> (Each overload of `sendCommand(apdu:)` and return values `(Data, UInt8, UInt8)` / `NFCISO7816ResponseAPDU` (`payload` / `statusWord1` / `statusWord2`), properties like `initialSelectedAID`, `NFCTag`'s `case .iso7816(any NFCISO7816Tag)`. Retrieved on 2026-09-08)

@@ -24,11 +24,12 @@ The Public Personal Authentication Service (JPKI) is a mechanism for officially 
 
 There are two types of electronic certificates.
 
-| Electronic Certificate | Purpose | Four Basic Attributes (Name, Address, Date of Birth, Gender) | Main Revocation Conditions |
-|---|---|---|---|
-| Signing certificate | Creation and transmission of electronic documents such as applications and contracts. Can verify that it is an "authentic document created and transmitted by the person themselves" | **Retains** | Expiration of validity period, change in four basic attributes (moving, marriage, etc.), death or moving overseas of the person, etc. |
-| User-authentication certificate | Logging into websites, etc. Proves only that "the person is the user themselves". Identifies the logged-in person by the issue number | Does not retain | Expiration of validity period, death or moving overseas of the person, etc. (Not revoked by changes in the four basic attributes) |
+| Electronic Certificate | Purpose | Target Age | Four Basic Attributes (Name, Address, Date of Birth, Gender) | Main Revocation Conditions |
+|---|---|---|---|---|
+| Signing certificate | Creation and transmission of electronic documents such as applications and contracts. Can verify that it is an "authentic document created and transmitted by the person themselves" | In principle age 15+ (*) | **Retains** | Expiration of validity period, change in four basic attributes (moving, marriage, etc.), death or moving overseas of the person, etc. |
+| User-authentication certificate | Logging into websites, etc. Proves only that "the person is the user themselves". Identifies the logged-in person by the issue number | No age limit (from age 0) | Does not retain | Expiration of validity period, death or moving overseas of the person, etc. (Not revoked by changes in the four basic attributes) |
 
+* In principle, under Article 3, Paragraph 2 of the Public Personal Authentication Act, signing certificates are not issued to persons under 15 years of age or adult wards.
 Electronic signatures using signing certificates can be subject to Article 3 (Presumption of Authentic Execution) of the Electronic Signatures Act.
 
 ## Actors and 2 Introduction Methods
@@ -59,8 +60,8 @@ In the case of private businesses, the part "Inquire/respond on validity to J-LI
 2. Sends the encrypted document, public key, and signing certificate along with the document body to the verifier.
 3. The verifier decrypts the encrypted document using the sent public key.
 4. Matches the decryption result with the document body to detect any alterations.
-5. The verifier inquires to J-LIS (Certificate Authority) about the validity of the electronic certificate.
-6. J-LIS responds with the validity.
+5. The verifier inquires to J-LIS (Certificate Authority) via a PF operator about the validity of the electronic certificate.
+6. J-LIS responds with the validity (via the PF operator).
 7. If valid, authentication is successful (application, etc., is established).
 
 ### User-Authentication Certificate (Example: Login to Mynaportal)
@@ -70,7 +71,7 @@ In the case of private businesses, the part "Inquire/respond on validity to J-LI
 3. Sends the ciphertext, public key, and user-authentication certificate along with the random number body to the verifier.
 4. The verifier decrypts the ciphertext using the sent public key.
 5. Matches the decryption result with the random number body to detect alterations or substitutions.
-6. The verifier inquires to J-LIS about the validity of the electronic certificate and receives a response.
+6. The verifier inquires to J-LIS via a PF operator about the validity of the electronic certificate and receives a response.
 7. If valid, authentication is successful. The verifier identifies the logged-in person by the issue number of the electronic certificate.
 
 ## Fees
@@ -99,7 +100,7 @@ The electronic certificate verification fee to J-LIS is a pay-as-you-go system b
 - [ ] Estimate the schedule. Even for SP operators, procedures via the PF operator for AID disclosure application, usage application, and procedures on the J-LIS side take time (refer to `platform-jigyousha` for rough estimates. Do not assert them in this skill).
 - [ ] Design separating a "cryptographically correct electronic certificate" from a "currently valid electronic certificate". Refer to `signature-verification` for signature verification and `jlis-yukousei-kakunin` for certificate validity verification.
 
-## Sources
+## References
 
 PDFs under `references/pdfs/` are third-party works and are not shipped with the plugin. If a file is missing, run `bash references/refresh.sh` to download it (URLs and SHA256 are in `references/sources.md`).
 

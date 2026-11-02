@@ -55,7 +55,7 @@
 | 電子署名 | でんししょめい | 電磁的記録に対して行う、作成者本人性と非改ざん性を確認できる措置。署名用電子証明書と対応する秘密鍵で生成する。 | jpki-ap-shomei, signature-verification |
 | 表記揺れ | ひょうきゆれ | 同一の氏名・住所が複数の表記で現れる現象（旧字・新字、丁目・番地表記の差異等）。基本4情報の照合時に正規化が必要。 | kihon-4-jouhou-doui |
 | トラストアンカー | トラストアンカー | 証明書チェーンにおける信頼の基点。JPKIでは電子証明書の発行者である J-LIS が該当する。 | jpki-overview, signature-verification |
-| 有効性確認 | ゆうこうせいかくにん | 顧客から提供された電子証明書が失効していないことを J-LIS（CRL提供方式／OCSPレスポンダ方式）で確認すること。 | jlis-yukousei-kakunin, platform-jigyousha |
+| 有効性確認 | ゆうこうせいかくにん | 顧客から提供された電子証明書が失効していないことを、大臣認定PF事業者を経由して J-LIS（CRL提供方式／OCSPレスポンダ方式）に照会し確認すること。民間事業者は直接 J-LIS へ照会できない。 | jlis-yukousei-kakunin, platform-jigyousha |
 | 当人認証 | とうにんにんしょう | 認証を行っている者が、その電子証明書の正当な保持者本人であることの確認。主に利用者証明用電子証明書が担う。 | jpki-ap-riyousha, honnin-kakunin-houhou |
 | 身元確認 | みもとかくにん | 実在する人物であり、かつ申込者がその人物本人であることの確認。犯収法の取引時確認等で求められる。 | honnin-kakunin-houhou |
 | セルフィー | セルフィー | 本人の容貌をその場で撮影した画像。書類撮影方式では本人確認書類の顔写真と照合する。 | honnin-kakunin-houhou |
@@ -101,6 +101,10 @@
 | JPEG2000 | ジェイペグにせん | 券面事項確認APの顔写真データに用いられるとされる画像圧縮形式（1ソースのみ・要検証。apdu-cheatsheet.md 参照）。 | kenmen-jikou-kakunin-ap |
 | App Transport Security | アップトランスポートセキュリティ | iOS の HTTPS 通信を強制する仕組み（ATS）。eKYC のサーバー通信では例外を作らない。 | ios-security |
 | 顔認証 | かおにんしょう | 券面事項確認APの利用時や書類撮影方式で、容貌画像と登録顔写真を照合する処理。連続失敗でカードがロックする経路もある（pin-lock-handling 参照）。 | kenmen-jikou-kakunin-ap, honnin-kakunin-houhou |
+| Bleichenbacher攻撃 / BERserk | ブライヘンバッハーこうげき / バーサーク | RSA PKCS#1 v1.5 のパディング検証不備やタイミング差を突く署名偽造・解読攻撃。厳格な DER 解析と定数時間比較で防ぐ。 | signature-verification |
+| フェイルクローズ (Fail-Closed) | フェイルクローズ | 有効性確認でネットワーク障害、タイムアウト、CRL/OCSP期限切れ等の異常が発生した際、安全側に倒して必ず不合格（拒否）とする原則（Fail-Open の禁止）。 | jlis-yukousei-kakunin, ekyc-session-orchestration |
+| トラストストア分離 | トラストストアぶんり | 署名用電子証明書と利用者証明用電子証明書で異なるCA証明書ストアを用い、証明書の用途取り違え攻撃（Purpose Confusion）を防ぐ設計。 | signature-verification |
+| 暗号消去 (Crypto-shredding) | あんごうしょうきょ | 犯収法等の保存期間（7年）満了時に、KMS/HSMで管理するデータ暗号化鍵（DEK）を破棄することで、ストレージ・バックアップ上のデータを復元不能に消去する技術。 | doui-jouhou-kanri, signature-verification |
 
 ## 出典
 

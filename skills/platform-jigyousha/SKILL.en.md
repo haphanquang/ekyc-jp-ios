@@ -28,7 +28,7 @@ See `jlis-yukousei-kakunin` for implementation procedures of certificate validit
 
 - When delegating the entirety of the "system for reception and validity verification of electronic certificates" to a PF operator, the PF operator can handle the certification and notification to the agency on behalf of each private operator (PDF 04). This reduces the burden on each company (the so-called "split-the-bill effect").
 - **Apps envisioned by this plugin are usually SP operators**. They delegate validity verification via the SDK / API of a PF operator. Therefore, **in-house maintenance of signature verification equipment is not required**, and the practical handling of the certification examination is also handled by the PF operator. The lead time on the app side will mainly consist of the contract with the PF operator and the J-LIS examination in the case of the IC reading method (about 1 to 2 months, described later).
-- **The app or an uncertified in-house server must not inquire directly with J-LIS.** It must always go through a PF operator.
+- **The app or in-house server must not inquire directly with J-LIS (validity verification must always go through a minister-certified PF operator).** It must always go through a PF operator.
 
 ### Proviso when using the Act on Prevention of Transfer of Criminal Proceeds Ka-method (JPKI) for transaction verification
 
@@ -138,7 +138,7 @@ Contract with a PF operator and delegate validity verification via its SDK / API
 - "About 1 to 2 months J-LIS examination" is described in the PF operator's (LIQUID) document and is unique to the IC reading method. It is considered unnecessary if only general validity verification such as CRL / OCSP is used without IC reading.
 - The above figures are an example for LIQUID. Since procedure names, formats, and required periods differ for other PF operators, be sure to check for each candidate.
 
-## Sources
+## References
 
 PDFs under `references/pdfs/` are third-party works and are not shipped with the plugin. If a file is missing, run `bash references/refresh.sh` to download it (URLs and SHA256 are in `references/sources.md`).
 

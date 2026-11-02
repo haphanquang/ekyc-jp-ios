@@ -100,7 +100,7 @@ Method names, item designations, and application timings are not defined. See `h
 - **Do not perform facial image matching / identity determination on the device side.** Matching against the captured facial image is done on the server side. Do not inquire directly with J-LIS.
 - Do not determine the method names or enforcement timing of the Act on Prevention of Transfer of Criminal Proceeds in this skill (`honnin-kakunin-houhou` / `references/method-map.md`).
 
-## Sources
+## References
 
 PDFs under `references/pdfs/` are third-party works and are not shipped with the plugin. If a file is missing, run `bash references/refresh.sh` to download it (URLs and SHA256 are in `references/sources.md`).
 

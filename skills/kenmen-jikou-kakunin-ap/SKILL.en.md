@@ -105,7 +105,7 @@ extension CardReader {
 - **Do not perform facial matching or identity determination on the device side.** Matching with the selfie is on the server side. Do not query J-LIS directly.
 - Do not assert method names, designations, and enforcement dates under the Act on Prevention of Transfer of Criminal Proceeds in this skill (`honnin-kakunin-houhou` / `references/method-map.md`).
 
-## Sources
+## References
 
 PDFs under `references/pdfs/` are third-party works and are not shipped with the plugin. If a file is missing, run `bash references/refresh.sh` to download it (URLs and SHA256 are in `references/sources.md`).
 

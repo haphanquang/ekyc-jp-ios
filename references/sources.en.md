@@ -28,12 +28,13 @@ Article excerpts are in `hourei-eKYC.md`. The `refresh.sh` script of `sources-re
 | L1 | Ordinance for Enforcement of the Act on Prevention of Transfer of Criminal Proceeds (current) (犯罪収益移転防止法施行規則（現行）) | 420M60000F5A001 | 420M60000F5A001_20260806_508M60000F5A006 | https://laws.e-gov.go.jp/law/420M60000F5A001 | 2026-09-10 | honnin-kakunin-houhou |
 | L2 | Ordinance for Enforcement of the Act on Prevention of Transfer of Criminal Proceeds (version effective 2027-04-01, not yet in force) (犯罪収益移転防止法施行規則（2027-04-01 未施行版）) | 420M60000F5A001 | 420M60000F5A001_20270401_508M60000F5A005 | https://laws.e-gov.go.jp/law/420M60000F5A001?asof=2027-04-01 | 2026-09-10 | honnin-kakunin-houhou |
 | L3 | Ordinance for Enforcement of the Mobile Phone Fraud Prevention Act (current) (携帯電話不正利用防止法施行規則（現行）) | 417M60000008167 | 417M60000008167_20260806_508M60000008099 | https://laws.e-gov.go.jp/law/417M60000008167 | 2026-09-10 | honnin-kakunin-houhou |
+| L3b | Ordinance for Enforcement of the Mobile Phone Fraud Prevention Act (version effective 2027-04-01, not yet in force) (携帯電話不正利用防止法施行規則（2027-04-01 未施行版）) | 417M60000008167 | 417M60000008167_20270401_508M60000008094 | https://laws.e-gov.go.jp/law/417M60000008167?asof=2027-04-01 | 2026-11-02 | honnin-kakunin-houhou |
 | L4 | Act on Certification Services of the Japan Agency for Local Authority Information Systems Related to Electronic Signatures, etc. (Public Personal Authentication Act) (電子署名等に係る地方公共団体情報システム機構の認証業務に関する法律（公的個人認証法）) | 414AC0000000153 | 414AC0000000153_20260614_506AC0000000059 | https://laws.e-gov.go.jp/law/414AC0000000153 | 2026-09-10 | honnin-kakunin-houhou, platform-jigyousha, jpki-overview |
 | L5 | Act on Prevention of Transfer of Criminal Proceeds (the Act itself) (犯罪による収益の移転防止に関する法律（本法）) | 419AC0000000022 | ― | https://laws.e-gov.go.jp/law/419AC0000000022 | 2026-09-09 | honnin-kakunin-houhou |
 | L6 | Ordinance for Enforcement of the Secondhand Articles Dealer Act (current) (古物営業法施行規則（現行）) | 407M50400000010 | 407M50400000010_20260812_508M60400000017 | https://laws.e-gov.go.jp/law/407M50400000010 | 2026-10-05 | honnin-kakunin-houhou |
 | L7 | Secondhand Articles Dealer Act (the Act itself) (古物営業法（本法）) | 324AC0000000108 | 324AC0000000108_20250601_504AC0000000068 | https://laws.e-gov.go.jp/law/324AC0000000108 | 2026-10-05 | honnin-kakunin-houhou |
 
-L5 (the Act on Prevention of Transfer of Criminal Proceeds itself) has no verbatim extract or recorded revision in `hourei-eKYC.md` and is not cross-checked by `refresh.sh` (L1–L4, L6, and L7 are automatically cross-checked by `refresh.sh`).
+L5 (the Act on Prevention of Transfer of Criminal Proceeds itself) has no verbatim extract or recorded revision in `hourei-eKYC.md` and is not cross-checked by `refresh.sh` (L1–L3, L3b, L4, L6, and L7 are automatically cross-checked by `refresh.sh`).
 During `sources-refresh`, check `https://laws.e-gov.go.jp/api/2/law_revisions/419AC0000000022` if needed.
 
 ## PDF Documents

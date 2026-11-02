@@ -145,6 +145,38 @@ The current method designations are **10 sub-items from (i) (イ) to (nu) (ヌ)*
 
 ---
 
+## 3b. Ordinance for Enforcement of the Mobile Phone Fraud Prevention Act (Version Effective April 1, 2027 / Not Yet in Force)
+
+- LawId: `417M60000008167`
+- Retrieved Revision: `417M60000008167_20270401_508M60000008094` (Promulgated July 27, 2026; MIC Order No. 94)
+- Effective Date: 2027-04-01
+- e-Gov: <https://laws.e-gov.go.jp/law/417M60000008167?asof=2027-04-01>
+
+### Article 3, Paragraph 1, Item 1 (2027 Amendment to Identity Verification Methods for Natural Persons at Contract Conclusion)
+
+With enforcement on April 1, 2027, the method designations are reorganized into **12 items from (i) (イ) to (wo) (ヲ)**. Main changes:
+
+| Item (2027) | Current (2026) | Summary |
+|---|---|---|
+| (i) (イ) | (i) (イ) | Presentation of photo/IC-equipped identity document + IC chip reading (in-person) |
+| (ro) (ロ) | ― | Presentation of non-photo IC-equipped identity document + IC reading + non-forwardable mail |
+| (ha) (ハ) | ― | Presentation of photo identity document without IC chip + non-forwardable mail |
+| **(ni) (ニ)** | **(ha) (ハ)** | **Transmission of facial appearance image + transmission of photo/IC chip recorded information (IC reading + facial image)** |
+| (ho) (ホ) | ― | Transmission of non-photo IC document information + non-forwardable mail |
+| (he) (ヘ) | (ho) (ホ) | Delivery of non-photo/non-IC document + non-forwardable mail |
+| (to) (ト) | (he) (ヘ) | Restricted-delivery mail with specific matter communication, etc. |
+| **(chi) (チ)** | **(to) (ト)** | **Reception of electronic signature + electronic certificate (JPKI / public personal authentication, etc.)** |
+| **(ri) (リ)** | **(chi) (チ)** | **Card-alternative electromagnetic record = My Number Card on smartphone (specific electromagnetic record transmission + verification)** |
+| (nu) (ヌ) | ― | Presentation of documents for persons moving abroad + non-forwardable mail |
+| (ru) (ル) | (ri) (リ) | Delivery of documents for persons moving abroad + non-forwardable mail |
+| (wo) (ヲ) | (nu) (ヌ) | Delivery of document copy + non-forwardable mail |
+
+- Former (ha) (ハ) method (IC read + face) moves to **New (ni) (ニ) method**.
+- Former (to) (ト) method (Electronic signature / JPKI) moves to **New (chi) (チ) method**.
+- Former (chi) (チ) method (Smartphone My Number Card) moves to **New (ri) (リ) method**.
+
+---
+
 ## 4. Public Personal Authentication Act (Act on Certification Business of the Japan Agency for Local Authority Information Systems Regarding Electronic Signatures, etc.)
 
 - LawId: `414AC0000000153`

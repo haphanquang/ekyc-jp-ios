@@ -99,7 +99,7 @@ As **evidence of validity verification** for record preservation under the Act o
 
 The CA generation and issuance number (serial) pair `(issuer DER, issuance number)` may be saved to trace "which certificate was verified" later, but consider it separately from storing the certificate body.
 
-## Sources
+## References
 
 PDFs under `references/pdfs/` are third-party works and are not shipped with the plugin. If a file is missing, run `bash references/refresh.sh` to download it (URLs and SHA256 are in `references/sources.md`).
 

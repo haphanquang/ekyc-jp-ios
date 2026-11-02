@@ -111,7 +111,7 @@ Verify that the 15 items of PDF 09 "II Details and Supplementary Explanations of
 - [ ] **Structure of Consent Screen:** Does it meet the "Requirements for the Consent Screen" in `kihon-4-jouhou-doui` (independent title, summary, Agree/Disagree, link to detailed explanation)?
 - [ ] Did you consider using Mynaportal's "Personal Consent Acquisition Support Service" to acquire consent from existing customers? (PDF 11, `kihon-4-jouhou-doui`).
 
-## Sources
+## References
 
 PDFs under `references/pdfs/` are third-party works and are not shipped with the plugin. If a file is missing, run `bash references/refresh.sh` to download it (URLs and SHA256 are in `references/sources.md`).
 

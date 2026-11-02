@@ -112,7 +112,13 @@ func checkRemainingAttempts(pinEFID: [UInt8], tag: NFCISO7816Tag) async throws -
     guard sw1Sel == 0x90, sw2Sel == 0x00 else {
         return .other(sw1: sw1Sel, sw2: sw2Sel)
     }
-    let emptyVerify = NFCISO7816APDU(data: Data([0x00, 0x20, 0x00, 0x80, 0x00]))!
+    // Case 1 APDU (4 bytes: 00 20 00 80。Le=00 を含めると一部の IC チップで 67 00 Wrong Length になるのを防ぐ)
+    let emptyVerify = NFCISO7816APDU(instructionClass: 0x00,
+                                    instructionCode: 0x20,
+                                    p1Parameter: 0x00,
+                                    p2Parameter: 0x80,
+                                    data: Data(),
+                                    expectedResponseLength: -1)!
     let (_, sw1, sw2) = try await tag.sendCommand(apdu: emptyVerify)
     return interpret(sw1: sw1, sw2: sw2)
 }

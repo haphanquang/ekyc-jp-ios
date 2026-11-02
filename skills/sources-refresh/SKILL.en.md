@@ -64,7 +64,7 @@ The script prints its messages in Japanese. The first column shows them verbatim
 - [ ] Review the `Last Verified` and `Unverified Items` of each skill listed in the `使用スキル` column for that row. Fix citations if they are outdated, and leave points that cannot be fully confirmed as `Unverified`.
 - [ ] **Skill bodies are not automatically fixed.** A human judges what and how to fix by comparing the old and new PDFs. `refresh.sh` only shows the differences, it does not judge or edit.
 
-## Sources
+## References
 
 - `references/sources.md` — List of primary sources (URL, acquisition date, SHA256, used skills).
 - `references/hourei-eKYC.md` — Primary law excerpts and e-Gov revision IDs for the Act on Prevention of Transfer of Criminal Proceeds, Mobile Phone Fraud Prevention Act, Public Personal Authentication Act, and Secondhand Articles Dealer Act.

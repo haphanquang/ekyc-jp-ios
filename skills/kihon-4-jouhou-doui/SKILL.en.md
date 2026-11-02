@@ -137,7 +137,7 @@ Required = 1, 3, 4, 5, 6, 8, 9, 10, 12, 13, 15 (11 items) / Optional = 2, 7, 11,
 - [ ] Complete the procedures for using the Public Personal Authentication Service as a prerequisite for using this service. The SP operator receives system support information from the PF operator (see `platform-jigyousha`).
 - [ ] The selection and legal basis of identity verification methods (Act on Prevention of Transfer of Criminal Proceeds, Mobile Phone Fraud Prevention Act, etc.) are outside the scope of this skill. Refer to `honnin-kakunin-houhou`.
 
-## Sources
+## References
 
 PDFs under `references/pdfs/` are third-party works and are not shipped with the plugin. If a file is missing, run `bash references/refresh.sh` to download it (URLs and SHA256 are in `references/sources.md`).
 

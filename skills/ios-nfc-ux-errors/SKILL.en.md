@@ -103,7 +103,7 @@ Before the first reading, insert a single screen that proactively explains the m
 - [ ] **Interrupt and resume** — Can stop midway and start over
 - In App Clips, structure to complete with just this screen and the reading screen.
 
-## Sources
+## References
 
 PDFs under `references/pdfs/` are third-party works and are not shipped with the plugin. If a file is missing, run `bash references/refresh.sh` to download it (URLs and SHA256 are in `references/sources.md`).
 

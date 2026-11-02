@@ -55,7 +55,7 @@ Last Verified: 2026-10-05
 | Electronic signature (電子署名) | でんししょめい | A measure applied to an electromagnetic record that makes it possible to confirm the identity of its creator and that it has not been tampered with. Generated with the private key corresponding to the signing certificate. | jpki-ap-shomei, signature-verification |
 | Notation variants (表記揺れ) | ひょうきゆれ | The phenomenon of the same name or address appearing in multiple notations (old vs. new character forms, differences in chome/banchi notation, etc.). Normalization is required when matching the four basic attributes. | kihon-4-jouhou-doui |
 | Trust anchor (トラストアンカー) | トラストアンカー | The root of trust in a certificate chain. In JPKI, this is J-LIS, the issuer of the electronic certificates. | jpki-overview, signature-verification |
-| Validity check (有効性確認) | ゆうこうせいかくにん | Confirming through J-LIS (CRL provision method / OCSP responder method) that an electronic certificate provided by a customer has not been revoked. | jlis-yukousei-kakunin, platform-jigyousha |
+| Validity check (有効性確認) | ゆうこうせいかくにん | Confirming through an authorized Platform Operator via J-LIS (CRL provision method / OCSP responder method) that an electronic certificate provided by a customer has not been revoked. Private businesses cannot inquire directly with J-LIS. | jlis-yukousei-kakunin, platform-jigyousha |
 | Holder authentication (当人認証) | とうにんにんしょう | Confirming that the person performing authentication is the legitimate holder of the electronic certificate. Mainly handled by the user-authentication certificate. | jpki-ap-riyousha, honnin-kakunin-houhou |
 | Identity proofing (身元確認) | みもとかくにん | Confirming that the person actually exists and that the applicant is that very person. Required, for example, for verification at the time of transaction under the Act on Prevention of Transfer of Criminal Proceeds. | honnin-kakunin-houhou |
 | Selfie (セルフィー) | セルフィー | An image of the individual's appearance captured on the spot. In document-photo methods, it is matched against the facial photo on the identity document. | honnin-kakunin-houhou |
@@ -101,8 +101,12 @@ Last Verified: 2026-10-05
 | JPEG2000 (JPEG2000) | ジェイペグにせん | An image compression format reportedly used for facial photo data in the card-face verification application (single source only; needs verification. See apdu-cheatsheet.md). | kenmen-jikou-kakunin-ap |
 | App Transport Security (App Transport Security) | アップトランスポートセキュリティ | The iOS mechanism that enforces HTTPS communication (ATS). Do not create exceptions for eKYC server communication. | ios-security |
 | Face recognition (顔認証) | かおにんしょう | The process of matching a captured facial image against a registered facial photo, used with the card-face verification application or in document-photo methods. There is also a path by which consecutive failures lock the card (see pin-lock-handling). | kenmen-jikou-kakunin-ap, honnin-kakunin-houhou |
+| Bleichenbacher attack / BERserk (Bleichenbacher攻撃 / BERserk) | ブライヘンバッハーこうげき / バーサーク | Signature forgery or decryption attacks exploiting padding parsing flaws or timing discrepancies in RSA PKCS#1 v1.5. Prevented by strict DER verification and constant-time comparisons. | signature-verification |
+| Fail-Closed (フェイルクローズ) | フェイルクローズ | The security principle where any network error, timeout, or expired CRL/OCSP cache during validity checking results in immediate rejection (prohibiting Fail-Open). | jlis-yukousei-kakunin, ekyc-session-orchestration |
+| Trust store isolation (トラストストア分離) | トラストストアぶんり | An architectural design maintaining separate CA stores for signing certificates and user-authentication certificates to prevent Purpose Confusion attacks. | signature-verification |
+| Crypto-shredding (暗号消去) | あんごうしょうきょ | A technique to permanently render stored data unrecoverable upon expiration of legal retention periods (e.g. 7 years under AML laws) by destroying the Data Encryption Key (DEK) managed in KMS/HSM. | doui-jouhou-kanri, signature-verification |
 
-## Sources
+## References
 
 This glossary is a derived reference within this plugin, and the definitions of each term are based on the following. For primary records of values and procedures, refer to the individual skills and the following.
 

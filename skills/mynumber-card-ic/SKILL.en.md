@@ -43,7 +43,7 @@ The lock count column is based on the "Number of Digits and Lock Counts for PINs
 | Reading card-face images, facial photo images, and personal numbers (face-to-face confirmation, IC reading of identity verification documents) | Card-face verification AP | `kenmen-jikou-kakunin-ap`. Handling personal numbers requires a basis under the My Number Act |
 | Processing related to the Basic Resident Register network | Juki AP | Detailed scope is outside this plugin |
 
-## Sources
+## References
 
 PDFs under `references/pdfs/` are third-party works and are not shipped with the plugin. If a file is missing, run `bash references/refresh.sh` to download it (URLs and SHA256 are in `references/sources.md`).
 

@@ -119,7 +119,7 @@ The exact termination conditions (`61 xx` / `6C xx` presence, maximum length per
 - **Do not automatically retry on `63 CX`.** This risks reaching the lock limit. For UX, see `pin-lock-handling`.
 - Do not determine the method names or enforcement timing of the Act on Prevention of Transfer of Criminal Proceeds in this skill (`honnin-kakunin-houhou` / `references/method-map.md`).
 
-## Sources
+## References
 
 - <https://tex2e.github.io/blog/protocol/jpki-mynumbercard-with-apdu> ("Creating signature data with My Number Card and APDU" — JPKI-AP AID, SELECT `00 A4 04 0C` / `00 A4 02 0C`, signing private key EF `00 1A` / PIN EF `00 1B` / certificate EF `00 01`, VERIFY `00 20 00 80`, COMPUTE DIGITAL SIGNATURE `80 2A 00 80` and SHA-256 DigestInfo (Lc=`33`), `SHA256withRSA` / PKCS#1 v1.5, segmented READ of certificate. Retrieved on 2026-09-08)
 - `references/apdu-cheatsheet.md` (Byte arrays for AID, SELECT / VERIFY / READ BINARY / COMPUTE DIGITAL SIGNATURE and their certainty, SW1SW2, PIN length)

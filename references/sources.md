@@ -28,12 +28,13 @@ PDF は第三者の著作物のためリポジトリに含めません。`refres
 | L1 | 犯罪収益移転防止法施行規則（現行） | 420M60000F5A001 | 420M60000F5A001_20260806_508M60000F5A006 | https://laws.e-gov.go.jp/law/420M60000F5A001 | 2026-09-10 | honnin-kakunin-houhou |
 | L2 | 犯罪収益移転防止法施行規則（2027-04-01 未施行版） | 420M60000F5A001 | 420M60000F5A001_20270401_508M60000F5A005 | https://laws.e-gov.go.jp/law/420M60000F5A001?asof=2027-04-01 | 2026-09-10 | honnin-kakunin-houhou |
 | L3 | 携帯電話不正利用防止法施行規則（現行） | 417M60000008167 | 417M60000008167_20260806_508M60000008099 | https://laws.e-gov.go.jp/law/417M60000008167 | 2026-09-10 | honnin-kakunin-houhou |
+| L3b | 携帯電話不正利用防止法施行規則（2027-04-01 未施行版） | 417M60000008167 | 417M60000008167_20270401_508M60000008094 | https://laws.e-gov.go.jp/law/417M60000008167?asof=2027-04-01 | 2026-11-02 | honnin-kakunin-houhou |
 | L4 | 電子署名等に係る地方公共団体情報システム機構の認証業務に関する法律（公的個人認証法） | 414AC0000000153 | 414AC0000000153_20260614_506AC0000000059 | https://laws.e-gov.go.jp/law/414AC0000000153 | 2026-09-10 | honnin-kakunin-houhou, platform-jigyousha, jpki-overview |
 | L5 | 犯罪による収益の移転防止に関する法律（本法） | 419AC0000000022 | ― | https://laws.e-gov.go.jp/law/419AC0000000022 | 2026-09-09 | honnin-kakunin-houhou |
 | L6 | 古物営業法施行規則（現行） | 407M50400000010 | 407M50400000010_20260812_508M60400000017 | https://laws.e-gov.go.jp/law/407M50400000010 | 2026-10-05 | honnin-kakunin-houhou |
 | L7 | 古物営業法（本法） | 324AC0000000108 | 324AC0000000108_20250601_504AC0000000068 | https://laws.e-gov.go.jp/law/324AC0000000108 | 2026-10-05 | honnin-kakunin-houhou |
 
-L5（犯収法 本法）は `hourei-eKYC.md` に条文抜粋・取得リビジョンを持たないため `refresh.sh` の自動突合対象外（L1〜L4・L6・L7 は `refresh.sh` で自動突合）。
+L5（犯収法 本法）は `hourei-eKYC.md` に条文抜粋・取得リビジョンを持たないため `refresh.sh` の自動突合対象外（L1〜L3, L3b, L4, L6, L7 は `refresh.sh` で自動突合）。
 `sources-refresh` の際に必要に応じ `https://laws.e-gov.go.jp/api/2/law_revisions/419AC0000000022` を確認する。
 
 ## PDF 資料

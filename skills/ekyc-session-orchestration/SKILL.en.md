@@ -109,7 +109,7 @@ Leave at minimum the following in each entry:
 - Audit logs connect to verification records and evidence of verification methods under the Act on Prevention of Transfer of Criminal Proceeds. **The retention period (verification records: 7 years from contract end date, etc.) is in "Creation and Preservation of Verification Records" of `honnin-kakunin-houhou`, and method designations are in `honnin-kakunin-houhou` / `references/method-map.md`; they are not asserted in this skill.**
 - Do not leave raw values of four basic attributes, PINs, private keys, or certificate DERs in the audit log (do not hold beyond what is necessary for matching. Match with the "Do Not Save" items in `signature-verification` / `jlis-yukousei-kakunin`).
 
-## Sources
+## References
 
 PDFs under `references/pdfs/` are third-party works and are not shipped with the plugin. If a file is missing, run `bash references/refresh.sh` to download it (URLs and SHA256 are in `references/sources.md`).
 

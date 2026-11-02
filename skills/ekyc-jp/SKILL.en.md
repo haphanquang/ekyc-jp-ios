@@ -75,13 +75,13 @@ Total of 19 skills in 3 tiers + maintenance (including this router). First, iden
 
 ## Invariable Rules
 
-1. Do not inquire directly to J-LIS. Certificate validity verification must always be performed via a platform operator (PF operator). Do not access J-LIS directly from apps or uncertified in-house servers.
+1. Do not inquire directly to J-LIS. Certificate validity verification must always be performed via a platform operator (PF operator). Do not access J-LIS directly from apps or in-house servers (validity verification must always go through a minister-certified PF operator).
 2. Legal dates and method names (such as the method designations of the Act on Prevention of Transfer of Criminal Proceeds) are defined solely in `honnin-kakunin-houhou` and `references/method-map.md`. Do not assert them elsewhere in this skill group. Do not write legal dates without a dated source.
 3. When the last update of `references/sources.md` was about 3 months or more ago, or when answering questions related to the 2026/2027 periods, execute `sources-refresh` first before answering.
 4. Pass the PIN only to the VERIFY command to the card. Do not send it to the server, logs, or analytics SDKs, and do not save it on the device (even "remembering" it with biometric authentication is prohibited). For details, see `ios-security`.
 5. Trust an electronic certificate only after verifying the chain up to the JPKI certificate authority (signing / user-authentication) that issued it. Simply passing the signature with the public key contained in the certificate proves nothing (`signature-verification`).
 
-## Sources
+## References
 
 This skill does not hold detailed knowledge. Refer to each skill and `references/` for facts, figures, and procedures.
 

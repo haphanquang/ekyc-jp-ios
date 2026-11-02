@@ -52,3 +52,13 @@ Entries are appended per document only when there is a new, removed, or CHANGED 
   Because the chapeau of new Wa-method (ワ) states "the same applies in Wa and Ka below," new Wa-method and new Ka-method are
   limited to persons not subject to the Basic Resident Registration Act and persons who have moved abroad; this was reflected in `method-map.md`, `hourei-eKYC.md`, and `honnin-kakunin-houhou`.
   Added Article 15, Paragraph 2 and Article 16 of the Ordinance for Enforcement of the Secondhand Articles Dealer Act (exemption threshold of 10,000 yen, covered secondhand articles) to `hourei-eKYC.md` §5.
+
+## 2026-11-02
+- Periodic maintenance and statutory/technical audit conducted.
+- Executed `refresh.sh`: 2 primary web pages and 33 PDF documents verified via SHA-256 match, all identical (`same`). Current and unenforced law revisions L1–L4, L6, L7 all verified identical (`same`).
+- Via e-Gov Law Search API v2, detected and verified the unenforced version of the Ordinance for Enforcement of the Mobile Phone Fraud Prevention Act taking effect on April 1, 2027 (MIC Order No. 94 of 2026, promulgated July 27, 2026; revision ID `417M60000008167_20270401_508M60000008094`).
+  - Article 3, Paragraph 1, Item 1 reorganized from 10 items (i–nu) into 12 items (i–wo).
+  - IC reading + facial image method transitions from current (ha) to new (ni).
+  - Electronic signature method (JPKI, etc.) transitions from current (to) to new (chi).
+  - Smartphone-mounted My Number Card method transitions from current (chi) to new (ri).
+- Added `L3b` to `sources.md` (and `sources.en.md`), established "## 3b. Ordinance for Enforcement of the Mobile Phone Fraud Prevention Act (Version Effective April 1, 2027 / Not Yet in Force)" in `hourei-eKYC.md` (and `hourei-eKYC.en.md`), added 3b cross-check to `refresh.sh`, and updated `method-map.md` (and `method-map.en.md`).

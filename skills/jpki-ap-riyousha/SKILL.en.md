@@ -120,7 +120,7 @@ extension CardReader {
 - **Do not retain data read from the card (certificate DER, signature value) beyond the scope of the request.** Discard it after server transmission, and retrieve it again from the card upon retries.
 - Do not determine the method names or enforcement timing of the Act on Prevention of Transfer of Criminal Proceeds in this skill.
 
-## Sources
+## References
 
 - <https://tex2e.github.io/blog/protocol/jpki-mynumbercard-with-apdu> ("Creating signature data with My Number Card and APDU" — JPKI-AP AID `D3 92 F0 00 26 01 00 00 00 01`, SELECT `00 A4 04 0C` / `00 A4 02 0C`, Authentication (= User-Authentication) PIN EF `00 18` / Authentication private key EF `00 17` / Authentication certificate EF `00 0A`, VERIFY `00 20 00 80` (4-digit ASCII example `00 20 00 80 04 31 32 33 34`), COMPUTE DIGITAL SIGNATURE `80 2A 00 80` is used for authentication as well, SHA-256 DigestInfo (Lc=`33`), `SHA256withRSA` / PKCS#1 v1.5, segmented READ of certificate. Retrieved on 2026-09-08)
 - `references/apdu-cheatsheet.md` (Byte arrays for AID, SELECT / VERIFY / COMPUTE DIGITAL SIGNATURE / READ BINARY and their certainty, SW1SW2, user-authentication PIN length/lock count)

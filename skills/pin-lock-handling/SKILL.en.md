@@ -112,7 +112,13 @@ func checkRemainingAttempts(pinEFID: [UInt8], tag: NFCISO7816Tag) async throws -
     guard sw1Sel == 0x90, sw2Sel == 0x00 else {
         return .other(sw1: sw1Sel, sw2: sw2Sel)
     }
-    let emptyVerify = NFCISO7816APDU(data: Data([0x00, 0x20, 0x00, 0x80, 0x00]))!
+    // Case 1 APDU (4 bytes: 00 20 00 80; prevents 67 00 Wrong Length on IC chips when Le=00 is included)
+    let emptyVerify = NFCISO7816APDU(instructionClass: 0x00,
+                                    instructionCode: 0x20,
+                                    p1Parameter: 0x00,
+                                    p2Parameter: 0x80,
+                                    data: Data(),
+                                    expectedResponseLength: -1)!
     let (_, sw1, sw2) = try await tag.sendCommand(apdu: emptyVerify)
     return interpret(sw1: sw1, sw2: sw2)
 }
@@ -153,7 +159,7 @@ The app cannot perform lock release or initialization. Guide the user to the fol
 - Card blocking (`69 83`) does not resolve with time. A successful VERIFY with the correct PIN, or initialization at a counter/convenience store, is required.
 - App-side temporary input suspension is a dropout/misoperation prevention measure separate from the card's lock state. If the card is blocked, clearly state "waiting will not resolve this" and guide to counter/convenience store channels.
 
-## Sources
+## References
 
 PDFs under `references/pdfs/` are third-party works and are not shipped with the plugin. If a file is missing, run `bash references/refresh.sh` to download it (URLs and SHA256 are in `references/sources.md`).
 

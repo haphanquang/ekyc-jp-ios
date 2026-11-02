@@ -30,7 +30,7 @@ The device side does not verify digital signatures or query J-LIS (server / plat
 - **Pass the PIN only to the VERIFY APDU sent to the card.** Never send it to servers, analytics SDKs, logs, or the pasteboard. Do not save it in Keychain (including a biometrically protected "remember PIN" feature), UserDefaults, or files. Use `isSecureTextEntry` for the input field and discard the PIN as soon as the VERIFY response arrives. If a design sends the PIN to a server or stores it, correct it as an error.
 - Basic 4 information, face photo images, individual numbers, challenge/to-be-signed data, and signature values read from the card are **temporary data for sending to the server** (the PIN is not sent, as stated above). Hold as `Data` / `String` and discard immediately after server transmission (or session termination).
 - Limit retention to the scope of one request. On retry, re-read from the card.
-- For highly sensitive data such as PINs, to eliminate the risk of duplicate memory remaining due to Swift's `String` / `Array` Copy-on-Write (CoW) mechanism, handle them using an unmanaged native heap buffer (`SecureBytes` managing `UnsafeMutablePointer<UInt8>`), and securely zero-fill and release them immediately after use using `memset_s`. The top priority is "don't store it in the first place / don't log it."
+- For highly sensitive data such as PINs, to eliminate the risk of duplicate memory remaining due to Swift's `String` / `Array` Copy-on-Write (CoW) mechanism, handle them using an unmanaged native heap buffer (`SecureBytes` managing `UnsafeMutablePointer<UInt8>`), and securely zero-fill and release them immediately after use using `memset_s`. When receiving input from UI components (such as `UITextField`), it is advisable to design the flow to avoid creating intermediate Swift `String` variables, feeding input directly from custom secure keypads into `SecureBytes`. The top priority is "don't store it in the first place / don't log it."
 
 ```swift
 import Darwin
@@ -204,7 +204,7 @@ NotificationCenter.default.addObserver(
 - [ ] `NFCReaderUsageDescription` / `NSCameraUsageDescription` are honest and minimal. `select-identifiers` AIDs are minimal
 - [ ] Device does NOT perform digital signature verification or J-LIS queries
 
-## Sources
+## References
 
 PDFs under `references/pdfs/` are third-party works and are not shipped with the plugin. If a file is missing, run `bash references/refresh.sh` to download it (URLs and SHA256 are in `references/sources.md`).
 
