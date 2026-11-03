@@ -105,8 +105,15 @@ func interpret(sw1: UInt8, sw2: UInt8) -> VerifyOutcome {
 }
 
 /// 空の VERIFY APDU（Lc = 0）を用いて、試行回数を消費せずに残り回数・ロック状態を確認する（ISO/IEC 7816-4 §7.5.2）。
-/// セッション切断後の状態再取得などに使用。
-func checkRemainingAttempts(pinEFID: [UInt8], tag: NFCISO7816Tag) async throws -> VerifyOutcome {
+/// セッション切断後の状態再取得などに使用。新規セッション接続時は DF（JPKI-AP等）を SELECT してから EF を選択する。
+func checkRemainingAttempts(pinEFID: [UInt8], aid: [UInt8]? = nil, tag: NFCISO7816Tag) async throws -> VerifyOutcome {
+    if let aid = aid {
+        let selectAID = NFCISO7816APDU(data: Data([0x00, 0xA4, 0x04, 0x0C, UInt8(aid.count)] + aid))!
+        let (_, sw1AID, sw2AID) = try await tag.sendCommand(apdu: selectAID)
+        guard sw1AID == 0x90, sw2AID == 0x00 else {
+            return .other(sw1: sw1AID, sw2: sw2AID)
+        }
+    }
     let selectCmd = NFCISO7816APDU(data: Data([0x00, 0xA4, 0x02, 0x0C, 0x02] + pinEFID))!
     let (_, sw1Sel, sw2Sel) = try await tag.sendCommand(apdu: selectCmd)
     guard sw1Sel == 0x90, sw2Sel == 0x00 else {
@@ -125,6 +132,7 @@ func checkRemainingAttempts(pinEFID: [UInt8], tag: NFCISO7816Tag) async throws -
 ```
 
 入力欄は `.numberPad`（4 桁・12 桁・14 桁）／`.asciiCapable`（署名用）、`isSecureTextEntry = true`、`textContentType` は設定しない（パスワード自動入力・保存の対象にしない）。上記のコードは 2026-09-25 に Swift 6 言語モードでテスト済み（全角入力・桁数違反・`63 C0` / `63 C2` / `63 00` / `69 83`）。
+※ 本サンプルの `pinBytes` はロジック例示のため `String` を引数に取っているが、金融機関水準の本番実装では Swift の String/Array によるヒープ上のコピー（Copy-on-Write）を避けるため、UI の入力段階から `ios-security` に記載の `SecureBytes`（`UnsafeMutablePointer` + `memset_s`）を用い、APDU 送信直後にゼロ消去すること。
 
 ## UX 指針
 

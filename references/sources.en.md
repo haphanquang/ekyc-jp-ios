@@ -1,6 +1,6 @@
 # Source List (sources manifest)
 
-Last updated: 2026-10-05
+Last updated: 2026-11-02
 
 The `sources-refresh` skill reads this file to detect changes in primary sources.
 If a URL changes, a document disappears, or a new document is added, update this table

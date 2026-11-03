@@ -26,10 +26,10 @@
 | CRL | シーアールエル | 失効リスト。1日1回程度更新。オフライン照合可。 | jlis-yukousei-kakunin |
 | OCSP | オーシーエスピー | 証明書の有効性を個別・リアルタイムに問い合わせるプロトコル。 | jlis-yukousei-kakunin |
 | 犯収法 | はんしゅうほう | 犯罪による収益の移転防止に関する法律。 | honnin-kakunin-houhou |
-| カ方式 | カほうしき | JPKI署名用電子証明書を用いた身元確認方法（現行の犯収法施行規則第6条第1項第1号カ、2027年4月以降は新ヌ）。特定事業者が署名検証者である場合に限る（但書）。※号記号・時期は `method-map.md` / `hourei-eKYC.md` を典拠とする。 | honnin-kakunin-houhou |
+| カ方式 | カほうしき | JPKI署名用電子証明書を用いた身元確認方法（犯収法 現カ／2027年以降は新ヌ、携帯法 現ト／2027年以降は新チ、古物営業法 第十一号）。特定事業者・古物商が署名検証者である場合に限る（但書）。※号記号・時期は `method-map.md` / `hourei-eKYC.md` を典拠とする。 | honnin-kakunin-houhou |
 | ホ方式 | ホほうしき | 写真付き本人確認書類の画像送信＋容貌撮影（セルフィー）による身元確認方法。なりすましリスクから犯収法において2027年4月1日改正で廃止（令和6年閣僚会議決定に基づく）。※号記号・時期は `method-map.md` を典拠とする。 | honnin-kakunin-houhou |
-| ヘ方式 | ヘほうしき | 本人確認書類のIC読取＋容貌撮影。※号記号・時期は `method-map.md` を典拠とする。 | honnin-kakunin-houhou, kenmen-nyuryoku-hojo-ap |
-| ル方式 | ルほうしき | カード代替電磁的記録（Apple Wallet 等）を用いた方法。※号記号・時期は `method-map.md` を典拠とする。 | honnin-kakunin-houhou |
+| ヘ方式 | ヘほうしき | 本人確認書類のIC読取＋容貌撮影（犯収法 現ヘ／2027年以降は新ハ、携帯法 現ハ／2027年以降は新ニ、古物営業法 第九号）。※号記号・時期は `method-map.md` を典拠とする。 | honnin-kakunin-houhou, kenmen-nyuryoku-hojo-ap |
+| ル方式 | ルほうしき | カード代替電磁的記録（Apple Wallet 等のスマートフォン搭載マイナンバーカード）を用いた方法（犯収法 現ル／2027年以降は新ト、携帯法 現チ／2027年以降は新リ。古物営業法には該当方式なし）。※号記号・時期は `method-map.md` を典拠とする。 | honnin-kakunin-houhou |
 | 転送不要郵便 | てんそうふようゆうびん | 転送を認めない郵便。住所実在確認に用いる。 | honnin-kakunin-houhou |
 | APDU | エーピーディーユー | ICカードとの通信単位（ISO 7816）。 | ios-corenfc-apdu |
 | AID | エーアイディー | アプリケーション識別子。SELECT で指定。 | ios-corenfc-apdu, apdu-cheatsheet |
@@ -94,7 +94,7 @@
 | certificatePolicies | サーティフィケートポリシーズ | X.509 証明書の拡張。証明書の種別を示すポリシー OID を格納する。JPKI の具体的な OID 値は一次資料で未確認（signature-verification 参照）。 | signature-verification |
 | 取引時確認 | とりひきじかくにん | 犯収法上、特定事業者が特定取引を行う際に必要な、本人特定事項等の確認。 | honnin-kakunin-houhou |
 | 特定取引 | とくていとりひき | 犯収法で取引時確認が義務付けられる取引（預貯金口座開設、10万円超の現金振込等）。 | honnin-kakunin-houhou |
-| 携帯法 | けいたいほう | 携帯電話不正利用防止法（正式名称は携帯音声通信事業者による契約者等の本人確認等…）。契約時等の本人確認方法を定める。改正施行規則は2026年4月1日施行済み（第3条第1項第1号イ〜ヌ、書類画像送信方式は消滅。`method-map.md` / `hourei-eKYC.md` 参照）。 | honnin-kakunin-houhou |
+| 携帯法 | けいたいほう | 携帯電話不正利用防止法（正式名称は携帯音声通信事業者による契約者等の本人確認等…）。契約時等の本人確認方法を定める。改正施行規則は2026年4月1日施行済み（第3条第1項第1号イ〜ヌ、書類画像送信方式は消滅）。2027年4月1日施行で12号（イ〜ヲ）へ再編予定（`method-map.md` / `hourei-eKYC.md` §3b 参照）。 | honnin-kakunin-houhou |
 | 古物営業法 | こぶつえいぎょうほう | 古物商が古物の買受け等の際に相手方の住所・氏名・職業・年齢を確認する義務（本法第15条第1項）。確認方法（施行規則第15条第3項の各号）と犯収法方法との対応は method-map.md「古物営業法」を参照（一次条文は hourei-eKYC.md §5）。 | honnin-kakunin-houhou |
 | 番号法 | ばんごうほう | マイナンバー法（行政手続における特定の個人を識別するための番号の利用等に関する法律）。個人番号の収集・利用・本人確認を規律する。 | kenmen-jikou-kakunin-ap, kihon-4-jouhou-doui |
 | 通称 | つうしょう | 住民票に記載された、氏名以外の呼称（主に外国人住民）。券面・4情報の照合で表記の扱いに注意する。 | kenmen-jikou-kakunin-ap, kihon-4-jouhou-doui |

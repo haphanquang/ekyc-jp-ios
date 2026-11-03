@@ -62,6 +62,7 @@ extension CardReader {
     // 手順 2〜3: 利用者証明用暗証番号（4桁 数字）の EF を SELECT して VERIFY。SW を呼び出し側へ返し、
     //         リトライは pin-lock-handling に委ねる
     //         （VerifyOutcome / pinBytes / interpret は pin-lock-handling で定義）
+    //         ※ 本サンプルの pin: String 引数は例示用。金融機関水準の本番実装では Swift の String/Array によるヒープ上のコピー（Copy-on-Write）を避けるため、ios-security に記載の SecureBytes を用い、APDU 送信直後にゼロ消去すること。
     func verifyRiyoushaPIN(_ pin: String, tag: NFCISO7816Tag) async throws -> VerifyOutcome {
         let bytes = try pinBytes(pin, kind: .riyousha)             // "１２３４" も "1234" -> 31 32 33 34
         try await selectEF(efID: [0x00, 0x18], tag: tag)          // 00 A4 02 0C 02 00 18（1ソース・要検証）

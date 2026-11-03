@@ -123,6 +123,15 @@ func urlSession(_ session: URLSession,
 }
 ```
 
+## 端末整合性と App Attest（DCAppAttestService）
+
+通信経路の TLS ピンニングに加え、不正な中継・リプレイ攻撃（Session Relay Attack）や改ざんクライアントからのリクエストを防ぐため、DeviceCheck フレームワークの **App Attest（`DCAppAttestService`）** を併用する（`ekyc-session-orchestration` 参照）。
+
+1. **鍵ペアの生成**: `DCAppAttestService.shared.generateKey()` で Secure Enclave 内にハードウェア保護されたキーを作成し、`keyId` を Keychain に保存する。
+2. **Attestation の取得**: サーバーからセッション開始時に受け取った nonce（または初回チャレンジ）の SHA-256 ハッシュを `clientDataHash` として渡し、`attestKey(keyId, clientDataHash:)` で Apple の Attestation オブジェクトを取得してサーバーへ登録する。
+3. **Assertion の生成**: JPKI 署名や認証リクエストを送信する際、リクエストペイロード（nonce ＋ 署名値 ＋ タイムスタンプ等）の SHA-256 ハッシュを `clientDataHash` として渡し、`generateAssertion(keyId, clientDataHash:)` で Assertion を生成して HTTP ヘッダ（`X-App-Attest-Assertion` 等）に付与する。
+4. **サーバーでの検証**: サーバー側で counter の単調増加チェックおよび `clientDataHash` の突合を行い、正当なアプリインスタンスから直接送られたリクエストであることを検証する。
+
 ## ログに残してはいけない項目
 
 アプリログ・`os_log` / `Logger`・分析イベント・クラッシュレポーター（Crashlytics 等）のブレッドクラム／カスタムキーに、次を**平文で出さない**。

@@ -62,3 +62,14 @@ Entries are appended per document only when there is a new, removed, or CHANGED 
   - Electronic signature method (JPKI, etc.) transitions from current (to) to new (chi).
   - Smartphone-mounted My Number Card method transitions from current (chi) to new (ri).
 - Added `L3b` to `sources.md` (and `sources.en.md`), established "## 3b. Ordinance for Enforcement of the Mobile Phone Fraud Prevention Act (Version Effective April 1, 2027 / Not Yet in Force)" in `hourei-eKYC.md` (and `hourei-eKYC.en.md`), added 3b cross-check to `refresh.sh`, and updated `method-map.md` (and `method-map.en.md`).
+
+## 2026-11-03
+- 4:00 AM periodic maintenance and comprehensive audit of all skills, references, and evaluation test suites (evals) conducted.
+- Executed `refresh.sh`: 2 primary web pages and 33 PDF documents verified via SHA-256 match, all identical (`same`). Statutory revisions (L1–L4, L6, L7) all verified identical (`same`). Verified L5 (Main Act of Criminal Proceeds Act `419AC0000000022`) via e-Gov API, confirming no unreflected new amendments beyond the current enforced revision (`419AC0000000022_20260812_508AC0000000064`).
+- Reflected findings from 4 independent audit subagents (Tier 1 Legal & Domain, Tier 2 iOS CoreNFC/APDU/Device Security, Tier 3 Server Cryptography/Revocation/Session, Tier 4 Plugin Structure/Bilingual/Evals):
+  - Fully synchronized Mobile Phone Act 2027-04-01 version (L3b: new ni, new chi, new ri) into `skills/honnin-kakunin-houhou/` and `references/method-map.md`.
+  - Added the signature-verifier proviso for Secondhand Articles Dealer Act Article 15, Paragraph 3, Item 11 (JPKI) to `skills/platform-jigyousha/`.
+  - Added cross-statutory mappings (Mobile Phone Act 2026/2027, Secondhand Articles Dealer Act) to "Method ka", "Method he", "Method ru", and "Mobile Phone Act" in `references/yougoshuu.md`.
+  - Hardened `skills/ios-corenfc-apdu/` (EF-ID length guard), `skills/pin-lock-handling/` (DF/EF selection on reconnect, SecureBytes memory zeroing note), `skills/ios-security/` (DCAppAttestService device attestation guide), and `references/apdu-cheatsheet.md` (clarifying Card-face Verification AP Verification Number B 14 digits / 10-attempt lock).
+  - Hardened `skills/signature-verification/` (fixed step number typo, Auth CA fingerprint pinning, RFC 5280 Critical extension rejection) and `skills/jlis-yukousei-kakunin/` (CRL/OCSP thisUpdate to nextUpdate validity window check).
+  - Synchronized all 27 bilingual pairs (.md ↔ .en.md) with 100% structural and semantic alignment.

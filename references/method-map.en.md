@@ -1,6 +1,6 @@
 # Identity Verification Method Correspondence Table (method map)
 
-Last Verified: 2026-10-05 (Secondhand Articles Dealer Act section; other sections: 2026-09-11)
+Last Verified: 2026-11-02 (Mobile Phone Act 2027 version: 2026-11-02; Secondhand Articles Dealer Act section: 2026-10-05; other sections: 2026-09-11)
 
 > This file and `skills/honnin-kakunin-houhou/SKILL.md` are the sole locations that define
 > "method names and dates" under the Act on Prevention of Transfer of Criminal Proceeds, Mobile Phone Fraud Prevention Act,
@@ -125,6 +125,33 @@ Target provision: Article 3, Paragraph 1, Item 1 (at contract conclusion / natur
 > though it was confirmed on e-Gov during the review on September 10, 2026 (verbatim excerpts of the supplementary provisions text are not included).
 > Confirm and finalize the supplementary provisions during `sources-refresh`.
 
+## Mobile Phone Fraud Prevention Act (Enforced April 1, 2027, Unenforced Version)
+
+Primary source: `references/hourei-eKYC.md` §3b (revision
+`417M60000008167_20270401_508M60000008094`, Order No. 94 of the Ministry of Internal Affairs and Communications of Reiwa 8, promulgated July 27, 2026, enforced April 1, 2027, acquired November 2, 2026).
+
+Upon enforcement on April 1, 2027, the method designations are reorganized into **12 items from i (イ) to wo (ヲ)** (final designation = wo).
+
+| New Designation | Current (2026) | Summary | Relationship to eKYC Implementation |
+|---|---|---|---|
+| i (イ) | i (イ) | Presentation of photo/IC chip-equipped identity document + IC chip reading (face-to-face) | ― |
+| ro (ロ) | ― | Presentation of non-photo IC chip-equipped identity document + IC reading + non-forwardable mail | ― |
+| ha (ハ) | ― | Presentation of photo non-IC document, etc. + non-forwardable mail | ― |
+| **ni (ニ)** | **ha (ハ)** | **Transmission of facial image information + photo/IC chip recorded information (IC reading + facial photo)** | Equivalent to current ha method. Transmission of facial photo in IC + 4 basic attributes |
+| ho (ホ) | ― | Transmission of IC recorded information of non-photo IC document + non-forwardable mail | Equivalent to current ni method |
+| he (ヘ) | ho (ホ) | Sending of non-photo, non-IC documents + non-forwardable mail | ― |
+| to (ト) | he (ヘ) | Restricted delivery mail communicating specified matters, etc. | ― |
+| **chi (チ)** | **to (ト)** | **Electronic signature + receiving electronic certificates (JPKI / Public Personal Authentication, etc.)** | Equivalent to current to method. Use of Public Personal Authentication (JPKI), etc. |
+| **ri (リ)** | **chi (チ)** | **Alternative electronic records for card = smartphone-mounted My Number Card (transmission of specified electronic records + confirmation)** | Equivalent to current chi method. Transmission of smartphone-mounted My Number Card |
+| nu (ヌ) | ― | Presentation of documents for persons residing overseas, etc. + non-forwardable mail | ― |
+| ru (ル) | ri (リ) | Sending documents for persons residing overseas, etc. + non-forwardable mail | ― |
+| wo (ヲ) | nu (ヌ) | Sending copies of documents + non-forwardable mail | ― |
+
+Main transition points:
+- Former ha method (IC reading + facial photo) transitions to **new ni method**.
+- Former to method (Electronic signature / JPKI) transitions to **new chi method**.
+- Former chi method (Smartphone My Number Card) transitions to **new ri method**.
+
 ## Secondhand Articles Dealer Act
 
 Primary source: `references/hourei-eKYC.md` §5 (Ordinance for Enforcement of the Secondhand Articles Dealer Act, LawId `407M50400000010`, revision
@@ -225,12 +252,13 @@ not the to (ト) type (bank inquiry / small-amount transfer)**. Other than that,
 - **`references/hourei-eKYC.md`** — Primary provision excerpts retrieved from the e-Gov e-Laws API. Article 6, Paragraph 1, Item 1 of the Ordinance for Enforcement of the Act on Prevention of Transfer of Criminal Proceeds
   (current `420M60000F5A001_20260806_508M60000F5A006` / April 2027 version
   `420M60000F5A001_20270401_508M60000F5A005`), Article 19 of the same, Article 3 of the Ordinance for Enforcement of the Mobile Phone Fraud Prevention Act
-  (`417M60000008167_20260806_508M60000008099`), and Article 17 of the Public Personal Authentication Act
-  (`414AC0000000153_20260614_506AC0000000059`). Primary source for method designations and provisos. Retrieved 2026-09-10.
+  (current `417M60000008167_20260806_508M60000008099` / April 2027 version §3b
+  `417M60000008167_20270401_508M60000008094`, acquired 2026-11-02), and Article 17 of the Public Personal Authentication Act
+  (`414AC0000000153_20260614_506AC0000000059`). Primary source for method designations and provisos. Retrieved 2026-09-10 (Mobile Phone Act 2027 version on 2026-11-02).
   Article 15 of the Ordinance for Enforcement of the Secondhand Articles Dealer Act (`407M50400000010_20260812_508M60400000017`) and Articles 15, 16, and
   18 of the Secondhand Articles Dealer Act (`324AC0000000108_20250601_504AC0000000068`) are in §5, retrieved 2026-10-05.
 - e-Gov e-Laws: <https://laws.e-gov.go.jp/law/420M60000F5A001> (Ordinance for Enforcement of the Act on Prevention of Transfer of Criminal Proceeds; version not yet in force is
-  `?asof=2027-04-01`), <https://laws.e-gov.go.jp/law/417M60000008167> (Ordinance for Enforcement of the Mobile Phone Fraud Prevention Act),
+  `?asof=2027-04-01`), <https://laws.e-gov.go.jp/law/417M60000008167> (Ordinance for Enforcement of the Mobile Phone Fraud Prevention Act; version not yet in force is `?asof=2027-04-01`),
   <https://laws.e-gov.go.jp/law/414AC0000000153> (Public Personal Authentication Act),
   <https://laws.e-gov.go.jp/law/407M50400000010> (Ordinance for Enforcement of the Secondhand Articles Dealer Act),
   <https://laws.e-gov.go.jp/law/324AC0000000108> (Secondhand Articles Dealer Act).

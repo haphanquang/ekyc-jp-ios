@@ -144,6 +144,7 @@ extension CardReader {
 
     // SELECT by EF id: 00 A4 02 0C 02 <ef-hi> <ef-lo>
     func selectEF(efID: [UInt8], tag: NFCISO7816Tag) async throws {
+        guard efID.count == 2 else { throw ReaderError.invalidInput }
         let apdu = rawAPDU([0x00, 0xA4, 0x02, 0x0C, 0x02] + efID)
         let (_, sw1, sw2) = try await send(apdu, to: tag)
         guard sw1 == 0x90, sw2 == 0x00 else { throw ReaderError.selectFailed(sw1, sw2) }

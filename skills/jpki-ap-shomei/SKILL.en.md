@@ -48,6 +48,7 @@ Send the following sequentially within a single session. Abort if the response S
 extension CardReader {
     // Steps 2-3: SELECT the EF for signing PIN, then VERIFY. Return the SW to the caller,
     // and delegate retries to pin-lock-handling (VerifyOutcome / pinBytes / interpret are defined there)
+    // * Note: The pin: String parameter in this sample is for demonstration. In financial-grade production implementations, to avoid heap copies (Copy-on-Write) from Swift's String/Array ARC, use SecureBytes as described in ios-security and zero it immediately after APDU transmission.
     func verifyShomeiPIN(_ pin: String, tag: NFCISO7816Tag) async throws -> VerifyOutcome {
         // The signing PIN is "uppercase letters + digits, 6-16 characters". Convert full-width to half-width,
         // uppercase, and check the format before sending to the card (violations throw and do not consume a try)

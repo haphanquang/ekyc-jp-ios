@@ -123,6 +123,15 @@ func urlSession(_ session: URLSession,
 }
 ```
 
+## Device Integrity and App Attest (DCAppAttestService)
+
+In addition to TLS pinning on communication paths, to prevent unauthorized relay / replay attacks (Session Relay Attacks) and requests from tampered clients, combine with **App Attest (`DCAppAttestService`)** from the DeviceCheck framework (see `ekyc-session-orchestration`).
+
+1. **Key Pair Generation**: Create a hardware-protected key inside the Secure Enclave via `DCAppAttestService.shared.generateKey()`, and store the `keyId` in the Keychain.
+2. **Obtaining Attestation**: Pass the SHA-256 hash of the nonce (or initial challenge) received from the server at session initiation as `clientDataHash`, obtain Apple's Attestation object via `attestKey(keyId, clientDataHash:)`, and register it with the server.
+3. **Generating Assertion**: When sending a JPKI signature or authentication request, pass the SHA-256 hash of the request payload (nonce + signature value + timestamp, etc.) as `clientDataHash`, generate an assertion via `generateAssertion(keyId, clientDataHash:)`, and attach it to an HTTP header (such as `X-App-Attest-Assertion`).
+4. **Server Verification**: The server verifies the monotonic counter increment and matches the `clientDataHash`, confirming that the request was transmitted directly from a legitimate app instance.
+
 ## Items That Must Not Be Logged
 
 In app logs, `os_log` / `Logger`, analytics events, and crash reporter (Crashlytics, etc.) breadcrumbs/custom keys, do **NOT output the following in plaintext**.

@@ -1,6 +1,6 @@
 # Primary Legal Text Excerpts for eKYC-Related Laws and Ordinances (e-Gov Law Search)
 
-Last Verified: 2026-09-11 (§5 Ordinance for Enforcement of the Secondhand Articles Dealer Act is 2026-10-05)
+Last Verified: 2026-09-11 (§5 Ordinance for Enforcement of the Secondhand Articles Dealer Act: 2026-10-05, §3b Mobile Phone Act 2027 version: 2026-11-02)
 
 This file contains excerpts retrieved from the primary source (e-Gov Law Search API) used by `method-map.md` and `skills/honnin-kakunin-houhou/SKILL.md` to establish method designations and effective dates. **Method designations shift with legal amendments.**
 Before implementation or legal determination, always re-verify the text of the relevant revision on e-Gov Law Search below.

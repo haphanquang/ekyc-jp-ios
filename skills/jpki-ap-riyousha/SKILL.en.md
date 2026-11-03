@@ -62,6 +62,7 @@ extension CardReader {
     // Steps 2-3: SELECT the EF and VERIFY the user-authentication PIN (4-digit number). Return SW to caller,
     //         and delegate retries to pin-lock-handling
     //         (VerifyOutcome / pinBytes / interpret are defined in pin-lock-handling)
+    //         * Note: The pin: String parameter in this sample is for demonstration. In financial-grade production implementations, to avoid heap copies (Copy-on-Write) from Swift's String/Array ARC, use SecureBytes as described in ios-security and zero it immediately after APDU transmission.
     func verifyRiyoushaPIN(_ pin: String, tag: NFCISO7816Tag) async throws -> VerifyOutcome {
         let bytes = try pinBytes(pin, kind: .riyousha)             // both "１２３４" and "1234" -> 31 32 33 34
         try await selectEF(efID: [0x00, 0x18], tag: tag)          // 00 A4 02 0C 02 00 18 (1 source, requires verification)

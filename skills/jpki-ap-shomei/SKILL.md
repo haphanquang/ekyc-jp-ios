@@ -48,6 +48,7 @@ description: マイナンバーカードの署名用電子証明書 読み取り
 extension CardReader {
     // 手順 2〜3: 署名用 暗証番号の EF を SELECT してから VERIFY。SW を呼び出し側へ返し、
     // リトライは pin-lock-handling に委ねる（VerifyOutcome / pinBytes / interpret はそこで定義）
+    // ※ 本サンプルの pin: String 引数は例示用。金融機関水準の本番実装では Swift の String/Array によるヒープ上のコピー（Copy-on-Write）を避けるため、ios-security に記載の SecureBytes を用い、APDU 送信直後にゼロ消去すること。
     func verifyShomeiPIN(_ pin: String, tag: NFCISO7816Tag) async throws -> VerifyOutcome {
         // 署名用 暗証番号は「英大文字 + 数字 6〜16 桁」。全角→半角・大文字化・形式チェックを
         // カードへ送る前に行う（形式違反は throw され、試行回数を消費しない）

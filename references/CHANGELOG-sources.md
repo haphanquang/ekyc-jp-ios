@@ -62,3 +62,14 @@
   - 電子署名方式（JPKI等）が現行「ト」から「新チ」へ移行。
   - スマートフォン搭載マイナンバーカード方式が現行「チ」から「新リ」へ移行。
 - `sources.md` に `L3b` を追加し、`hourei-eKYC.md` に「## 3b. 携帯電話不正利用防止法施行規則（2027年4月1日 施行・未施行版）」を新設。`refresh.sh` に 3b の自動突合を追加、`method-map.md` に対応行を追記。
+
+## 2026-11-03
+- 午前4:00 定期メンテナンスおよび全スキル・リファレンス・評価セット（evals）の包括的監査を実施。
+- `refresh.sh` 実行により、一次ページ 2 点、PDF 33 点の SHA-256 突合を実施、すべて一致（`same`）。法令リビジョン（L1〜L4, L6, L7）もすべて一致（`same`）。e-Gov API にて L5（犯収法本法 `419AC0000000022`）を確認し、現行施行リビジョン（`419AC0000000022_20260812_508AC0000000064`）に未反映の新規改正がないことを確認。
+- 4つの独立監査サブエージェント（Tier 1 法令・ドメイン、Tier 2 iOS CoreNFC/APDU/端末セキュリティ、Tier 3 サーバー暗号・失効確認・セッション、Tier 4 プラグイン構造・日英対訳・evals）によるクロスチェック結果を反映:
+  - `skills/honnin-kakunin-houhou/` および `references/method-map.md` に携帯法施行規則 2027年4月1日版（L3b: 新ニ, 新チ, 新リ）の詳細節とマッピングを完全同期。
+  - `skills/platform-jigyousha/` に古物営業法施行規則第15条第3項第十一号（JPKI）の署名検証者但書を追記。
+  - `references/yougoshuu.md` の「カ方式」「ヘ方式」「ル方式」「携帯法」に法令横断対応（携帯法2026/2027、古物営業法）を補完。
+  - `skills/ios-corenfc-apdu/`（EF-ID 長さ検証 guard）、`skills/pin-lock-handling/`（セッション再接続時の DF/EF 選択、SecureBytes 運用の注記）、`skills/ios-security/`（DCAppAttestService 端末整合性ガイド）、`references/apdu-cheatsheet.md`（券面事項確認APの照合番号B 14桁・10回ロックの明確化）を強化。
+  - `skills/signature-verification/`（手順番号の誤参照修正、利用者証明用 CA のフィンガープリント照合、RFC 5280 Critical 拡張拒否）、`skills/jlis-yukousei-kakunin/`（CRL/OCSP の thisUpdate〜nextUpdate 有効期間検証）を強化。
+  - 全27組の日英対訳（.md ↔ .en.md）を 100% 同期更新。
