@@ -5,5 +5,26 @@
   "author": {
     "name": "quangha"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "skills": [
+    "skills/doui-jouhou-kanri",
+    "skills/ekyc-jp",
+    "skills/ekyc-session-orchestration",
+    "skills/honnin-kakunin-houhou",
+    "skills/ios-corenfc-apdu",
+    "skills/ios-nfc-ux-errors",
+    "skills/ios-security",
+    "skills/jlis-yukousei-kakunin",
+    "skills/jpki-ap-riyousha",
+    "skills/jpki-ap-shomei",
+    "skills/jpki-overview",
+    "skills/kenmen-jikou-kakunin-ap",
+    "skills/kenmen-nyuryoku-hojo-ap",
+    "skills/kihon-4-jouhou-doui",
+    "skills/mynumber-card-ic",
+    "skills/pin-lock-handling",
+    "skills/platform-jigyousha",
+    "skills/signature-verification",
+    "skills/sources-refresh"
+  ]
 }

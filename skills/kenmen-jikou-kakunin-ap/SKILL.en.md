@@ -59,7 +59,7 @@ The individual number (My Number) is **Specific Personal Information**. Stricter
 
 Send sequentially within 1 session. Interrupt if any response SW is not `90 00`. **The AID, EF identifier, and unlock keyref of the Card Surface Verification AP have not been confirmed in public sources, and the following are all `unverified`.** Follow the confidence table in `references/apdu-cheatsheet.md` and implement after replacing with confirmed values.
 
-- [ ] **1. SELECT Card Surface Verification AP** — `00 A4 04 0C <Lc> <AID>` (CLA INS P1 P2 are common with other APs. **AID is `unverified`**). If `6A 82`, review AID / `select-identifiers` in `Info.plist`.
+- [ ] **1. SELECT Card Surface Verification AP** — `00 A4 04 0C <Lc> <AID>` (CLA INS P1 P2 are common with other APs. **AID is `unverified`, technical candidate: `D3 92 10 00 31 00 01 01 01 01`**). If `6A 82`, review AID / `select-identifiers` in `Info.plist`.
 - [ ] **2. SELECT EF of unlock information** — `00 A4 02 0C 02 <ef-hi ef-lo>` (**EF identifier is `unverified`**).
 - [ ] **3. VERIFY inquiry number** — `00 20 00 P2 <Lc> <ASCII byte sequence>`.
   - Front only: 14 digits printed on the card surface (DOB 6 + expiry 4 + security code 4).

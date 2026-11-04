@@ -52,13 +52,16 @@ description: 券面入力補助AP から 基本4情報（氏名・住所・生�
 
 ```swift
 extension CardReader {
-    // 手順 2〜3: 解錠情報 EF の SELECT と VERIFY。ヘ方式は券面記載の 14 桁を渡す。
-    // 00 11 は 4 桁 PIN の EF（14 桁 .shogoB の対象 EF・keyref・Lc・整形は未確認のため確定値に差し替える）。
+    // 手順 2〜3: 解錠情報 EF の SELECT と VERIFY。
+    // 00 11 は 4 桁 PIN の EF（14 桁 .shogoB による解錠は券面事項確認AP（kenmen-jikou-kakunin-ap）で行う）。
     // VerifyOutcome / PINKind / pinBytes / interpret は pin-lock-handling で定義。
-    // kind: 4 桁 PIN なら .kenmenHojo、ヘ方式の券面記載 14 桁なら .shogoB
     func verifyKenmenUnlock(_ unlock: String, kind: PINKind, tag: NFCISO7816Tag) async throws -> VerifyOutcome {
-        let bytes = try pinBytes(unlock, kind: kind)         // 全角→半角・桁数チェック（違反はカードへ送らない）
-        try await selectEF(efID: [0x00, 0x11], tag: tag)     // 00 A4 02 0C 02 00 11（4桁PIN EF。14桁 .shogoB の対象EFは未確認）
+        guard kind == .kenmenHojo else {
+            // 14桁の照合番号Bによる解錠は券面事項確認AP（kenmen-jikou-kakunin-ap）で行う
+            throw ReaderError.invalidInput
+        }
+        let bytes = try pinBytes(unlock, kind: .kenmenHojo)   // 全角→半角・桁数チェック（違反はカードへ送らない）
+        try await selectEF(efID: [0x00, 0x11], tag: tag)     // 00 A4 02 0C 02 00 11（4桁PIN EF）
         let apdu = rawAPDU([0x00, 0x20, 0x00, 0x80, UInt8(bytes.count)] + bytes)
         let (_, sw1, sw2) = try await send(apdu, to: tag)
         return interpret(sw1: sw1, sw2: sw2)                // pin-lock-handling

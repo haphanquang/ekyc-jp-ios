@@ -29,7 +29,7 @@ description: 日本のeKYC（マイナンバーカード・公的個人認証JPK
 | `jpki-ap-shomei` | 署名用電子証明書の読み取りと電子署名生成 |
 | `jpki-ap-riyousha` | 利用者証明用電子証明書、チャレンジレスポンス |
 | `kenmen-nyuryoku-hojo-ap` | 券面入力補助APで基本4情報取得 |
-| `kenmen-jikou-kakunin-ap` | 券面画像・顔写真・個人番号の取得 |
+| `kenmen-jikou-kakunin-ap` | 券面画像・顔写真・個人番号の取得（※個人番号の取得は番号法上の根拠が必要。犯収法eKYCでは取得不可） |
 | `pin-lock-handling` | 暗証番号のロック回数、SW1SW2、ロック解除案内 |
 | `ios-nfc-ux-errors` | 読み取りUX、エラー文言、アンテナ位置、App Clip |
 | `ios-security` | カードデータの取り扱い、証明書ピンニング、ログ禁止項目 |
@@ -63,7 +63,7 @@ description: 日本のeKYC（マイナンバーカード・公的個人認証JPK
 | 署名用電子証明書で電子署名を生成し、サーバーで検証したい | `ekyc-session-orchestration` → `ios-corenfc-apdu` → `jpki-ap-shomei` → `signature-verification` → `jlis-yukousei-kakunin` |
 | 利用者証明用電子証明書でチャレンジレスポンス認証をしたい | `ios-corenfc-apdu` → `jpki-ap-riyousha` → `ekyc-session-orchestration` |
 | 券面入力補助APで基本4情報を取得したい | `ios-corenfc-apdu` → `kenmen-nyuryoku-hojo-ap` |
-| 券面画像・顔写真・個人番号を取得したい | `ios-corenfc-apdu` → `kenmen-jikou-kakunin-ap` |
+| 券面画像・顔写真・個人番号を取得したい（※個人番号の取得は番号法上の根拠が必要。犯収法eKYCでは取得不可） | `ios-corenfc-apdu` → `kenmen-jikou-kakunin-ap` |
 | 暗証番号のロック・SW1SW2・ロック解除案内を扱いたい | `pin-lock-handling` |
 | 読み取りUX、エラー文言、アンテナ位置、App Clip を設計したい | `ios-nfc-ux-errors` |
 | カードデータの取り扱い、証明書ピンニング、ログ禁止項目を確認したい | `ios-security` |

@@ -40,6 +40,7 @@ VERIFY response SW1SW2. Values are ISO/IEC 7816-4 standard values; primary sourc
 | `90 00` | Verification successful | Proceed to next step. May clear remaining count display |
 | `63 CX` | PIN mismatch. Lower nibble `X` is remaining retry count (e.g., `63 C2` is 2 remaining. Treat `63 C0` as 0 remaining = locked) | Display remaining count. Warn when `X` is small. **Do not auto-resend** |
 | `63 00` | Mismatch (possibly behavior not returning remaining count) | Treat remaining count as unknown; warn cautiously. Present that next attempt may be the last |
+| `69 82` | Security status not satisfied (PIN not verified, etc.) | Perform required PIN VERIFY (e.g. signing PIN verification before reading EF 00 01) before retrying |
 | `69 83`, `69 84` | Authentication method blocked (locked) / Referenced data invalidated | Further VERIFY is futile. Close PIN entry field and transition to lock release guidance |
 | `67 00` | Wrong length | Suspect implementation bug such as Lc mismatch. Do not assume user attempt was consumed |
 | `6A 88` | Referenced data not found (keyref/EF mismatch, etc.) | Suspect implementation bug. Review SELECTed AP/EF. Do not prompt user to re-enter PIN |
@@ -125,7 +126,7 @@ func checkRemainingAttempts(pinEFID: [UInt8], aid: [UInt8]? = nil, tag: NFCISO78
                                     p1Parameter: 0x00,
                                     p2Parameter: 0x80,
                                     data: Data(),
-                                    expectedResponseLength: -1)!
+                                    expectedResponseLength: -1)
     let (_, sw1, sw2) = try await tag.sendCommand(apdu: emptyVerify)
     return interpret(sw1: sw1, sw2: sw2)
 }

@@ -48,7 +48,7 @@ There are two types of validity verification methods: "CRL provision method" and
 | Update frequency | Updated on a daily basis (once a day, etc.) | Updated on a 15-minute basis |
 | Immediacy | Maximum time lag of about 1 day due to periodic updates | Real-time |
 | Offline | **Can be verified even offline** | Cannot be verified offline (communication to the responder is required) |
-| Fee handling | CRL method is permanently free | OCSP responder method is free for the time being for 3 years (from January 2023) |
+| Fee handling | CRL method is permanently free | OCSP responder method is free until March 31, 2027 (Guidelines v1.8 Chapter 4(3)b) |
 
 - The electronic certificate verification fee to J-LIS is a pay-as-you-go system (20 yen/item for signing, 2 yen/item for user-authentication), but it is free for the time being from January 2023 (jpki-introduction §3.3).
 - In the case of SP operators, a service usage fee set by the PF operator will be incurred separately from this (varies by operator).
@@ -152,7 +152,7 @@ PDFs under `references/pdfs/` are third-party works and are not shipped with the
 - `references/pdfs/33_guide-liquid-ekyc.pdf` (LIQUID eKYC. p18-19 Fraud detection/notation fluctuation, p21 "Flow to introduction" = NDA, AID disclosure application, Public Personal Authentication Service usage application, J-LIS examination about 1-2 months, schedule upper limit)
 - `references/method-map.md` (Definitions of He-method/Ka-method. The legal names and timing are uniquely defined in this file and `honnin-kakunin-houhou`)
 
-## Last Verified: 2026-09-11
+## Last Verified: 2026-10-05
 
 ## Unverified Items
 

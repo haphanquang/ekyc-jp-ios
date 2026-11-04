@@ -52,13 +52,16 @@ Send the following sequentially within a single session. Abort if the response S
 
 ```swift
 extension CardReader {
-    // Steps 2-3: SELECT the unlocking EF and VERIFY. The He-method passes 14 digits written on the card face.
-    // 00 11 is the 4-digit PIN EF (target EF / keyref / Lc / formatting for 14-digit .shogoB are unverified; replace when confirmed).
+    // Steps 2-3: SELECT the unlocking EF and VERIFY.
+    // 00 11 is the 4-digit PIN EF (unlocking with 14-digit .shogoB is performed in the card-face items confirmation AP: kenmen-jikou-kakunin-ap).
     // VerifyOutcome / PINKind / pinBytes / interpret are defined in pin-lock-handling.
-    // kind: .kenmenHojo for the 4-digit PIN, .shogoB for the 14 digits written on the card face (He-method)
     func verifyKenmenUnlock(_ unlock: String, kind: PINKind, tag: NFCISO7816Tag) async throws -> VerifyOutcome {
-        let bytes = try pinBytes(unlock, kind: kind)         // full-width to half-width, digit-count check (violations are not sent to the card)
-        try await selectEF(efID: [0x00, 0x11], tag: tag)     // 00 A4 02 0C 02 00 11 (4-digit PIN EF; target EF for 14-digit .shogoB is unverified)
+        guard kind == .kenmenHojo else {
+            // Unlocking with 14-digit check number B is performed in the card-face items confirmation AP (kenmen-jikou-kakunin-ap)
+            throw ReaderError.invalidInput
+        }
+        let bytes = try pinBytes(unlock, kind: .kenmenHojo)   // full-width to half-width, digit-count check (violations are not sent to the card)
+        try await selectEF(efID: [0x00, 0x11], tag: tag)     // 00 A4 02 0C 02 00 11 (4-digit PIN EF)
         let apdu = rawAPDU([0x00, 0x20, 0x00, 0x80, UInt8(bytes.count)] + bytes)
         let (_, sw1, sw2) = try await send(apdu, to: tag)
         return interpret(sw1: sw1, sw2: sw2)                // pin-lock-handling

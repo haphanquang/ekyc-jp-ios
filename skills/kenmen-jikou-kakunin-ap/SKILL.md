@@ -59,7 +59,7 @@ description: マイナンバーカードの券面事項確認AP から 券面イ
 
 1 セッション内で順に送る。各応答 SW が `90 00` でなければ中断する。**券面事項確認AP の AID・EF 識別子・解錠 keyref は公開ソースで確認できておらず、以下はすべて `未確認`。** `references/apdu-cheatsheet.md` の確度表に従い、確定値に差し替えてから実装する。
 
-- [ ] **1. 券面事項確認AP を SELECT** — `00 A4 04 0C <Lc> <AID>`（CLA INS P1 P2 は他 AP と共通。**AID は `未確認`**）。`6A 82` なら AID / `Info.plist` の `select-identifiers` を見直す。
+- [ ] **1. 券面事項確認AP を SELECT** — `00 A4 04 0C <Lc> <AID>`（CLA INS P1 P2 は他 AP と共通。**AID は `未確認`、技術候補値: `D3 92 10 00 31 00 01 01 01 01`**）。`6A 82` なら AID / `Info.plist` の `select-identifiers` を見直す。
 - [ ] **2. 解錠情報の EF を SELECT** — `00 A4 02 0C 02 <ef-hi ef-lo>`（**EF 識別子は `未確認`**）。
 - [ ] **3. 照会番号を VERIFY** — `00 20 00 P2 <Lc> <ASCII バイト列>`。
   - 表面のみ：券面記載の14桁（生年月日6＋有効期限4＋セキュリティコード4）。

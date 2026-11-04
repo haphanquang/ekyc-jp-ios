@@ -40,6 +40,7 @@ VERIFY の応答 SW1SW2。値は ISO/IEC 7816-4 の標準値で、マイナン�
 | `90 00` | 照合成功 | 次の手順へ。残り回数の表示はクリアしてよい |
 | `63 CX` | 暗証番号不一致。下位ニブル `X` が残り試行回数（例: `63 C2` はあと 2 回。`63 C0` は残り 0 回＝ロックとして扱う） | 残り回数を表示。`X` が小さいときは警告。**自動で再送しない** |
 | `63 00` | 不一致（残り回数を返さない挙動の可能性） | 残り回数不明として扱い、慎重に警告。次が最後の可能性がある旨を提示 |
+| `69 82` | セキュリティステータス不満足（PIN未照合等） | 必要な暗証番号の VERIFY（例: EF 00 01 読取前の署名用 PIN 照合）を行ってから再実行する |
 | `69 83`, `69 84` | 認証方法がロック（閉塞）／参照データ無効 | 以降の VERIFY は無駄。暗証番号入力欄を閉じ、ロック解除の案内へ遷移 |
 | `67 00` | データ長誤り（Wrong length） | Lc 桁数不整合等の実装バグを疑う。利用者の試行回数を消費した前提にしない |
 | `6A 88` | 参照すべきデータが見つからない（keyref／EF の誤り等） | 実装バグを疑う。SELECT した AP・EF を見直す。利用者に暗証番号の再入力を促さない |
@@ -125,7 +126,7 @@ func checkRemainingAttempts(pinEFID: [UInt8], aid: [UInt8]? = nil, tag: NFCISO78
                                     p1Parameter: 0x00,
                                     p2Parameter: 0x80,
                                     data: Data(),
-                                    expectedResponseLength: -1)!
+                                    expectedResponseLength: -1)
     let (_, sw1, sw2) = try await tag.sendCommand(apdu: emptyVerify)
     return interpret(sw1: sw1, sw2: sw2)
 }

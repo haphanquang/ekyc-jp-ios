@@ -29,7 +29,7 @@ Total of 19 skills in 3 tiers + maintenance (including this router). First, iden
 | `jpki-ap-shomei` | Reading signing certificates and generating electronic signatures |
 | `jpki-ap-riyousha` | User-authentication certificates, challenge-response |
 | `kenmen-nyuryoku-hojo-ap` | Acquiring four basic attributes with the card-face input-assist application |
-| `kenmen-jikou-kakunin-ap` | Acquiring card-face images, facial photos, and personal numbers |
+| `kenmen-jikou-kakunin-ap` | Acquiring card-face images, facial photos, and personal numbers (*Acquiring Personal Number requires legal basis under My Number Act; prohibited in standard eKYC) |
 | `pin-lock-handling` | PIN lock counts, SW1SW2, unlock guidance |
 | `ios-nfc-ux-errors` | Reading UX, error wording, antenna position, App Clip |
 | `ios-security` | Handling card data, certificate pinning, prohibited log items |
@@ -63,7 +63,7 @@ Total of 19 skills in 3 tiers + maintenance (including this router). First, iden
 | Generate an electronic signature with a signing certificate and verify it on the server | `ekyc-session-orchestration` → `ios-corenfc-apdu` → `jpki-ap-shomei` → `signature-verification` → `jlis-yukousei-kakunin` |
 | Perform challenge-response authentication with a user-authentication certificate | `ios-corenfc-apdu` → `jpki-ap-riyousha` → `ekyc-session-orchestration` |
 | Acquire the four basic attributes with the card-face input-assist application | `ios-corenfc-apdu` → `kenmen-nyuryoku-hojo-ap` |
-| Acquire card-face images, facial photos, and personal numbers | `ios-corenfc-apdu` → `kenmen-jikou-kakunin-ap` |
+| Acquire card-face images, facial photos, and personal numbers (*Acquiring Personal Number requires legal basis under My Number Act; prohibited in standard eKYC) | `ios-corenfc-apdu` → `kenmen-jikou-kakunin-ap` |
 | Handle PIN locks, SW1SW2, and unlock guidance | `pin-lock-handling` |
 | Design reading UX, error wording, antenna position, and App Clip | `ios-nfc-ux-errors` |
 | Check card data handling, certificate pinning, and prohibited log items | `ios-security` |

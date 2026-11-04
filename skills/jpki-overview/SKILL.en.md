@@ -48,7 +48,7 @@ There are two introduction methods. **Reading the electronic certificate from th
 | Become a PF operator | Inquire to J-LIS directly | Required | Develop in-house (cloud is possible) | About 6 months to 1 year from obtaining technical specifications to acquiring certification |
 | Become an SP operator | Outsource to a PF operator | Facility development is unnecessary (see proviso below) | Unnecessary | Cheap and quick. Usage fees determined by the PF operator (varies by operator) |
 
-> **Proviso**: When performing **transaction verification under the Act on Prevention of Transfer of Criminal Proceeds using the ka method (JPKI. New nu method from April 2027)**, according to the proviso of Article 6, Paragraph 1, Item 1, ka of the Ordinance for Enforcement of the Act on Prevention of Transfer of Criminal Proceeds, **the specified business itself must be a "signature verifier"** (competent minister certification under Article 17, Paragraph 1, Item 6 of the Public Personal Authentication Act + notification to the agency). The PF operator can act as a proxy for certification, notification, and facility development, but the name belongs to the specified business. For details, see `honnin-kakunin-houhou`, `platform-jigyousha`, and `references/hourei-eKYC.md`. This is irrelevant if only the he method (IC reading + facial photo) is used.
+> **Proviso**: When performing **transaction verification under the Act on Prevention of Transfer of Criminal Proceeds using the ka method (JPKI. New nu method from April 2027)**, or **identity verification under the Secondhand Articles Dealer Act using Item 11 (JPKI)**, according to the provisos of the respective regulations (Article 6, Paragraph 1, Item 1, ka proviso of the Ordinance for Enforcement of the Act on Prevention of Transfer of Criminal Proceeds; Article 15, Paragraph 3, Item 11 proviso of the Ordinance for Enforcement of the Secondhand Articles Dealer Act), **the business itself must be a "signature verifier"** (competent minister certification under Article 17, Paragraph 1, Item 6 of the Public Personal Authentication Act + notification to the agency). The PF operator can act as a proxy for certification, notification, and facility development, but the name belongs to the business. For details, see `honnin-kakunin-houhou`, `platform-jigyousha`, and `references/hourei-eKYC.md`. This is irrelevant if only the he method (IC reading + facial photo) is used.
 
 ## Authentication Flow
 
@@ -83,7 +83,7 @@ The electronic certificate verification fee to J-LIS is a pay-as-you-go system b
 | Signing certificate | 20 yen / 1 case |
 | User-authentication certificate | 2 yen / 1 case |
 
-- **Free for the time being from January 2023** (the CRL provision method is permanently free, and the OCSP responder method is free for the time being for 3 years).
+- **Free for the time being from January 2023** (the CRL provision method is permanently free, and the OCSP responder method is free until March 31, 2027: Guidelines v1.8 Chapter 4(3)b).
 - No costs are incurred for acquiring or maintaining the competent minister certification itself.
 - For SP operators, service usage fees determined by the PF operator are incurred separately from this (varies by operator).
 
@@ -96,7 +96,7 @@ The electronic certificate verification fee to J-LIS is a pay-as-you-go system b
 - [ ] Choose whether to become a PF operator or outsource to a PF operator as an SP operator.
   - [ ] If becoming a PF operator: Competent minister certification is required. Takes about 6 months to 1 year from obtaining technical specifications to acquiring certification.
   - [ ] If becoming an SP operator: Select a PF operator and sign an operator contract. Compare supported reading methods, SDKs/APIs, usage fees, and NDA conditions (see `platform-jigyousha`).
-  - [ ] Determine whether to perform **transaction verification under the Act on Prevention of Transfer of Criminal Proceeds using the ka method (JPKI / new nu)**. If so, confirm with legal affairs and the PF operator the necessity of becoming a "signature verifier" in-house, the scope of proxying by the PF operator, and the required period (the proviso in `honnin-kakunin-houhou`).
+  - [ ] Determine whether to perform **transaction verification under the Act on Prevention of Transfer of Criminal Proceeds using the ka method (JPKI / new nu) or under the Secondhand Articles Dealer Act using Item 11**. If so, confirm with legal affairs and the PF operator the necessity of becoming a "signature verifier" in-house, the scope of proxying by the PF operator, and the required period (the proviso in `honnin-kakunin-houhou` and `platform-jigyousha`).
 - [ ] Estimate the schedule. Even for SP operators, procedures via the PF operator for AID disclosure application, usage application, and procedures on the J-LIS side take time (refer to `platform-jigyousha` for rough estimates. Do not assert them in this skill).
 - [ ] Design separating a "cryptographically correct electronic certificate" from a "currently valid electronic certificate". Refer to `signature-verification` for signature verification and `jlis-yukousei-kakunin` for certificate validity verification.
 
