@@ -45,6 +45,7 @@ VERIFY の応答 SW1SW2。値は ISO/IEC 7816-4 の標準値で、マイナン�
 | `67 00` | データ長誤り（Wrong length） | Lc 桁数不整合等の実装バグを疑う。利用者の試行回数を消費した前提にしない |
 | `6A 88` | 参照すべきデータが見つからない（keyref／EF の誤り等） | 実装バグを疑う。SELECT した AP・EF を見直す。利用者に暗証番号の再入力を促さない |
 | `6A 82` | ファイル／AP が見つからない | AID・EF・`Info.plist` の `select-identifiers` を見直す（`ios-corenfc-apdu`） |
+| `6D 00` | 命令コード未サポート／無効（Instruction not supported） | 選択中 AP で非対応の INS。APDU ロジック実装バグを疑う。暗証番号誤り・試行回数消費とみなさない |
 | その他 | 未知の SW | 暗証番号の誤りと決めつけない。原因不明として扱い、試行回数を消費した前提にしない |
 
 **VERIFY の前後処理はこのスキルの定義を唯一の定義とする。** `jpki-ap-shomei` / `jpki-ap-riyousha` / `kenmen-nyuryoku-hojo-ap` / `kenmen-jikou-kakunin-ap` はここの `pinBytes` と `interpret` を呼ぶ（各スキルで別の enum を定義しない）。
@@ -62,7 +63,7 @@ enum PINKind {
     case shogoA          // 照合番号A: 個人番号 12 桁
 }
 
-enum PINInputError: Error { case invalidFormat }
+enum PINInputError: Error { case invalidFormat, invalidInput }
 
 /// 入力を正規化・検証し、VERIFY に載せる ASCII バイト列を返す。
 /// 形式が違えば throw する（カードへ送らない＝試行回数を消費しない）。
@@ -107,7 +108,8 @@ func interpret(sw1: UInt8, sw2: UInt8) -> VerifyOutcome {
 
 /// 空の VERIFY APDU（Lc = 0）を用いて、試行回数を消費せずに残り回数・ロック状態を確認する（ISO/IEC 7816-4 §7.5.2）。
 /// セッション切断後の状態再取得などに使用。新規セッション接続時は DF（JPKI-AP等）を SELECT してから EF を選択する。
-func checkRemainingAttempts(pinEFID: [UInt8], aid: [UInt8]? = nil, tag: NFCISO7816Tag) async throws -> VerifyOutcome {
+func checkRemainingAttempts(pinEFID: [UInt8], p2: UInt8 = 0x80, aid: [UInt8]? = nil, tag: NFCISO7816Tag) async throws -> VerifyOutcome {
+    guard pinEFID.count == 2 else { throw PINInputError.invalidInput }
     if let aid = aid {
         let selectAID = NFCISO7816APDU(data: Data([0x00, 0xA4, 0x04, 0x0C, UInt8(aid.count)] + aid))!
         let (_, sw1AID, sw2AID) = try await tag.sendCommand(apdu: selectAID)
@@ -120,11 +122,11 @@ func checkRemainingAttempts(pinEFID: [UInt8], aid: [UInt8]? = nil, tag: NFCISO78
     guard sw1Sel == 0x90, sw2Sel == 0x00 else {
         return .other(sw1: sw1Sel, sw2: sw2Sel)
     }
-    // Case 1 APDU (4 bytes: 00 20 00 80。Le=00 を含めると一部の IC チップで 67 00 Wrong Length になるのを防ぐ)
+    // Case 1 APDU (4 bytes: 00 20 00 [p2]。Le=00 を含めると一部の IC チップで 67 00 Wrong Length になるのを防ぐ)
     let emptyVerify = NFCISO7816APDU(instructionClass: 0x00,
                                     instructionCode: 0x20,
                                     p1Parameter: 0x00,
-                                    p2Parameter: 0x80,
+                                    p2Parameter: p2,
                                     data: Data(),
                                     expectedResponseLength: -1)
     let (_, sw1, sw2) = try await tag.sendCommand(apdu: emptyVerify)

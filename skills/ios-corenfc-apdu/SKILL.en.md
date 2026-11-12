@@ -154,6 +154,7 @@ extension CardReader {
     func readBinary(offset: Int, length: Int, tag: NFCISO7816Tag) async throws -> Data {
         // If the highest bit of P1 is 1, it means "short EF identifier" specification, so offset is up to 15 bits
         guard (0...0x7FFF).contains(offset) else { throw ReaderError.offsetOutOfRange(offset) }
+        guard (1...256).contains(length) else { throw ReaderError.invalidInput }
         var (data, sw1, sw2) = try await send(readBinaryAPDU(offset: offset, expectedLen: length), to: tag)
         if sw1 == 0x6C {   // Le error: Resend exactly once with the length indicated by the card (ISO/IEC 7816-4)
             let le = sw2 == 0 ? 256 : Int(sw2)

@@ -45,6 +45,7 @@ VERIFY response SW1SW2. Values are ISO/IEC 7816-4 standard values; primary sourc
 | `67 00` | Wrong length | Suspect implementation bug such as Lc mismatch. Do not assume user attempt was consumed |
 | `6A 88` | Referenced data not found (keyref/EF mismatch, etc.) | Suspect implementation bug. Review SELECTed AP/EF. Do not prompt user to re-enter PIN |
 | `6A 82` | File/AP not found | Review AID, EF, and `select-identifiers` in `Info.plist` (`ios-corenfc-apdu`) |
+| `6D 00` | Instruction not supported or invalid | INS not supported by selected AP. Suspect APDU logic bug. Do not treat as user PIN error or consumed attempt |
 | Other | Unknown SW | Do not assume PIN error. Treat as unknown cause; do not assume retry count was consumed |
 
 **The definition in this skill is the sole definition for VERIFY pre- and post-processing.** `jpki-ap-shomei` / `jpki-ap-riyousha` / `kenmen-nyuryoku-hojo-ap` / `kenmen-jikou-kakunin-ap` call `pinBytes` and `interpret` here (do not define separate enums in each skill).
@@ -62,7 +63,7 @@ enum PINKind {
     case shogoA          // Inquiry Number A: Individual Number 12 digits
 }
 
-enum PINInputError: Error { case invalidFormat }
+enum PINInputError: Error { case invalidFormat, invalidInput }
 
 /// Normalizes and validates the input, and returns an ASCII byte array to be included in VERIFY.
 /// If the format is invalid, it throws (not sent to the card = retry count not consumed).
@@ -107,7 +108,8 @@ func interpret(sw1: UInt8, sw2: UInt8) -> VerifyOutcome {
 
 /// Checks the remaining attempts / lock status without consuming attempts using an empty VERIFY APDU (Lc = 0, ISO/IEC 7816-4 §7.5.2).
 /// Used for recovering status after session disconnection, etc. When connecting to a fresh session, select the DF (such as JPKI-AP) before selecting the EF.
-func checkRemainingAttempts(pinEFID: [UInt8], aid: [UInt8]? = nil, tag: NFCISO7816Tag) async throws -> VerifyOutcome {
+func checkRemainingAttempts(pinEFID: [UInt8], p2: UInt8 = 0x80, aid: [UInt8]? = nil, tag: NFCISO7816Tag) async throws -> VerifyOutcome {
+    guard pinEFID.count == 2 else { throw PINInputError.invalidInput }
     if let aid = aid {
         let selectAID = NFCISO7816APDU(data: Data([0x00, 0xA4, 0x04, 0x0C, UInt8(aid.count)] + aid))!
         let (_, sw1AID, sw2AID) = try await tag.sendCommand(apdu: selectAID)
@@ -120,11 +122,11 @@ func checkRemainingAttempts(pinEFID: [UInt8], aid: [UInt8]? = nil, tag: NFCISO78
     guard sw1Sel == 0x90, sw2Sel == 0x00 else {
         return .other(sw1: sw1Sel, sw2: sw2Sel)
     }
-    // Case 1 APDU (4 bytes: 00 20 00 80; prevents 67 00 Wrong Length on IC chips when Le=00 is included)
+    // Case 1 APDU (4 bytes: 00 20 00 [p2]; prevents 67 00 Wrong Length on IC chips when Le=00 is included)
     let emptyVerify = NFCISO7816APDU(instructionClass: 0x00,
                                     instructionCode: 0x20,
                                     p1Parameter: 0x00,
-                                    p2Parameter: 0x80,
+                                    p2Parameter: p2,
                                     data: Data(),
                                     expectedResponseLength: -1)
     let (_, sw1, sw2) = try await tag.sendCommand(apdu: emptyVerify)

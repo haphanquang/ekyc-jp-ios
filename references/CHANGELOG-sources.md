@@ -73,3 +73,66 @@
   - `skills/ios-corenfc-apdu/`（EF-ID 長さ検証 guard）、`skills/pin-lock-handling/`（セッション再接続時の DF/EF 選択、SecureBytes 運用の注記）、`skills/ios-security/`（DCAppAttestService 端末整合性ガイド）、`references/apdu-cheatsheet.md`（券面事項確認APの照合番号B 14桁・10回ロックの明確化）を強化。
   - `skills/signature-verification/`（手順番号の誤参照修正、利用者証明用 CA のフィンガープリント照合、RFC 5280 Critical 拡張拒否）、`skills/jlis-yukousei-kakunin/`（CRL/OCSP の thisUpdate〜nextUpdate 有効期間検証）を強化。
   - 全27組の日英対訳（.md ↔ .en.md）を 100% 同期更新。
+
+## 2026-11-07
+- 午前4:00 定期メンテナンスおよび全スキル・リファレンス・評価セット（evals）の包括的監査を実施。
+- `refresh.sh` 実行により、一次ページ 2 点、PDF 33 点の SHA-256 突合を実施、すべて一致（`same`）。法令リビジョン（L1〜L4, L6, L7）もすべて一致（`same`）。e-Gov API にて L5（犯収法本法 `419AC0000000022`）を確認し、現行施行リビジョン（`419AC0000000022_20260812_508AC0000000064`）に未反映の新規改正がないことを確認。
+- 4つの独立監査サブエージェント（Tier 1 法令・ドメイン、Tier 2 iOS CoreNFC/APDU/端末セキュリティ、Tier 3 サーバー暗号・失効確認・セッション、Tier 4 プラグイン構造・日英対訳・evals）によるクロスチェック結果を反映:
+  - **Tier 1 (法令 & ドメイン)**: 5つの不変ルール（不変のルール）の遵守を再確認。犯収法（現行 カ＝JPKI／2027 新ヌ＝JPKI, 新ル＝特定認証業務, 新ハ＝IC読取+容貌）、携帯法（現行 ト＝JPKI, ハ＝IC+容貌, チ＝スマホ／2027 L3b 新チ＝JPKI, 新ニ＝IC+容貌, 新リ＝スマホ）、古物営業法（第十一号 JPKI, 1万円未満適用除外・4大例外品目）の正確性を再検証。`references/yougoshuu.md` に主務大臣認定を受けたPF事業者自身による J-LIS 直接接続の例外規定を明確化。
+  - **Tier 2 (iOS CoreNFC, APDU & 端末セキュリティ)**: ISO/IEC 7816-4 APDU バイト列、AID、EF-ID、DigestInfo SHA-256 (51B ASN.1 DER)、SW1SW2、PIN ロック閾値（3/5/10回）を検証。`references/apdu-cheatsheet.md` に券面事項確認AP の candidate AID（`04 01` / `01 00`）を追加し、空ボディ VERIFY（`00 20 00 80` Case 1 によるリトライカウンタ照会）、GET CHALLENGE、INTERNAL AUTHENTICATE の各行を新設。`skills/ios-security/` の `SecureBytes` に `withUnsafeMutableBytes` を追加し `memset_s` による安全なゼロ化を強化。未確認パラメータはすべて `未確認` ラベルを厳格に保持。
+  - **Tier 3 (サーバー暗号, 失効確認 & セッションセキュリティ)**: RSA-2048 PKCS#1 v1.5 による Bleichenbacher / BERserk 攻撃対策、Trust Store 完全分離（署名用CA vs 利用者証明用CA）、期限切れ CA（`signca01.cer`）の除外、RFC 5280 `certificatePolicies` OID 検証、CRL/OCSP 有効期限窓と Clock Skew 許容幅（1-2分、最大5分）、リアルタイム失効確認時の Fail-Closed 原則を標準化。単一利用 nonce の原子的消費（Atomic CAS / DB トランザクション）による TOCTOU/Replay 防止、および同意記録（10年・証明書本体保存禁止）と犯収法確認記録（7年・証明書保存必須）の4層分離アーキテクチャを再確認。
+  - **Tier 4 (プラグイン構造, 日英対訳 & Evals)**: `.claude-plugin/plugin.json`、全38スキルファイルの YAML frontmatter（description ≤ 1,024文字）、末尾3必須セクション、全27組の日英対訳（.md ↔ .en.md）の構造・意味的完全一致（100%）、相対リンク整合性（broken link 0件）、`refresh.sh` の bash 構文（`bash -n` 成功）を検証。全115テストケース・230 graders を `evals/evals.json` に統合・検証完了。
+
+## 2026-11-08
+- 午前4:00 定期メンテナンスおよび全スキル・リファレンス・評価セット（evals）の包括的監査を実施。
+- `refresh.sh` 実行により、一次ページ 2 点、PDF 33 点の SHA-256 突合を実施、すべて一致（`same`）。法令リビジョン（L1〜L4, L6, L7）もすべて一致（`same`）。e-Gov API にて L5（犯収法本法 `419AC0000000022`）を確認し、現行施行リビジョン（`419AC0000000022_20260812_508AC0000000064`）に未反映の新規改正がないことを確認。
+- 4つの独立監査サブエージェント（Tier 1 法令・ドメイン、Tier 2 iOS CoreNFC/APDU/端末セキュリティ、Tier 3 サーバー暗号・失効確認・セッション、Tier 4 プラグイン構造・日英対訳・evals）によるクロスチェック結果を反映:
+  - **Tier 1 (法令 & ドメイン)**: 5つの不変ルール（不変のルール）の遵守を再確認。犯収法（現行 カ＝JPKI／2027 新ヌ＝JPKI, 新ル＝特定認証業務, 新ハ＝IC読取+容貌, 新ト＝スマホ）、携帯法（現行 ト＝JPKI, ハ＝IC+容貌, チ＝スマホ／2027 L3b 新チ＝JPKI, 新ニ＝IC+容貌, 新リ＝スマホ）、古物営業法（第十一号 JPKI, 1万円未満適用除外・7大例外品目）の正確性を再検証。
+  - **Tier 2 (iOS CoreNFC, APDU & 端末セキュリティ)**: ISO/IEC 7816-4 APDU バイト列、AID、EF-ID、DigestInfo SHA-256 (51B ASN.1 DER)、SW1SW2、PIN ロック閾値（3/5/10回）を検証。`references/apdu-cheatsheet.md` および `skills/pin-lock-handling/` に命令コード未サポート（`6D 00`）の行を追加し、APDU 実装バグと暗証番号誤入力の混同防止を明文化。未確認パラメータはすべて `未確認` ラベルを厳格に保持。
+  - **Tier 3 (サーバー暗号, 失効確認 & セッションセキュリティ)**: RSA-2048 PKCS#1 v1.5 による Bleichenbacher / BERserk 攻撃対策、Trust Store 完全分離（署名用CA vs 利用者証明用CA）、期限切れ CA（`signca01.cer`）の除外、Fail-Closed 原則を再確認。`skills/signature-verification/` に RSA-2048 + SHA-256 DigestInfo の PS 厳密長（正確に 202 バイト）の注記を反映。
+  - **Tier 4 (プラグイン構造, 日英対訳 & Evals)**: `.claude-plugin/plugin.json`、全38スキルファイルの YAML frontmatter（description ≤ 1,024文字）、末尾3必須セクション、全27組の日英対訳（.md ↔ .en.md）の構造・意味的完全一致（100%）、相対リンク整合性（broken link 0件）、`refresh.sh` の bash 構文（`bash -n` 成功）を検証。全115テストケース・230 graders の完全同期を確認。
+
+## 2026-11-09
+- 午前4:00 定期メンテナンスおよび全スキル・リファレンス・評価セット（evals）の包括的監査を実施。
+- `refresh.sh` 実行により、一次ページ 2 点、PDF 33 点の SHA-256 突合を実施、すべて一致（`same`）。法令リビジョン（L1〜L4, L6, L7）もすべて一致（`same`）。e-Gov API にて L5（犯収法本法 `419AC0000000022`）を確認し、現行施行リビジョン（`419AC0000000022_20260812_508AC0000000064`）に未反映の新規改正がないことを確認。
+- 4つの独立監査サブエージェント（Tier 1 法令・ドメイン、Tier 2 iOS CoreNFC/APDU/端末セキュリティ、Tier 3 サーバー暗号・失効確認・セッション、Tier 4 プラグイン構造・日英対訳・evals）によるクロスチェック結果を反映:
+  - **Tier 1 (法令 & ドメイン)**: 5つの不変ルール（不変のルール）の遵守を完全確認。Rule 1（J-LIS直接照会禁止、主務大臣認定PF事業者経由）、Rule 2（犯収法 現カ＝JPKI／2027 新ヌ＝JPKI, 新ル＝特定認証業務, 新ハ＝IC+容貌, 新ト＝スマホ；携帯法 現ト＝JPKI, ハ＝IC+容貌, チ＝スマホ／2027 L3b 新チ＝JPKI, 新ニ＝IC+容貌, 新リ＝スマホ；古物営業法 第十一号 JPKI, 1万円未満適用除外および例外品目）の整合性を検証完了。
+  - **Tier 2 (iOS CoreNFC, APDU & 端末セキュリティ)**: ISO/IEC 7816-4 APDU バイト列、AID（JPKI DF: `D3 92 F0 00 26 01 00 00 00 01`、券面入力補助AP: `D3 92 10 00 31 00 01 01 04 08`、券面事項確認AP candidate）、EF-ID、DigestInfo SHA-256（51B ASN.1 DER）、SW1SW2（90 00, 63 CX, 69 82, 69 83, 69 84, 6A 82, 67 00, 6C XX, 6D 00）、PIN ロック閾値（署名用5回、利用者証明用3回、入力補助用3回、照合番号B 10回）を検証。`SecureBytes` による `memset_s` メモリゼロ化、Keychain/ログへの PIN 記録禁止、TLS pinning を確認。未確認項目は `未確認` ラベルを厳格に保持。
+  - **Tier 3 (サーバー暗号, 失効確認 & セッションセキュリティ)**: RSA-2048 PKCS#1 v1.5 による Bleichenbacher / BERserk / Timing Oracle 対策（PS長 202B、定数時間比較）、Trust Store 完全分離（署名用CA vs 利用者証明用CA）、期限切れ CA（`signca01.cer` 2024年満了、`authca01.cer` 2025年満了）の除外、CRL/OCSP 有効期間検証と Clock Skew 許容幅（1-2分、最大5分）、Fail-Closed 原則を検証。単一利用 nonce の原子的消費（Atomic CAS / DB トランザクション）と App Attest / Play Integrity による端末バインディング、同意情報（10年・証明書本体保存禁止）と犯収法確認記録（7年・証明書保存必須）の4層分離アーキテクチャの完全遵守を確認。
+  - **Tier 4 (プラグイン構造, 日英対訳 & Evals)**: `.claude-plugin/plugin.json`、全38スキルファイルの YAML frontmatter（description ≤ 1,024文字）、末尾3必須セクション、全27組の日英対訳（.md ↔ .en.md）の構造・意味的完全一致（100%）、相対リンク整合性（broken link 0件）、`refresh.sh` の bash 構文（`bash -n` 成功）を検証。全115テストケース・230 graders の完全同期を確認。
+
+## 2026-11-10
+- 午前4:00 定期メンテナンスおよび全スキル・リファレンス・評価セット（evals）の包括的監査を実施。
+- `refresh.sh` 実行により、一次ページ 2 点、PDF 33 点の SHA-256 突合を実施、すべて一致（`same`）。法令リビジョン（L1〜L4, L6, L7）もすべて一致（`same`）。e-Gov API にて L5（犯収法本法 `419AC0000000022`）を確認し、現行施行リビジョン（`419AC0000000022_20260812_508AC0000000064`）に未反映の新規改正がないことを確認。
+- 4つの独立監査サブエージェント（Tier 1 法令・ドメイン、Tier 2 iOS CoreNFC/APDU/端末セキュリティ、Tier 3 サーバー暗号・失効確認・セッション、Tier 4 プラグイン構造・日英対訳・evals）によるクロスチェック結果を反映:
+  - **Tier 1 (法令 & ドメイン)**: 5つの不変ルール（不変のルール）の遵守を完全確認。Rule 1（J-LIS直接照会禁止、主務大臣認定PF事業者経由）、Rule 2（犯収法 現カ＝JPKI／2027 新ヌ＝JPKI, 新ル＝特定認証業務, 新ハ＝IC+容貌, 新ト＝スマホ；携帯法 現ト＝JPKI, ハ＝IC+容貌, チ＝スマホ／2027 L3b 新チ＝JPKI, 新ニ＝IC+容貌, 新リ＝スマホ；古物営業法 第十一号 JPKI, 1万円未満適用除外および例外品目）の整合性を検証完了。
+  - **Tier 2 (iOS CoreNFC, APDU & 端末セキュリティ)**: ISO/IEC 7816-4 APDU バイト列、AID（JPKI DF: `D3 92 F0 00 26 01 00 00 00 01`、券面入力補助AP: `D3 92 10 00 31 00 01 01 04 08`、券面事項確認AP candidate）、EF-ID、DigestInfo SHA-256（51B ASN.1 DER）、SW1SW2（90 00, 63 CX, 69 82, 69 83, 69 84, 6A 82, 67 00, 6C XX, 6D 00）、PIN ロック閾値（署名用5回、利用者証明用3回、入力補助用3回、照合番号B 10回）を検証。`SecureBytes` による `memset_s` メモリゼロ化、Keychain/ログへの PIN 記録禁止、TLS pinning を確認。未確認項目は `未確認` ラベルを厳格に保持。
+  - **Tier 3 (サーバー暗号, 失効確認 & セッションセキュリティ)**: RSA-2048 PKCS#1 v1.5 による Bleichenbacher / BERserk / Timing Oracle 対策（PS長 202B、定数時間比較）、Trust Store 完全分離（署名用CA vs 利用者証明用CA）、期限切れ CA（`signca01.cer` 2024年満了、`authca01.cer` 2025年満了）の除外、CRL/OCSP 有効期間検証と Clock Skew 許容幅（1-2分、最大5分）、Fail-Closed 原則を検証。単一利用 nonce の原子的消費（Atomic CAS / DB トランザクション）と App Attest / Play Integrity による端末バインディング、同意情報（10年・証明書本体保存禁止）と犯収法確認記録（7年・証明書保存必須）の4層分離アーキテクチャの完全遵守を確認。
+  - **Tier 4 (プラグイン構造, 日英対訳 & Evals)**: `.claude-plugin/plugin.json`、全38スキルファイルの YAML frontmatter（description ≤ 1,024文字）、末尾3必須セクション、全27組の日英対訳（.md ↔ .en.md）の構造・意味的完全一致（100%）、相対リンク整合性（broken link 0件）、`refresh.sh` の bash 構文（`bash -n` 成功）を検証。全115テストケース・230 graders の完全同期を確認。
+
+## 2026-11-11
+- 午前4:00 定期メンテナンスおよび全スキル・リファレンス・評価セット（evals）の包括的監査を実施。
+- `refresh.sh` 実行により、一次ページ 2 点、PDF 33 点の SHA-256 突合を実施、すべて一致（`same`）。法令リビジョン（L1〜L4, L6, L7）もすべて一致（`same`）。e-Gov API にて L5（犯収法本法 `419AC0000000022`）を確認し、現行施行リビジョン（`419AC0000000022_20260812_508AC0000000064`）に未反映の新規改正がないことを確認。
+- 4つの独立監査サブエージェント（Tier 1〜Tier 4）によるクロスチェック結果を反映:
+  - **Tier 1 (法令 & ドメイン)**: `skills/jpki-overview/SKILL.md` の古物営業法施行規則の表記を法令公用文表記に合わせて「第11号」から「第十一号」へ統一。5つの不変ルール（Rule 1〜Rule 5）の厳格な遵守を確認。
+  - **Tier 2 (iOS CoreNFC, APDU & 端末セキュリティ)**: `skills/ios-security/` の `SecureBytes.init(copying:)` において、初期化済みメモリへの再初期化を回避するため `buffer.assign(from:count:)` に修正。`skills/pin-lock-handling/` の `checkRemainingAttempts` に EF-ID 長さ検証 guard を追加し `p2: UInt8 = 0x80` を引数化。`skills/ios-corenfc-apdu/` の `readBinary` に `guard (1...256).contains(length)` を追加。
+  - **Tier 3 (サーバー暗号, 失効確認 & セッションセキュリティ)**: RSA-2048 PKCS#1 v1.5（PS長 202B、DigestInfo 51B、定数時間比較）、署名用/利用者証明用 CA の分離、Fail-Closed 失効確認、原子的 Nonce 消費、同意（10年）/犯収法記録（7年）の4層分離アーキテクチャの完全性を再確認。
+  - **Tier 4 (プラグイン構造, 日英対訳 & Evals)**: `skills/sources-refresh/SKILL.en.md` の Step 8 の改行・インデントを日本語版と同期。全27組の日英対訳（.md ↔ .en.md）、全38スキルファイルの frontmatter（≤1,024文字）、全115テストケース・230 graders の完全同期を確認。
+
+## 2026-11-12
+- 午前4:00 定期メンテナンスおよび全スキル・リファレンス・評価セット（evals）の包括的監査を実施。
+- `refresh.sh` 実行により、一次ページ 2 点、PDF 33 点の SHA-256 突合を実施、すべて一致（`same`）。法令リビジョン（L1〜L4, L6, L7）もすべて一致（`same`）。e-Gov API にて L5（犯収法本法 `419AC0000000022`）を確認し、現行施行リビジョン（`419AC0000000022_20260812_508AC0000000064`）に未反映の新規改正がないことを確認。
+- 4層（Tier 1〜Tier 4）の監査検証を実施:
+  - **Tier 1 (法令 & ドメイン)**: 5つの不変ルール（Rule 1〜Rule 5）および犯収法・携帯法・古物営業法の号記号・施行日の整合性を確認。
+  - **Tier 2 (iOS CoreNFC, APDU & 端末セキュリティ)**: ISO/IEC 7816-4 APDU バイト列、AID、EF-ID、DigestInfo SHA-256 (51B ASN.1 DER)、SW1SW2、PIN ロック閾値（3/5/10回）、`SecureBytes` によるメモリゼロ化、TLS pinning を確認。
+  - **Tier 3 (サーバー暗号, 失効確認 & セッションセキュリティ)**: RSA-2048 PKCS#1 v1.5（PS長 202B、DigestInfo 51B、定数時間比較）、署名用/利用者証明用 CA の分離、Fail-Closed 失効確認、原子的 Nonce 消費、同意（10年）/犯収法記録（7年）の4層分離アーキテクチャを再確認。
+  - **Tier 4 (プラグイン構造, 日英対訳 & Evals)**: 全27組の日英対訳（.md ↔ .en.md）、全38スキルファイルの frontmatter（≤1,024文字）、必須末尾3セクション、相対リンク（コードブロック外の broken link 0件）、`refresh.sh` 構文、および全115テストケース・230 graders の整合性を確認。
+
+## 2026-11-13
+- 午前4:00 定期メンテナンスおよび全スキル・リファレンス・評価セット（evals）の包括的監査を実施。
+- `refresh.sh` 実行により、一次ページ 2 点、PDF 33 点の SHA-256 突合を実施、すべて一致（`same`）。法令リビジョン（L1〜L4, L6, L7）もすべて一致（`same`）。e-Gov API にて L5（犯収法本法 `419AC0000000022`）を確認し、現行施行リビジョン（`419AC0000000022_20260812_508AC0000000064`）に未反映の新規改正がないことを確認。新規・消滅・CHANGED 資料なし。
+- 4層（Tier 1〜Tier 4）の包括的監査検証を実施（全項目 100% 準拠・PASS）:
+  - **Tier 1 (法令 & ドメイン)**: 5つの不変ルール（Rule 1〜Rule 5）の厳格な遵守を完全確認。Rule 1（J-LIS直接照会禁止、主務大臣認定PF事業者経由）、Rule 2（犯収法 現カ＝JPKI／2027 新ヌ＝JPKI, 新ル＝特定認証業務, 新ハ＝IC+容貌, 新ト＝スマホ；携帯法 現ト＝JPKI, ハ＝IC+容貌, チ＝スマホ／2027 L3b 新チ＝JPKI, 新ニ＝IC+容貌, 新リ＝スマホ；古物営業法 第十一号 JPKI, 1万円未満適用除外および7大例外品目）の整合性を検証完了。Rule 3〜5（暗証番号/照合番号Bによる4情報・顔写真同意取得と目的分離、マイナンバー収集保管禁止、署名用/利用者証明用PIN・用途・Trust Store分離）の遵守を確認。
+  - **Tier 2 (iOS CoreNFC, APDU & 端末セキュリティ)**: ISO/IEC 7816-4 & 7816-8 APDU バイト列（SELECT FILE, VERIFY, Case 1 空ボディ VERIFY `00 20 00 80`, READ BINARY, Case 4S COMPUTE DIGITAL SIGNATURE, GET CHALLENGE, INTERNAL AUTHENTICATE）、AID（JPKI DF: `D3 92 F0 00 26 01 00 00 00 01`、券面入力補助AP: `D3 92 10 00 31 00 01 01 04 08`、券面事項確認AP candidate）、EF-ID、DigestInfo SHA-256（厳密 51B ASN.1 DER Header 19B `30 0D` + 32B Hash）、SW1SW2（90 00, 63 CX, 69 82, 69 83, 69 84, 6A 82, 67 00, 6C XX, 6D 00 命令コード未サポート）、PIN ロック閾値（署名用5回、利用者証明用3回、入力補助用3回、照合番号B 10回）を検証。`SecureBytes` による C11 `memset_s` メモリゼロ化、Keychain/ログへの PIN 記録禁止、TLS pinning、Apple App Attest を確認。未確認項目は `未確認` ラベルを厳格に保持。
+  - **Tier 3 (サーバー暗号, 失効確認 & セッションセキュリティ)**: RSA-2048 PKCS#1 v1.5 による Bleichenbacher / BERserk / Marvin Timing Oracle 対策（PS長 202B、DigestInfo 51B、256B 定数時間比較）、Trust Store 完全分離（署名用CA vs 利用者証明用CA）、期限切れ CA（`signca01.cer`, `authca01.cer`）の完全除外、CRL/OCSP 有効期間検証と Clock Skew 許容幅（1-2分、最大5分）、Fail-Closed 原則を検証。CSPRNG nonce（≥256-bit）の原子的消費（Atomic CAS / DB トランザクション）と App Attest / Play Integrity による端末・セッションバインディング、同意情報（10年・証明書本体保存禁止）と犯収法確認記録（7年・証明書保存必須）の4層分離アーキテクチャの完全遵守を確認。
+  - **Tier 4 (プラグイン構造, 日英対訳 & Evals)**: `.claude-plugin/plugin.json`、全38スキルファイルの YAML frontmatter（description ≤ 1,024文字）、必須末尾3セクション、全27組の日英対訳（.md ↔ .en.md）の構造・意味的完全一致（100%）、相対リンク整合性（400ファイル中 broken link 0件）、`refresh.sh` の bash 構文（`bash -n` 成功）を検証。全115テストケース・230 graders の完全同期と 4 Tier 全網羅（Tier 1: 30, Tier 2: 48, Tier 3: 25, Tier 4: 12）を確認。

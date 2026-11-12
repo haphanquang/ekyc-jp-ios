@@ -57,7 +57,7 @@ public final class SecureBytes: @unchecked Sendable {
         if let buffer = self.buffer, !bytes.isEmpty {
             bytes.withUnsafeBufferPointer { src in
                 guard let base = src.baseAddress else { return }
-                buffer.initialize(from: base, count: bytes.count)
+                buffer.assign(from: base, count: bytes.count)
             }
         }
     }
@@ -69,6 +69,16 @@ public final class SecureBytes: @unchecked Sendable {
             return try body(UnsafeBufferPointer(start: nil, count: 0))
         }
         return try body(UnsafeBufferPointer(start: buffer, count: count))
+    }
+
+    /// カスタムセキュアキーパッド等から直接バッファへ書き込むためのミュータブルアクセス（中間コピーの発生を防止）
+    public func withUnsafeMutableBytes<R>(_ body: (UnsafeMutableBufferPointer<UInt8>) throws -> R) rethrows -> R {
+        lock.lock()
+        defer { lock.unlock() }
+        guard let buffer = buffer else {
+            return try body(UnsafeMutableBufferPointer(start: nil, count: 0))
+        }
+        return try body(UnsafeMutableBufferPointer(start: buffer, count: count))
     }
 
     /// サーバー送信後または利用終了後に必ず呼ぶ（C11 memset_s で最適化消去を防ぎ確実にゼロ埋め）
