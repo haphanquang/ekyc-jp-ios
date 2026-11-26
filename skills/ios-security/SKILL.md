@@ -28,9 +28,9 @@ description: iOS でマイナンバーカード eKYC のセキュリティ対策
 ### カードデータは揮発
 
 - **暗証番号はカードへの VERIFY APDU にだけ渡す。** サーバー・分析 SDK・ログ・ペーストボードへ一切送らない。Keychain（生体認証で保護した「暗証番号を記憶する」機能を含む）・UserDefaults・ファイルに保存しない。入力欄は `isSecureTextEntry`、VERIFY の応答を受けたら即破棄する。暗証番号をサーバーへ送る設計・保存する設計が出たら誤りとして正す。
-- カードから読み取る基本4情報・顔写真画像・個人番号・チャレンジ／署名対象データ・署名値は、**サーバーへ送るための一時データ**（暗証番号は上記のとおり送らない）。`Data` / `String` で保持し、サーバー送信（またはセッション終了）直後に破棄する。
+- カードから読み取る基本4情報・顔写真画像・個人番号・チャレンジ／署名対象データ・署名値は、**サーバーへ送るための一時データ**（暗証番号は上記のとおり送らない）。`Data` / `String`（特に個人番号などの高機微データは可能な限り `SecureBytes` を用い、不変 `String` のまま長期保持しない）で保持し、サーバー送信（またはセッション終了）直後に破棄・ゼロ消去する。
 - 保持は 1 リクエストの範囲に限定する。リトライ時は再度カードから読み直す。
-- 暗証番号等の極めて機密性の高いデータは、Swift の `String` / `Array` の CoW（Copy-on-Write）によるメモリ複製残存リスクを排除するため、ネイティブヒープ（`UnsafeMutablePointer<UInt8>`）を直接管理する `SecureBytes` バッファ等で扱い、使用直後に `memset_s` で確実にゼロ埋め消去して解放する。UI 入力（`UITextField` 等）から受け取る際も、一時的な Swift `String` 変数を多重に生成せず、カスタムキーパッドやセキュア入力から直接 `SecureBytes` へ格納する設計が望ましい。最優先は「そもそも保存しない・ログに出さない」。
+- 暗証番号や個人番号（マイナンバー 12桁）・照合番号A等の極めて機密性の高いデータは、Swift の `String` / `Array` の CoW（Copy-on-Write）によるメモリ複製残存リスクを排除するため、ネイティブヒープ（`UnsafeMutablePointer<UInt8>`）を直接管理する `SecureBytes` バッファ等で扱い、使用直後に `memset_s` で確実にゼロ埋め消去して解放する。UI 入力（`UITextField` 等）から受け取る際も、一時的な Swift `String` 変数を多重に生成せず、カスタムキーパッドやセキュア入力から直接 `SecureBytes` へ格納する設計が望ましい。最優先は「そもそも保存しない・ログに出さない」。
 
 ```swift
 import Darwin
@@ -39,14 +39,21 @@ import Foundation
 /// Swift の Array/String の Copy-on-Write (CoW) を回避する安全なネイティブヒープバッファ
 public final class SecureBytes: @unchecked Sendable {
     private var buffer: UnsafeMutablePointer<UInt8>?
-    public private(set) var count: Int
+    private var _count: Int
     private let lock = NSLock()
 
+    public var count: Int {
+        lock.lock()
+        defer { lock.unlock() }
+        return _count
+    }
+
     public init(count: Int) {
-        self.count = count
-        if count > 0 {
-            self.buffer = UnsafeMutablePointer<UInt8>.allocate(capacity: count)
-            self.buffer?.initialize(repeating: 0, count: count)
+        let safeCount = max(0, count)
+        self._count = safeCount
+        if safeCount > 0 {
+            self.buffer = UnsafeMutablePointer<UInt8>.allocate(capacity: safeCount)
+            self.buffer?.initialize(repeating: 0, count: safeCount)
         } else {
             self.buffer = nil
         }
@@ -57,7 +64,7 @@ public final class SecureBytes: @unchecked Sendable {
         if let buffer = self.buffer, !bytes.isEmpty {
             bytes.withUnsafeBufferPointer { src in
                 guard let base = src.baseAddress else { return }
-                buffer.assign(from: base, count: bytes.count)
+                buffer.update(from: base, count: bytes.count)
             }
         }
     }
@@ -68,7 +75,7 @@ public final class SecureBytes: @unchecked Sendable {
         guard let buffer = buffer else {
             return try body(UnsafeBufferPointer(start: nil, count: 0))
         }
-        return try body(UnsafeBufferPointer(start: buffer, count: count))
+        return try body(UnsafeBufferPointer(start: buffer, count: _count))
     }
 
     /// カスタムセキュアキーパッド等から直接バッファへ書き込むためのミュータブルアクセス（中間コピーの発生を防止）
@@ -78,18 +85,18 @@ public final class SecureBytes: @unchecked Sendable {
         guard let buffer = buffer else {
             return try body(UnsafeMutableBufferPointer(start: nil, count: 0))
         }
-        return try body(UnsafeMutableBufferPointer(start: buffer, count: count))
+        return try body(UnsafeMutableBufferPointer(start: buffer, count: _count))
     }
 
     /// サーバー送信後または利用終了後に必ず呼ぶ（C11 memset_s で最適化消去を防ぎ確実にゼロ埋め）
     public func wipe() {
         lock.lock()
         defer { lock.unlock() }
-        if let buffer = buffer, count > 0 {
-            _ = memset_s(buffer, count, 0, count)
+        if let buffer = buffer, _count > 0 {
+            _ = memset_s(buffer, _count, 0, _count)
             buffer.deallocate()
             self.buffer = nil
-            self.count = 0
+            self._count = 0
         }
     }
 
@@ -137,8 +144,8 @@ func urlSession(_ session: URLSession,
 
 通信経路の TLS ピンニングに加え、不正な中継・リプレイ攻撃（Session Relay Attack）や改ざんクライアントからのリクエストを防ぐため、DeviceCheck フレームワークの **App Attest（`DCAppAttestService`）** を併用する（`ekyc-session-orchestration` 参照）。
 
-1. **鍵ペアの生成**: `DCAppAttestService.shared.generateKey()` で Secure Enclave 内にハードウェア保護されたキーを作成し、`keyId` を Keychain に保存する。
-2. **Attestation の取得**: サーバーからセッション開始時に受け取った nonce（または初回チャレンジ）の SHA-256 ハッシュを `clientDataHash` として渡し、`attestKey(keyId, clientDataHash:)` で Apple の Attestation オブジェクトを取得してサーバーへ登録する。
+1. **鍵ペアの生成**: 事前に `DCAppAttestService.shared.isSupported` を確認し（非対応端末・シミュレータでは `false` となるため、`ekyc-session-orchestration` の非対応端末フォールバック方針に従い目視審査等へ分岐）、`DCAppAttestService.shared.generateKey()` で Secure Enclave 内にハードウェア保護されたキーを作成し、`keyId` を Data Protection Keychain に `kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly`（または `...WhenUnlockedThisDeviceOnly`）属性付きで保存する（ハードウェア束縛のためバックアップ・他端末同期から除外。App Clip とフルアプリでは Keychain / App Attest 鍵のスコープが分離される点にも留意）。
+2. **Attestation の取得**: サーバーから受け取った初回アテステーション用チャレンジ（または署名用 nonce 未発行段階ではセッション開始時に取得した別チャレンジ）の SHA-256 ハッシュを `clientDataHash` として渡し、`attestKey(keyId, clientDataHash:)` で Apple の Attestation オブジェクトを取得してサーバーへ登録する。
 3. **Assertion の生成**: JPKI 署名や認証リクエストを送信する際、リクエストペイロード（nonce ＋ 署名値 ＋ タイムスタンプ等）の SHA-256 ハッシュを `clientDataHash` として渡し、`generateAssertion(keyId, clientDataHash:)` で Assertion を生成して HTTP ヘッダ（`X-App-Attest-Assertion` 等）に付与する。
 4. **サーバーでの検証**: サーバー側で counter の単調増加チェックおよび `clientDataHash` の突合を行い、正当なアプリインスタンスから直接送られたリクエストであることを検証する。
 
@@ -152,6 +159,7 @@ func urlSession(_ session: URLSession,
 - [ ] 個人番号（マイナンバー 12桁）
 - [ ] 顔写真画像・券面イメージ・カメラで撮影した容貌画像
 - [ ] 基本4情報（氏名・住所・生年月日・性別）の平文
+- [ ] 電子証明書（DER：署名用・利用者証明用）
 - [ ] 上記を含む APDU の生バイト列・HTTP リクエスト／レスポンスボディ
 
 そのうえで:
@@ -188,10 +196,15 @@ logger.info("JPKI 署名を送信: session=\(sessionID, privacy: .public) len=\(
 - これらは**抑止であって完全防止ではない**（脱獄端末・外部カメラ）。サーバー側の対策と併用する。
 
 ```swift
-NotificationCenter.default.addObserver(
+// 初期表示時（viewDidAppear / didMoveToWindow 等）に必ず現在状態を確認し、変化通知のトークンも保持する
+func updateScreenCaptureState() {
+    sensitiveContentHidden = view.window?.screen.isCaptured ?? true
+}
+
+captureObserver = NotificationCenter.default.addObserver(
     forName: UIScreen.capturedDidChangeNotification, object: nil, queue: .main
 ) { [weak self] _ in
-    self?.sensitiveContentHidden = self?.view.window?.screen.isCaptured ?? false
+    self?.updateScreenCaptureState()
 }
 ```
 
@@ -214,7 +227,8 @@ NotificationCenter.default.addObserver(
 - [ ] 読み取ったデータはメモリ保持のみ。サーバー送信／セッション終了直後に破棄し、リトライは再読み取り
 - [ ] ATS を弱める設定（`NSAllowsArbitraryLoads` 等）が eKYC サーバー向けに無い
 - [ ] eKYC サーバーへ証明書／公開鍵ピンニング。ピン不一致で接続拒否、フォールバック無し、バックアップ鍵も登録
-- [ ] 暗証番号・チャレンジ／ハッシュ・署名値・個人番号・顔写真・券面イメージ・基本4情報平文を、ログ・分析・クラッシュレポート・APDU ダンプに出していない
+- [ ] 口座開設等の eKYC で App Attest（`DCAppAttestService`）を用い、`keyId` を `...ThisDeviceOnly` で保護し、リクエストの `clientDataHash` をサーバーが検証している
+- [ ] 暗証番号・チャレンジ／ハッシュ・署名値・電子証明書（DER）・個人番号・顔写真・券面イメージ・基本4情報平文を、ログ・分析・クラッシュレポート・APDU ダンプに出していない
 - [ ] `os_log` / `Logger` の当該値に `.public` / `%{public}` を使っていない
 - [ ] 一時保存は Keychain（`kSecAttrAccessibleWhenUnlockedThisDeviceOnly` 以上・Data Protection Keychain）またはアプリ生成鍵の Secure Enclave のみ。`UserDefaults` / plist / 平文ファイル不使用
 - [ ] 個人番号を保持する場合、保存時暗号化・アクセス最小化・目的終了後の削除・保存期間を定義（番号法: `kenmen-jikou-kakunin-ap`）
@@ -236,7 +250,7 @@ NotificationCenter.default.addObserver(
 - <https://mas.owasp.org/MASTG/tests/ios/MASVS-STORAGE/MASTG-TEST-0052/>（iOS ローカルデータ保存テスト。`UserDefaults` / plist / Core Data 平文に機微データを置かない、Keychain の `kSecAttrAccessible` は最小権限。取得日 2026-09-08）
 - `references/pdfs/33_guide-liquid-ekyc.pdf`（p.10「JPKI+（容貌）概要」、p.19「高度な不正検知判定機能」、p.20「Liquid PAD / ISO/IEC 30107」— 容貌真贋判定（ディスプレイ攻撃・写真攻撃の PAD）、カメラインジェクション攻撃判定（カメラ制御をハッキングし仮想映像に差し替える攻撃）、顔／本人特定事項の使いまわし・警告リスト判定。いずれもサーバー側機能で端末アプリの責務ではない）
 
-## 最終確認日: 2026-09-08
+## 最終確認日: 2026-11-25
 
 ## 未確認事項
 

@@ -15,7 +15,7 @@ Method names such as the Act on Prevention of Transfer of Criminal Proceeds (He-
 - When checking the APDU for SELECT, unlock, and READ BINARY of the four basic attributes for the card-face input-assist application
 - When implementing a configuration where the user does not input a 4-digit PIN (unlocked with values written on the card face)
 
-The Individual Number (My Number) is also in the same AP, but reading it requires different unlocking and legal basis under the Numbers Act → `kenmen-jikou-kakunin-ap`. For lock/remaining count UX, see `pin-lock-handling`. To verify authenticity via electronic signature, use the Ka-method → `jpki-ap-shomei`.
+The Individual Number (My Number) text (EF `00 01`) is also inside this AP, but reading it requires different unlocking and a legal basis under the Numbers Act (for the card-face confirmation AP used for back-side image / My Number reading and the Numbers Act compliance checklist, see `kenmen-jikou-kakunin-ap`). For lock/remaining count UX, see `pin-lock-handling`. To verify authenticity via electronic signature, use the Ka-method → `jpki-ap-shomei`.
 
 ## Prerequisites
 
@@ -53,16 +53,19 @@ Send the following sequentially within a single session. Abort if the response S
 ```swift
 extension CardReader {
     // Steps 2-3: SELECT the unlocking EF and VERIFY.
-    // 00 11 is the 4-digit PIN EF (unlocking with 14-digit .shogoB is performed in the card-face items confirmation AP: kenmen-jikou-kakunin-ap).
+    // EF 00 11 (P2 = 0x80) is only documented in public sources for the 4-digit PIN (.kenmenHojo).
+    // Because target EF-ID, keyref(P2), Lc, and formatting for 14-digit He-method unlocking on this AP (PDF 33 p11)
+    // remain unverified, do not send 14-digit inputs to EF 00 11 until confirmed against J-LIS specs.
     // VerifyOutcome / PINKind / pinBytes / interpret are defined in pin-lock-handling.
+    // * Note: The unlock: String parameter in this sample is for demonstration. In financial-grade production implementations, to avoid heap copies (Copy-on-Write) from Swift's String/Array ARC, use SecureBytes (memset_s) as described in ios-security and zero it immediately after APDU transmission.
     func verifyKenmenUnlock(_ unlock: String, kind: PINKind, tag: NFCISO7816Tag) async throws -> VerifyOutcome {
         guard kind == .kenmenHojo else {
-            // Unlocking with 14-digit check number B is performed in the card-face items confirmation AP (kenmen-jikou-kakunin-ap)
+            // EF-ID, P2, Lc, and formatting for 14-digit unlock are unverified; do not send to EF 00 11
             throw ReaderError.invalidInput
         }
         let bytes = try pinBytes(unlock, kind: .kenmenHojo)   // full-width to half-width, digit-count check (violations are not sent to the card)
         try await selectEF(efID: [0x00, 0x11], tag: tag)     // 00 A4 02 0C 02 00 11 (4-digit PIN EF)
-        let apdu = rawAPDU([0x00, 0x20, 0x00, 0x80, UInt8(bytes.count)] + bytes)
+        let apdu = try rawAPDU([0x00, 0x20, 0x00, 0x80, UInt8(bytes.count)] + bytes)
         let (_, sw1, sw2) = try await send(apdu, to: tag)
         return interpret(sw1: sw1, sw2: sw2)                // pin-lock-handling
     }
@@ -115,7 +118,7 @@ PDFs under `references/pdfs/` are third-party works and are not shipped with the
 - <https://tex2e.github.io/blog/protocol/jpki-mynumbercard-with-apdu> ("Creating signature data with My Number Card and APDU" — Card-face input-assist AP DF Name `D3 92 10 00 31 00 01 01 04 08`, SELECT `00 A4 04 0C` / `00 A4 02 0C`, card-face input-assist PIN EF `00 11`, 4 basic attributes EF `00 02`, VERIFY `00 20 00 80 04 31 32 33 34`, READ BINARY `00 B0 00 02 01` → `00 B0 00 00 71`, TLV `FF 20` / `DF 21` to `DF 25`, Sex `31`/`32`/`33`, Name/Address are UTF-8, prefix 2-byte correction for cards issued around 2023. Retrieved on 2026-09-08)
 - <https://zenn.dev/kopaneet/articles/1ee74f87eb31d3> ("Acquiring 4 basic attributes from My Number Card" — Card-face input-assist AP AID `D3 92 10 00 31 00 01 01 04 08`, EF-IDs (4 basic attributes `00 02` / Individual Number `00 01` / Input-assist PIN `00 11`), order of SELECT/VERIFY/READ BINARY, body length is at the 3rd byte, max 112 bytes, UTF-8, locks after 3 consecutive failures. Retrieved on 2026-09-08)
 
-## Last Verified: 2026-09-11
+## Last Verified: 2026-11-26
 
 ## Unverified Items
 

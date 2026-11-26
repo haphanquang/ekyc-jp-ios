@@ -15,7 +15,7 @@ description: 券面入力補助AP から 基本4情報（氏名・住所・生�
 - 券面入力補助AP の SELECT・解錠・基本4情報の READ BINARY の APDU を確認するとき
 - 利用者が 4桁の暗証番号を入力しない構成（カード券面の記載値で解錠）を実装するとき
 
-個人番号（個人番号）も同じ AP 内にあるが、その読出しには別の解錠と番号法上の根拠が要る → `kenmen-jikou-kakunin-ap`。ロック・残回数の UX は `pin-lock-handling`。電子署名で真正性を確認するならカ方式 → `jpki-ap-shomei`。
+個人番号（マイナンバー）も同じ AP 内（EF `00 01`）にあるが、その読出しには別の解錠と番号法上の根拠が必要（裏面画像・個人番号読出しの券面事項確認APおよび番号法チェックリストは `kenmen-jikou-kakunin-ap` を参照）。ロック・残回数の UX は `pin-lock-handling`。電子署名で真正性を確認するならカ方式 → `jpki-ap-shomei`。
 
 ## 前提
 
@@ -53,16 +53,19 @@ description: 券面入力補助AP から 基本4情報（氏名・住所・生�
 ```swift
 extension CardReader {
     // 手順 2〜3: 解錠情報 EF の SELECT と VERIFY。
-    // 00 11 は 4 桁 PIN の EF（14 桁 .shogoB による解錠は券面事項確認AP（kenmen-jikou-kakunin-ap）で行う）。
+    // EF 00 11（P2 = 0x80）は公開ソースで確認済みの 4 桁 PIN（.kenmenHojo）用の経路。
+    // ヘ方式の 14 桁解錠（PDF 33 p11）における本 AP の対象 EF・keyref(P2)・Lc・桁整形は未確認のため、
+    // J-LIS 一次仕様で確定するまで EF 00 11 へ流さず拒否する。
     // VerifyOutcome / PINKind / pinBytes / interpret は pin-lock-handling で定義。
+    // ※ 本サンプルの unlock: String 引数は例示用。金融機関水準の本番実装では Swift の String/Array によるヒープ上のコピー（Copy-on-Write）を避けるため、ios-security に記載の SecureBytes（memset_s）を用い、APDU 送信直後にゼロ消去すること。
     func verifyKenmenUnlock(_ unlock: String, kind: PINKind, tag: NFCISO7816Tag) async throws -> VerifyOutcome {
         guard kind == .kenmenHojo else {
-            // 14桁の照合番号Bによる解錠は券面事項確認AP（kenmen-jikou-kakunin-ap）で行う
+            // 14桁解錠の EF-ID・P2・Lc・桁整形は未確認のため 00 11 へ送らない（確定仕様後に実装）
             throw ReaderError.invalidInput
         }
         let bytes = try pinBytes(unlock, kind: .kenmenHojo)   // 全角→半角・桁数チェック（違反はカードへ送らない）
         try await selectEF(efID: [0x00, 0x11], tag: tag)     // 00 A4 02 0C 02 00 11（4桁PIN EF）
-        let apdu = rawAPDU([0x00, 0x20, 0x00, 0x80, UInt8(bytes.count)] + bytes)
+        let apdu = try rawAPDU([0x00, 0x20, 0x00, 0x80, UInt8(bytes.count)] + bytes)
         let (_, sw1, sw2) = try await send(apdu, to: tag)
         return interpret(sw1: sw1, sw2: sw2)                // pin-lock-handling
     }
@@ -115,7 +118,7 @@ extension CardReader {
 - <https://tex2e.github.io/blog/protocol/jpki-mynumbercard-with-apdu>（「マイナンバーカードとAPDUで署名データ作成」— 券面入力補助AP DF 名 `D3 92 10 00 31 00 01 01 04 08`、SELECT `00 A4 04 0C` / `00 A4 02 0C`、券面入力補助用PIN EF `00 11`、基本4情報 EF `00 02`、VERIFY `00 20 00 80 04 31 32 33 34`、READ BINARY `00 B0 00 02 01` → `00 B0 00 00 71`、TLV `FF 20` / `DF 21`〜`DF 25`、性別 `31`/`32`/`33`、氏名・住所は UTF-8、2023 年頃発行分の先頭 2 バイト補正。取得日 2026-09-08）
 - <https://zenn.dev/kopaneet/articles/1ee74f87eb31d3>（「マイナンバーカードから基本4情報の取得」— 券面入力補助AP AID `D3 92 10 00 31 00 01 01 04 08`、EF-ID（基本4情報 `00 02` / 個人番号 `00 01` / 入力補助用PIN `00 11`）、SELECT/VERIFY/READ BINARY の順序、本体は 3 バイト目に長さ・最大 112 バイト・UTF-8、連続 3 回失敗でロック。取得日 2026-09-08）
 
-## 最終確認日: 2026-09-11
+## 最終確認日: 2026-11-26
 
 ## 未確認事項
 

@@ -5,7 +5,7 @@ description: マイナンバーカードの暗証番号 ロック と PIN リト
 
 # マイナンバーカードの暗証番号ロック・リトライの扱い
 
-VERIFY（`00 20 00 80` ＋ 暗証番号バイト列）に対する応答 SW1SW2 を解釈し、**残り試行回数の提示・ロック手前の警告・ロック時の案内**を行うためのリファレンス。各 AP の SELECT・VERIFY の手順そのものは `jpki-ap-shomei` / `jpki-ap-riyousha` / `kenmen-jikou-kakunin-ap` / `kenmen-nyuryoku-hojo-ap`、CoreNFC の APDU 送受信は `ios-corenfc-apdu`、エラー画面の文言は `ios-nfc-ux-errors` を参照。
+VERIFY（`00 20 00 80` ＋ 暗証番号バイト列。`P2=80` は JPKI-AP / 4桁券面入力補助の例で、他は未確認）に対する応答 SW1SW2 を解釈し、**残り試行回数の提示・ロック手前の警告・ロック時の案内**を行うためのリファレンス。各 AP の SELECT・VERIFY の手順そのものは `jpki-ap-shomei` / `jpki-ap-riyousha` / `kenmen-jikou-kakunin-ap` / `kenmen-nyuryoku-hojo-ap`、CoreNFC の APDU 送受信は `ios-corenfc-apdu`、エラー画面の文言は `ios-nfc-ux-errors` を参照。
 
 暗証番号の初期化・再設定はアプリでは実行できない（市区町村窓口・コンビニのキオスク端末・スマートフォン用アプリで行う）。本スキルは「どう案内するか」を扱う。犯収法の方法名・適用時期はここで断定しない（`honnin-kakunin-houhou`）。
 
@@ -106,18 +106,23 @@ func interpret(sw1: UInt8, sw2: UInt8) -> VerifyOutcome {
     }
 }
 
-/// 空の VERIFY APDU（Lc = 0）を用いて、試行回数を消費せずに残り回数・ロック状態を確認する（ISO/IEC 7816-4 §7.5.2）。
+/// 空ボディの VERIFY APDU（Case 1: 4B、Lc/データ部なし）を用いて、試行回数を消費せずに残り回数・ロック状態を確認する（ISO/IEC 7816-4 §7.5.2。実カードの対応可否は未確認）。
 /// セッション切断後の状態再取得などに使用。新規セッション接続時は DF（JPKI-AP等）を SELECT してから EF を選択する。
 func checkRemainingAttempts(pinEFID: [UInt8], p2: UInt8 = 0x80, aid: [UInt8]? = nil, tag: NFCISO7816Tag) async throws -> VerifyOutcome {
     guard pinEFID.count == 2 else { throw PINInputError.invalidInput }
     if let aid = aid {
-        let selectAID = NFCISO7816APDU(data: Data([0x00, 0xA4, 0x04, 0x0C, UInt8(aid.count)] + aid))!
+        guard (1...16).contains(aid.count),
+              let selectAID = NFCISO7816APDU(data: Data([0x00, 0xA4, 0x04, 0x0C, UInt8(aid.count)] + aid)) else {
+            throw PINInputError.invalidInput
+        }
         let (_, sw1AID, sw2AID) = try await tag.sendCommand(apdu: selectAID)
         guard sw1AID == 0x90, sw2AID == 0x00 else {
             return .other(sw1: sw1AID, sw2: sw2AID)
         }
     }
-    let selectCmd = NFCISO7816APDU(data: Data([0x00, 0xA4, 0x02, 0x0C, 0x02] + pinEFID))!
+    guard let selectCmd = NFCISO7816APDU(data: Data([0x00, 0xA4, 0x02, 0x0C, 0x02] + pinEFID)) else {
+        throw PINInputError.invalidInput
+    }
     let (_, sw1Sel, sw2Sel) = try await tag.sendCommand(apdu: selectCmd)
     guard sw1Sel == 0x90, sw2Sel == 0x00 else {
         return .other(sw1: sw1Sel, sw2: sw2Sel)
@@ -143,7 +148,7 @@ func checkRemainingAttempts(pinEFID: [UInt8], p2: UInt8 = 0x80, aid: [UInt8]? = 
 - [ ] **最終試行の前に警告する** — 残り 1 回になる前に「次に間違えるとロックされ、市区町村の窓口などでの手続きが必要になります」と、結果の重さを事前に伝える
 - [ ] **自動リトライを実装しない** — VERIFY の再送は必ず利用者の明示的な操作を起点にする。ループで送らない
 - [ ] **試行を無駄に消費しない** — 全角→半角の正規化と、空文字・桁数不足・文字種違反のチェックをカードへ送る前に行う（`pinBytes`）。誤った種類の暗証番号を送らせない
-- [ ] **SW を受け取れなかったら「消費した」と決めつけない** — 通信エラー・セッション切断時は、次の画面で残り回数を再取得してから提示する
+- [ ] **SW を受け取れなかったら「消費した」と決めつけない** — 通信エラー・セッション切断時は、次の画面で残り回数を再取得してから提示する（ただし空ボディ VERIFY の実カード対応は未確認のため、非対応応答時は消費と決めつけず慎重に案内する）
 - [ ] **暗証番号を保持しない** — VERIFY 後に即破棄し、リトライ時は再入力させる（`ios-security`）
 - [ ] **ロック時は入力欄を閉じる** — `69 83` を受けたら再入力欄を隠し、ロック解除の案内へ切り替える
 - [ ] **暗証番号の種類を取り違えさせない** — 4 桁を求める画面で 6〜16 桁の説明を出さない。逆も同様
@@ -192,3 +197,4 @@ func checkRemainingAttempts(pinEFID: [UInt8], p2: UInt8 = 0x80, aid: [UInt8]? = 
 - 券面入力補助用・券面事項確認用の VERIFY における keyref（P2）・Lc・対象 EF・桁整形（`references/apdu-cheatsheet.md` の該当行も `未確認`）。
 - コンビニ／スマートフォンでの初期化に対応する端末・機種の範囲。券面入力補助用暗証番号を窓口以外で再設定できるか。
 - ロック済みカードに VERIFY 以外（証明書 READ 等）を行った場合の応答。閉塞が AP 単位かカード全体かは未確認。
+- 空ボディ VERIFY（`checkRemainingAttempts`: `00 20 00 [p2]` Case 1 による暗証番号残数・ロック状態照会）について、実マイナンバーカード／各 AP での対応可否および返却 SW は未確認（`references/apdu-cheatsheet.md`）。

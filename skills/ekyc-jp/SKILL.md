@@ -92,7 +92,7 @@ description: 日本のeKYC（マイナンバーカード・公的個人認証JPK
 - `references/jpki-introduction.ja.md` — デジタル庁「公的個人認証サービス（JPKI）による本人確認」
 - ライブ URL: <https://www.digital.go.jp/policies/mynumber/private-business/jpki-introduction>（取得日 2026-09-08）
 
-## 最終確認日: 2026-09-08
+## 最終確認日: 2026-11-26
 
 ## 未確認事項
 

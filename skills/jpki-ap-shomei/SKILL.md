@@ -54,7 +54,7 @@ extension CardReader {
         // カードへ送る前に行う（形式違反は throw され、試行回数を消費しない）
         let bytes = try pinBytes(pin, kind: .shomei)
         try await selectEF(efID: [0x00, 0x1B], tag: tag)   // 手順 2: 署名用 暗証番号 EF（00 A4 02 0C 02 00 1B）
-        let apdu = rawAPDU([0x00, 0x20, 0x00, 0x80, UInt8(bytes.count)] + bytes)
+        let apdu = try rawAPDU([0x00, 0x20, 0x00, 0x80, UInt8(bytes.count)] + bytes)
         let (_, sw1, sw2) = try await send(apdu, to: tag)
         return interpret(sw1: sw1, sw2: sw2)                // pin-lock-handling
     }
@@ -72,7 +72,7 @@ extension CardReader {
             0x65, 0x03, 0x04, 0x02, 0x01, 0x05, 0x00, 0x04, 0x20,
         ]
         let digestInfo = digestInfoPrefix + Array(hash)     // 全長 0x33 = 51 バイト
-        let apdu = rawAPDU([0x80, 0x2A, 0x00, 0x80, UInt8(digestInfo.count)] + digestInfo + [0x00])
+        let apdu = try rawAPDU([0x80, 0x2A, 0x00, 0x80, UInt8(digestInfo.count)] + digestInfo + [0x00])
         let (sig, sw1, sw2) = try await send(apdu, to: tag)
         guard sw1 == 0x90, sw2 == 0x00 else { throw ReaderError.signFailed(sw1, sw2) }
         return sig                                          // RSA-2048 署名値（256 バイト）

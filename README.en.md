@@ -39,7 +39,7 @@ plausible guess. When a value is not confirmed, the skill says so.
 | Plugin | `ekyc-jp` v0.1.0 · 19 skills · knowledge and procedure only |
 | Skill language | Japanese (`SKILL.md`). Each skill also has a `SKILL.en.md` English reference translation, which Claude Code does not load |
 | Quality checks | `claude plugin validate` passes · 115 `claude plugin eval` triggering cases |
-| Last reviewed | 2026-10-05 |
+| Last reviewed | 2026-11-26 |
 | License | [MIT](LICENSE) (third-party documents excluded, see [License](#license)) |
 
 ## Key terms in 30 seconds
@@ -178,9 +178,9 @@ The plugin recommends:
 
 | Change | Effective |
 |---|---|
-| Mobile-phone law: document-image methods removed | 2026-04-01, in force (transitional period until 2026-09-30) |
-| Phonetic reading of the name added to the basic attributes | 2026-05-26 |
-| Anti-money-laundering law: photo-of-document methods removed, method letters renumbered | 2027-04-01 |
+| Mobile-phone law: document-image methods removed | 2026-04-01, in force (transitional period ended 2026-09-30) |
+| Phonetic reading of the name added to the basic attributes | 2026-05-26, in force |
+| Anti-money-laundering law: photo-of-document methods removed & method letters renumbered; Mobile-phone law: method letters renumbered & in-person IC reading consolidated | 2027-04-01 |
 
 Details: `honnin-kakunin-houhou`, [`method-map.en.md`](references/method-map.en.md), [`hourei-eKYC.en.md`](references/hourei-eKYC.en.md).
 
@@ -194,7 +194,7 @@ Details: `honnin-kakunin-houhou`, [`method-map.en.md`](references/method-map.en.
 | [`references/yougoshuu.en.md`](references/yougoshuu.en.md) | Glossary (about 90 terms) |
 | [`references/sources.en.md`](references/sources.en.md) | Source list: URL, fetch date, checksum, citing skills |
 | `references/refresh.sh` | Re-fetch script used by `sources-refresh`; downloads the 33 source PDFs into `references/pdfs/` |
-| [`evals/`](evals/README.md) | 115 triggering cases: 4 should-fire and 2 should-not-fire per skill |
+| [`evals/`](evals/README.md) | 115 triggering cases: 4 should-fire and 2 should-not-fire per skill (3 should-not-fire for `signature-verification`) |
 
 ## Keeping it current
 
@@ -236,7 +236,7 @@ Not covered by the MIT License:
 
 - **`references/jpki-introduction.ja.md` / `references/jpki-introduction.en.md`**: copies of Digital Agency pages, under that site's
   terms of use.
-- **Statute text quoted in [`references/hourei-eKYC.md`](references/hourei-eKYC.md)**: Japanese
+- **Statute text quoted in [`references/hourei-eKYC.en.md`](references/hourei-eKYC.en.md) (`references/hourei-eKYC.md`)**: Japanese
   laws and ordinances are not subject to copyright (Copyright Act, Article 13).
 
 The MIT License covers this repository's text and code only. It grants no rights in JPKI,

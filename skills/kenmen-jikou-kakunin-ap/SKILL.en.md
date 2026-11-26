@@ -1,6 +1,6 @@
 ---
 name: kenmen-jikou-kakunin-ap
-description: Use when reading card-face images (front/back), on-chip face photo, or the 12-digit My Number from the My Number Card's Card Surface Verification AP on iOS. Covers unlocking the front (14-digit Inquiry Number B: DOB 6 + expiry year 4 + security code 4) vs front+back (12-digit My Number), and My Number Act legal basis, encryption, deletion, and logging rules.
+description: "Use when reading card-face images (front/back), on-chip face photo, or the 12-digit My Number from the My Number Card's Card Surface Verification AP on iOS. Covers unlocking the front (14-digit Inquiry Number B: DOB 6 + expiry year 4 + security code 4) vs front+back (12-digit My Number), and My Number Act legal basis, encryption, deletion, and logging rules."
 ---
 
 # Reading Card Surface Images, Face Photo, and Individual Number with Card Surface Verification AP
@@ -76,11 +76,13 @@ extension CardReader {
     // EF-ID / keyref(P2) / Lc / formatting are unverified, so replace with confirmed byte sequences before use.
     // VerifyOutcome / PINKind / pinBytes / interpret are defined in pin-lock-handling.
     // kind: .shogoB (14 digits) for front only, .shogoA (12 digits) if reading the individual number too
+    // * Note: The inquiry: String parameter in this sample is for demonstration. Especially because .shogoA handles Specific Personal Information (12-digit My Number), in financial-grade production implementations avoid Copy-on-Write heap copies from Swift's String/Array by using SecureBytes (memset_s) as described in ios-security and zeroing immediately after APDU transmission.
     func verifyKenmenInquiry(_ inquiry: String, kind: PINKind, pinEFID: [UInt8], tag: NFCISO7816Tag) async throws -> VerifyOutcome {
+        guard kind == .shogoB || kind == .shogoA else { throw ReaderError.invalidInput }
         let bytes = try pinBytes(inquiry, kind: kind)        // full-width to half-width, digit-count check (formatting unverified)
         try await selectEF(efID: pinEFID, tag: tag)          // 00 A4 02 0C 02 <pinEFID> (EF-ID unverified)
         let p2: UInt8 = 0x80                                 // keyref unverified (placeholder value from JPKI-AP)
-        let apdu = rawAPDU([0x00, 0x20, 0x00, p2, UInt8(bytes.count)] + bytes)
+        let apdu = try rawAPDU([0x00, 0x20, 0x00, p2, UInt8(bytes.count)] + bytes)
         let (_, sw1, sw2) = try await send(apdu, to: tag)
         return interpret(sw1: sw1, sw2: sw2)                // pin-lock-handling
     }

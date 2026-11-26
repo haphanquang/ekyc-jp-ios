@@ -32,10 +32,10 @@ Cast `error` from `didInvalidateWithError` to `error as? NFCReaderError` and bra
 | NFC radio disabled (airplane mode, etc.) | `readerErrorRadioDisabled` | "NFC is not available. Check settings such as airplane mode and try again." |
 | This device does not support NFC reading | Not an error; pre-check with `NFCTagReaderSession.readingAvailable == false` | "This iPhone does not support NFC reading." (Don't show the reading button) |
 | Security violation (entitlement misconfiguration, etc.) | `readerErrorSecurityViolation` | Implementation/distribution configuration issue. Show generic failure to user. |
-| Invalid APDU parameter / packet length | `readerErrorInvalidParameter` / `readerErrorInvalidParameterLength` / `readerTransceiveErrorPacketTooLong` | Implementation bug. Show "Reading failed." to user. Check APDU in logs. |
+| Invalid APDU parameter / packet length | `readerErrorInvalidParameter` / `readerErrorInvalidParameterLength` / `readerTransceiveErrorPacketTooLong` | Implementation bug. Show "Reading failed." to user. In debug diagnostics, inspect only APDU headers/lengths (CLA/INS/P1/P2/Lc/Le) without logging sensitive payloads or PIN bytes (see `ios-security` for raw APDU logging prohibition). |
 | Tapped card is not a My Number Card / no supported AP | No CoreNFC error. `didDetect` shows non-`.iso7816`, or SELECT returns `6A 82`. Self-call `session.invalidate(errorMessage:)` | "Could not read My Number Card. Please verify it is a My Number Card." |
 | Wrong PIN | No CoreNFC error. VERIFY response `63 CX` (`X` = remaining count) | "Incorrect PIN. You can try ◯ more times." → Details in `pin-lock-handling` |
-| PIN locked | No CoreNFC error. VERIFY response `69 83` | "Your PIN has been locked. Please visit your municipal office for procedures." → Flow in `pin-lock-handling` |
+| PIN locked | No CoreNFC error. VERIFY response `69 83` / `69 84` / `63 C0` | "Your PIN has been locked. Please visit your municipal office for procedures." → Flow in `pin-lock-handling` |
 
 - Close the session with `session.invalidate()` on both success and failure. When you want to show the reason to the user, `session.invalidate(errorMessage:)` displays the message in red on the system scan sheet.
 - The detailed messages and screen transitions from the table above should be shown in your own UI. Keep system sheet messages short; show "why it failed" and "what to do next" thoroughly on in-app result screens (PDF 33's "present specific failure reasons").
@@ -86,7 +86,7 @@ session.invalidate(errorMessage: "Reading failed. Please remove your case and tr
 - **Relationship with NFC / CoreNFC**: CoreNFC is NOT included in Apple's "frameworks that don't work in App Clips" list. NFC capability/entitlement (see `ios-corenfc-apdu`) must also be configured on the App Clip side. However, no official Apple documentation explicitly states "CoreNFC reading sessions work within App Clips" has been confirmed (see "Unverified Items" below). Verify before implementation.
 - **Constraints**:
   - App Clips cannot run in the background. NFC **background tag reading** is not available; limited to foreground reader sessions (`NFCTagReaderSession` / `NFCNDEFReaderSession`). My Number Card reading uses foreground sessions, so this is normally not an issue.
-  - There is a size limit (15 MB / 100 MB depending on iOS version; details and conditions in sources below). Minimize to the essentials needed for reading and PIN entry.
+  - There is a size limit (10 MB for iOS 15 and earlier / 15 MB for iOS 16 and earlier / up to 100 MB for iOS 17+ [conditional]; details and conditions in sources below). Minimize to the essentials needed for reading and PIN entry.
   - An App Clip is provided as a pair with one corresponding full app, and the full app must include the same functionality as the App Clip.
 - Share reading/error handling code between the full app and App Clip, using the same UX messages and onboarding.
 
@@ -115,7 +115,7 @@ PDFs under `references/pdfs/` are third-party works and are not shipped with the
 - <https://developer.apple.com/documentation/appclip/choosing-the-right-functionality-for-your-app-clip> (CoreNFC NOT in App Clip's "non-functioning frameworks" list. App Clips cannot run in background. Size limits: iOS 15 and earlier 10 MB / iOS 16 and earlier 15 MB / iOS 17+ up to 100 MB (conditional). Provide as single target with same functionality as full app. HTTP 200. Retrieved 2026-09-08)
 - `skills/ios-corenfc-apdu/SKILL.md` / `skills/pin-lock-handling/SKILL.md` (session implementation, `alertMessage` initial values, SW1SW2 interpretation alignment)
 
-## Last Verified: 2026-09-08
+## Last Verified: 2026-11-25
 
 ## Unverified Items
 

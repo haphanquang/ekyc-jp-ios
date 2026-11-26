@@ -1,6 +1,6 @@
 # Primary Legal Text Excerpts for eKYC-Related Laws and Ordinances (e-Gov Law Search)
 
-Last Verified: 2026-09-11 (§5 Ordinance for Enforcement of the Secondhand Articles Dealer Act: 2026-10-05, §3b Mobile Phone Act 2027 version: 2026-11-02)
+Last Verified: 2026-11-24 (§2 Art. 19 excerpts: 2026-11-23, §6 Mobile Phone Act & §7 JPKI Enforcement Ordinance: 2026-11-24, §3b Mobile Phone Act 2027 version: 2026-11-02, §5 Ordinance for Enforcement of the Secondhand Articles Dealer Act: 2026-10-05, others: 2026-09-11)
 
 This file contains excerpts retrieved from the primary source (e-Gov Law Search API) used by `method-map.md` and `skills/honnin-kakunin-houhou/SKILL.md` to establish method designations and effective dates. **Method designations shift with legal amendments.**
 Before implementation or legal determination, always re-verify the text of the relevant revision on e-Gov Law Search below.
@@ -106,6 +106,14 @@ The method designations are **14 sub-items from (i) (イ) to (ka) (カ)** (final
 
 > **Resolved (numbering of (nu) (ヌ) / (ru) (ル)).** In the re-retrieval on 2026-09-11, there was a discrepancy where the summarization model returned the provision for specified certification business as "(nu) (ヌ)", but on 2026-10-05 the main text of the same revision was extracted directly from the API, confirming that **new (nu) (ヌ) = JPKI (verbatim above), and new (ru) (ル) = specified certification business certificate of a person accredited under Article 17, Paragraph 1, Item 5 of the Public Personal Authentication Act**.
 
+### Article 19, Paragraph 1, Item 2 (Attachments to Verification Records from April 1, 2027 Onward)
+
+Confirmed via e-Gov API v2 (`420M60000F5A001_20270401_508M60000F5A005`) on 2026-11-23:
+
+- **(i) (イ)** (Article 6, Paragraph 1, Item 1 **(ha) (ハ)** = IC reading + facial image): Said identity verification image information and information on name, residence, date of birth, and photograph recorded on said semiconductor integrated circuit, or copies thereof
+- **(ho) (ホ)** (Article 6, Paragraph 1, Item 1 **(to) (ト)** = smartphone-mounted My Number Card): Said specific electromagnetic record or a copy thereof
+- **(he) (ヘ)** (Article 6, Paragraph 1, Item 1 **(ri) (リ) to (ru) (ル)** = accredited certification business **(ri)**, JPKI **(nu)**, specified certification business **(ru)**; **limited to electromagnetic records**): An electromagnetic record sufficient to prove that verification of identity-specifying matters was performed by said method
+
 ### Direction of the Amendment (Confirmed / National Police Agency JAFIC & Financial Services Agency)
 
 - Effective date = **April 1, 2027 (Reiwa 9)** (JAFIC `260306qa.pdf` Q2; announced by the Financial Services Agency on June 26, 2026 [Reiwa 8]).
@@ -122,7 +130,7 @@ Official Title: Ordinance for Enforcement of the Act on Identification, etc. by 
 - Retrieved Revision: `417M60000008167_20260806_508M60000008099`
 - e-Gov: <https://laws.e-gov.go.jp/law/417M60000008167>
 - **Amendment is already in force** (effective April 1, 2026 [Reiwa 8] = 2026-04-01. Amending Ministerial Ordinance = April 1, 2025 [Reiwa 7] Ministry of Internal Affairs and Communications Ordinance No. 37, etc. **Transitional measures** for former Rules Article 3, Paragraph 1, Item 2 (ha) (ハ), etc. **ran until September 30, 2026 [Reiwa 8] = 2026-09-30**.
-  *Note: Article-by-article text of the Supplementary Provisions was not re-verified in this retrieval. Based on what the September 2026 review confirmed on e-Gov as of September 2026.)
+  *Note: Article-by-article text of the Supplementary Provisions was not re-verified in this retrieval, and relies on what was confirmed on e-Gov during the September 2026 review.)
 
 ### Article 3, Paragraph 1, Item 1 (Identity Verification Methods for Natural Persons at Contract Conclusion)
 
@@ -162,7 +170,7 @@ With enforcement on April 1, 2027, the method designations are reorganized into 
 | (ro) (ロ) | ― | Presentation of non-photo IC-equipped identity document + IC reading + non-forwardable mail |
 | (ha) (ハ) | ― | Presentation of photo identity document without IC chip + non-forwardable mail |
 | **(ni) (ニ)** | **(ha) (ハ)** | **Transmission of facial appearance image + transmission of photo/IC chip recorded information (IC reading + facial image)** |
-| (ho) (ホ) | ― | Transmission of non-photo IC document information + non-forwardable mail |
+| (ho) (ホ) | (ni) (ニ) | Transmission of non-photo IC document information + non-forwardable mail |
 | (he) (ヘ) | (ho) (ホ) | Delivery of non-photo/non-IC document + non-forwardable mail |
 | (to) (ト) | (he) (ヘ) | Restricted-delivery mail with specific matter communication, etc. |
 | **(chi) (チ)** | **(to) (ト)** | **Reception of electronic signature + electronic certificate (JPKI / public personal authentication, etc.)** |
@@ -311,6 +319,44 @@ The target signing certificate is one based on Article 3, Paragraph 6 (signing c
 > A secondhand articles dealer or secondhand articles market operator must keep the books, etc. under the preceding two Articles at their business office or secondhand articles market for three years from the day of the final entry, or preserve the record by electromagnetic means under the preceding two Articles for three years from the day of making said record so that it can be immediately displayed in writing at their business office or secondhand articles market.
 
 → The recording obligation under the Secondhand Articles Dealer Act is not a "confirmation record" under the Act on Prevention of Transfer of Criminal Proceeds (Article 6 of the Act on Prevention of Transfer of Criminal Proceeds), but an entry in **books, etc.** (Article 16 of the Principal Act: the counterparty's address, name, occupation, and age, and the category and method of measures taken) and preservation for **3 years** from the final entry date (or recording date for electromagnetic records) (Article 18, Paragraph 1 of the Principal Act). Details of the format and entry method for books, etc. under the Ordinance for Enforcement are unverified in this retrieval.
+
+---
+
+## 6. Mobile Phone Fraud Prevention Act (Principal Act / Current)
+
+- LawId: `417AC1000000031` (Act No. 31 of 2005 [Heisei 17])
+- Retrieved Revision: `417AC1000000031_20260529_508AC0000000025`
+- e-Gov: <https://laws.e-gov.go.jp/law/417AC1000000031>
+- Retrieved Date: 2026-11-24
+
+### Article 4 (Obligation to Prepare Identity Verification Records, etc.)
+
+> **Article 4** When a mobile voice communications carrier has performed identity verification, it must promptly prepare a record concerning identity-specifying matters and other matters concerning identity verification specified by Order of the Ministry of Internal Affairs and Communications (hereinafter referred to as an "identity verification record") by a method specified by Order of the Ministry of Internal Affairs and Communications.
+>
+> **2** A mobile voice communications carrier must preserve the identity verification record for three years from the day on which the service provision contract ends.
+
+---
+
+## 7. Ordinance for Enforcement of the Public Personal Authentication Act (Current / In Force)
+
+- LawId: `415M60000008120` (MIC Ordinance No. 120 of 2003 [Heisei 15])
+- Retrieved Revision: `415M60000008120_20260614_508M60004008011`
+- e-Gov: <https://laws.e-gov.go.jp/law/415M60000008120>
+- Retrieved Date: 2026-11-24
+
+### Article 29, Paragraphs 1 and 5 (Special Provision for Entrusting All Electronic Signature Verification Business = Deemed Status of SP Operator)
+
+> **Article 29** A person who entrusts the entirety of electronic signature verification business, etc. to a person listed in Article 17, Paragraph 1, Item 4 of the Act, a person certified by the competent minister pursuant to Item 5 or Item 6 of the same Paragraph, or the Prime Minister (hereinafter referred to as an "entrusted electronic signature verification operator" in this Article and Article 60) and who conforms to the criteria listed in Article 28, Items 1 and 2 (hereinafter referred to as an "entrusting electronic signature verification operator" in this Article and Article 60) is deemed to have received certification by the competent minister as prescribed in Item 6 of the same Paragraph.
+>
+> **5** In the case of Paragraph 1, when the entrusted electronic signature verification operator is a signature verifier prescribed in Article 17, Paragraph 4 of the Act, the agreement concluded between the Agency and said entrusted electronic signature verification operator pursuant to the same Paragraph is deemed to be an agreement concluded between the Agency and the entrusting electronic signature verification operator pursuant to the same Paragraph.
+
+### Article 35-2, Paragraphs 4 and 5 (Validity Period and Withdrawal of Consent for Provision of Latest 4 Attributes)
+
+> **Article 35-2** Consent of a signature user under Article 18, Paragraph 3 of the Act shall be given by the signature user transmitting information concerning said consent, to which the signature user's signing certificate and an electronic signature verified by said signing certificate are affixed, from a computer used by said signature user to a computer used by a signature verifier, etc. via a telecommunications line.
+>
+> **4** The validity period of the consent under Paragraph 1 shall be ten years.
+>
+> **5** A signature user may withdraw the consent under Paragraph 1 at any time.
 
 ---
 

@@ -37,7 +37,7 @@ APDU で IC チップを直接読み取る構成を前提にしています。
 | プラグイン | `ekyc-jp` v0.1.0 · 19 スキル · 知識と手順のみ |
 | 記述言語 | 日本語（`SKILL.md`）。各スキルに英語の参考訳 `SKILL.en.md` があるが、Claude Code は読み込まない |
 | 品質確認 | `claude plugin validate` パス · `claude plugin eval` のトリガー検証 115 件 |
-| 最終レビュー | 2026-10-05 |
+| 最終レビュー | 2026-11-26 |
 | ライセンス | [MIT](LICENSE)（第三者資料を除く。[ライセンス](#ライセンス) 参照） |
 
 ## 30 秒でわかる用語
@@ -174,9 +174,9 @@ SW1SW2 の意味など）は推測せず `未確認` と明記しています。
 
 | 変更 | 施行 |
 |---|---|
-| 携帯法：書類画像送信方式の廃止 | 2026-04-01 施行済み（経過措置は 2026-09-30 まで） |
-| 基本4情報へのカナ氏名の追加 | 2026-05-26 |
-| 犯収法：画像送信方式の廃止、号記号の再編 | 2027-04-01 |
+| 携帯法：書類画像送信方式の廃止 | 2026-04-01 施行済み（経過措置は 2026-09-30 終了） |
+| 基本4情報へのカナ氏名の追加 | 2026-05-26 施行済み |
+| 犯収法：画像送信方式の廃止・号記号再編／携帯法：号記号の再編・対面IC確認等 | 2027-04-01 |
 
 詳細: `honnin-kakunin-houhou`、[`method-map.md`](references/method-map.md)、[`hourei-eKYC.md`](references/hourei-eKYC.md)
 
@@ -190,7 +190,7 @@ SW1SW2 の意味など）は推測せず `未確認` と明記しています。
 | [`references/yougoshuu.md`](references/yougoshuu.md) | 用語集（約 90 語） |
 | [`references/sources.md`](references/sources.md) | 出典一覧：URL、取得日、ハッシュ、引用しているスキル |
 | `references/refresh.sh` | `sources-refresh` が使う再取得スクリプト。一次資料の PDF 33 点を `references/pdfs/` に取得する |
-| [`evals/`](evals/README.md) | トリガー検証 115 件（スキルごとに発火すべき 4 件、発火すべきでない 2 件） |
+| [`evals/`](evals/README.md) | トリガー検証 115 件（スキルごとに発火すべき 4 件、発火すべきでない 2 件〔`signature-verification` のみ 3 件〕） |
 
 ## 最新化
 

@@ -66,7 +66,7 @@ extension CardReader {
     func verifyRiyoushaPIN(_ pin: String, tag: NFCISO7816Tag) async throws -> VerifyOutcome {
         let bytes = try pinBytes(pin, kind: .riyousha)             // both "１２３４" and "1234" -> 31 32 33 34
         try await selectEF(efID: [0x00, 0x18], tag: tag)          // 00 A4 02 0C 02 00 18 (1 source, requires verification)
-        let apdu = rawAPDU([0x00, 0x20, 0x00, 0x80, UInt8(bytes.count)] + bytes)
+        let apdu = try rawAPDU([0x00, 0x20, 0x00, 0x80, UInt8(bytes.count)] + bytes)
         let (_, sw1, sw2) = try await send(apdu, to: tag)
         return interpret(sw1: sw1, sw2: sw2)                // pin-lock-handling
     }
@@ -82,7 +82,7 @@ extension CardReader {
             0x65, 0x03, 0x04, 0x02, 0x01, 0x05, 0x00, 0x04, 0x20,
         ]
         let digestInfo = digestInfoPrefix + Array(challengeHash)   // Total length 0x33 = 51 bytes
-        let apdu = rawAPDU([0x80, 0x2A, 0x00, 0x80, UInt8(digestInfo.count)] + digestInfo + [0x00])
+        let apdu = try rawAPDU([0x80, 0x2A, 0x00, 0x80, UInt8(digestInfo.count)] + digestInfo + [0x00])
         let (sig, sw1, sw2) = try await send(apdu, to: tag)
         guard sw1 == 0x90, sw2 == 0x00 else { throw ReaderError.signFailed(sw1, sw2) }
         return sig                                                 // RSA-2048 signature value (256 bytes)
@@ -100,9 +100,9 @@ extension CardReader {
 
 - Because the user-authentication certificate does not contain the four basic attributes, the server cannot identify "who" it is by name, etc. Instead, it identifies using the **issuer number** (a unique number for each electronic certificate).
 - Server-side flow (not done by the app):
-  1. **Registration (linking to an account) is performed only within a completed eKYC session.** Read both signing and user-authentication certificates in the same NFC session, have them sign **the nonce of that session** with both keys, and only when the signing-side identity verification (`signature-verification` steps 1-5 + `jlis-yukousei-kakunin`) is successful, save the **(issuer DER, issuer number) pair** of the user-authentication certificate to that account. Do not allow adding a user-authentication certificate just because they are logged in (an attacker could register their own card to a victim's account). Whether the identity of the origin card for both certificates can be verified via a PF operator's linking function is an `Unverified Item`.
-  2. Upon every login, **chain-verify the received user-authentication certificate up to the user-authentication CA** and check the expiration date (`signature-verification` "Apply the same verification to the user-authentication certificate"). **Verifying the signature with the public key in the certificate is insufficient**: the issuer number is not a secret, so an attacker can create a self-signed certificate containing the victim's issuer number and sign with their own key.
-  3. With the public key of the chain-verified certificate, verify that the signature is for the nonce of that session (the nonce is consumed atomically. `signature-verification` step 4).
+  1. **Registration (linking to an account) is performed only within a completed eKYC session.** Read both signing and user-authentication certificates in the same NFC session, sign with both keys (WYSIWYS `body + nonce` for the signing key and `nonce` challenge for the user-authentication key, submitted together in **one atomic `signed` request** consuming the single-use nonce once, or using separate single-use nonces bound to the same `session_id` if split across requests), and only when both the signing-side identity verification (`signature-verification` steps 1–5 + `jlis-yukousei-kakunin`) and user-authentication verification succeed, save the **(issuer DER, issuer number) pair** of the user-authentication certificate to that account. Do not allow adding a user-authentication certificate just because they are logged in (an attacker could register their own card to a victim's account). Whether the identity of the origin card for both certificates can be verified via a PF operator's linking function is an `Unverified Item`.
+  2. Upon every login, first verify and atomically consume the session nonce (`signature-verification` Step 1; leave consumed even if subsequent checks fail), then **chain-verify the received user-authentication certificate up to the user-authentication CA** and check the expiration date (`signature-verification` "Apply the Same Verification to User Authentication Digital Certificates" Steps 2a, 3, and 4). **Verifying the signature with the public key in the certificate is insufficient**: the issuer number is not a secret, so an attacker can create a self-signed certificate containing the victim's issuer number and sign with their own key.
+  3. With the public key of the chain- and validity-verified certificate, verify that the signature is for the nonce of that session (`signature-verification` Step 2).
   4. Match whether the (issuer DER, issuer number) of the certificate matches the saved pair (do not match by issuer number alone).
   5. Perform validity verification (`jlis-yukousei-kakunin`) on every login.
   6. Determine "personal authentication by the same person and same card successful" only when steps 2 through 5 are all successful.
@@ -129,12 +129,12 @@ extension CardReader {
 - <https://zenn.dev/trustdock/articles/66a228895294bc> (TrustDock "Introduction to Public Personal Authentication (JPKI)" — NFC Type-B, ISO 7816 APDU, user-authentication PIN is a 4-digit number, challenge-response (challenge from server → processing in IC card → response return → server verification) in 4 stages. No description of AID/APDU hex values or issuer number mechanism. Retrieved on 2026-09-08)
 - <https://www.jpki.go.jp/procedure/password.html> (J-LIS "Public Personal Authentication Service Portal Site" — Password for user-authentication certificate (4-digit number) locks upon 3 consecutive incorrect attempts, signing is 5 consecutive. Retrieved on 2026-09-08)
 
-## Last Verified: 2026-09-08
+## Last Verified: 2026-11-26
 
 ## Unverified Items
 
 - Private key EF `00 17`, PIN EF `00 18`, and certificate EF `00 0A` for user-authentication (notated as "authentication" by tex2e) are all `(Only 1 source, requires verification: tex2e)` (matching `references/apdu-cheatsheet.md`). Verify before implementation.
-- Whether it can be verified via a PF operator's linking (serial mapping) function that both signing and user-authentication certificates originate from the same card. If not, identical origin during registration is ensured by "obtaining both signatures for the same nonce within the same NFC session".
+- Whether it can be verified via a PF operator's linking (serial mapping) function that both signing and user-authentication certificates originate from the same card. If not, identical origin during registration is ensured by "obtaining both signatures within the same NFC session (either in one atomic request with the same nonce, or via separate single-use nonces bound to the same `session_id`)".
 - Whether challenge-response is done with COMPUTE DIGITAL SIGNATURE `80 2A 00 80` or another command like `INTERNAL AUTHENTICATE` (`00 88 …`). tex2e shows `80 2A 00 80` for authentication as well, but it is only 1 source.
 - Input format passed to Step 5 (whether the server's challenge = raw nonce is signed as-is, a SHA-256 hash, wrapped in DigestInfo, hash length). Requires coordination with server specifications (`ekyc-session-orchestration`).
 - Whether the lower nibble of `63 CX` is the remaining trial count, and whether `69 83` means locked (ISO/IEC 7816-4 standard values. Primary sources for JPKI specifics are `Unverified`). The 3-time lock limit for the user-authentication PIN has been confirmed on J-LIS `jpki.go.jp`.

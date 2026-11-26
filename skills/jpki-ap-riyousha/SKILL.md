@@ -66,7 +66,7 @@ extension CardReader {
     func verifyRiyoushaPIN(_ pin: String, tag: NFCISO7816Tag) async throws -> VerifyOutcome {
         let bytes = try pinBytes(pin, kind: .riyousha)             // "１２３４" も "1234" -> 31 32 33 34
         try await selectEF(efID: [0x00, 0x18], tag: tag)          // 00 A4 02 0C 02 00 18（1ソース・要検証）
-        let apdu = rawAPDU([0x00, 0x20, 0x00, 0x80, UInt8(bytes.count)] + bytes)
+        let apdu = try rawAPDU([0x00, 0x20, 0x00, 0x80, UInt8(bytes.count)] + bytes)
         let (_, sw1, sw2) = try await send(apdu, to: tag)
         return interpret(sw1: sw1, sw2: sw2)                // pin-lock-handling
     }
@@ -82,7 +82,7 @@ extension CardReader {
             0x65, 0x03, 0x04, 0x02, 0x01, 0x05, 0x00, 0x04, 0x20,
         ]
         let digestInfo = digestInfoPrefix + Array(challengeHash)   // 全長 0x33 = 51 バイト
-        let apdu = rawAPDU([0x80, 0x2A, 0x00, 0x80, UInt8(digestInfo.count)] + digestInfo + [0x00])
+        let apdu = try rawAPDU([0x80, 0x2A, 0x00, 0x80, UInt8(digestInfo.count)] + digestInfo + [0x00])
         let (sig, sw1, sw2) = try await send(apdu, to: tag)
         guard sw1 == 0x90, sw2 == 0x00 else { throw ReaderError.signFailed(sw1, sw2) }
         return sig                                                 // RSA-2048 署名値（256 バイト）
@@ -100,9 +100,9 @@ extension CardReader {
 
 - 利用者証明用電子証明書は基本4情報を持たないため、サーバーは「誰か」を氏名等では特定できない。代わりに**発行番号**（電子証明書ごとに一意な番号）で特定する。
 - サーバー側の流れ（アプリは行わない）:
-  1. **登録（アカウントへの紐付け）は、完了した eKYC セッションの中でだけ行う。** 同じ NFC セッションで署名用・利用者証明用の両方の電子証明書を読み、両方の鍵で**そのセッションの nonce** に署名させ、署名用側の身元確認（`signature-verification` 手順 1〜5 ＋ `jlis-yukousei-kakunin`）が成功したときに限り、利用者証明用電子証明書の **(issuer DER, 発行番号) の組**をそのアカウントに保存する。ログイン済みというだけで利用者証明用電子証明書を追加登録させない（攻撃者が自分のカードを被害者のアカウントに登録できてしまう）。両証明書が同一カード由来であることを PF事業者の紐付け機能で確かめられるかは `未確認事項`。
-  2. ログインのたびに、届いた利用者証明用電子証明書を**利用者証明用認証局までチェーン検証**し、有効期限を確認する（`signature-verification`「利用者証明用電子証明書にも同じ検証を適用する」）。**証明書内の公開鍵で署名を検証するだけでは不十分**：発行番号は秘密ではないので、攻撃者は被害者の発行番号を入れた自己署名証明書を作り、自分の鍵で署名できる。
-  3. チェーンが通った証明書の公開鍵で、署名がそのセッションの nonce に対するものであることを検証する（nonce は原子的に消費。`signature-verification` 手順 4）。
+  1. **登録（アカウントへの紐付け）は、完了した eKYC セッションの中でだけ行う。** 同じ NFC セッションで署名用・利用者証明用の両方の電子証明書を読み、両方の鍵で署名させ（署名用は WYSIWYS な `本文 + nonce`、利用者証明用は `nonce` チャレンジとし、**1 回の原子的 `signed` リクエスト**で提出して単回 nonce を 1 回だけ消費するか、別リクエストに分けるなら同一 `session_id` に束縛した個別の単回 nonce を使用する）、署名用側の身元確認（`signature-verification` 手順 1〜5 ＋ `jlis-yukousei-kakunin`）と利用者証明用側の検証が両方成功したときに限り、利用者証明用電子証明書の **(issuer DER, 発行番号) の組**をそのアカウントに保存する。ログイン済みというだけで利用者証明用電子証明書を追加登録させない（攻撃者が自分のカードを被害者のアカウントに登録できてしまう）。両証明書が同一カード由来であることを PF事業者の紐付け機能で確かめられるかは `未確認事項`。
+  2. ログインのたびに、まずそのセッションの nonce を確認・原子的に消費し（`signature-verification` 手順 1。以降の検証が失敗しても消費済みのままにする）、届いた利用者証明用電子証明書を**利用者証明用認証局までチェーン検証**し、有効期限を確認する（`signature-verification`「利用者証明用電子証明書にも同じ検証を適用する」手順 2a・3・4）。**証明書内の公開鍵で署名を検証するだけでは不十分**：発行番号は秘密ではないので、攻撃者は被害者の発行番号を入れた自己署名証明書を作り、自分の鍵で署名できる。
+  3. チェーンと有効期限が通った証明書の公開鍵で、署名がそのセッションの nonce に対するものであることを検証する（`signature-verification` 手順 2）。
   4. 証明書の (issuer DER, 発行番号) が保存済みの組と一致するかを照合する（発行番号だけで照合しない）。
   5. 有効性確認（`jlis-yukousei-kakunin`）をログインのたびに行う。
   6. 2〜5 がすべて成功したときだけ「同一人物・同一カードによる当人認証成功」と判定する。
@@ -129,12 +129,12 @@ extension CardReader {
 - <https://zenn.dev/trustdock/articles/66a228895294bc>（TrustDock「公的個人認証（JPKI）入門」— NFC Type-B、ISO 7816 APDU、利用者証明用暗証番号は 4桁 数字、チャレンジレスポンス（サーバーからのチャレンジ → IC カード内での処理 → 応答返却 → サーバー検証）の 4 段階。AID・APDU の 16 進値・発行番号の仕組みの記載なし。取得日 2026-09-08）
 - <https://www.jpki.go.jp/procedure/password.html>（J-LIS「公的個人認証サービス ポータルサイト」— 利用者証明用電子証明書のパスワード（4桁の数字）は 3 回連続で間違えるとロック、署名用は 5 回連続。取得日 2026-09-08）
 
-## 最終確認日: 2026-09-08
+## 最終確認日: 2026-11-26
 
 ## 未確認事項
 
 - 利用者証明用（tex2e 表記「認証用」）の秘密鍵 EF `00 17`・暗証番号 EF `00 18`・証明書 EF `00 0A` はいずれも（1ソースのみ・要検証：tex2e）（`references/apdu-cheatsheet.md` と同確度）。実装前に検証すること。
-- 署名用・利用者証明用の両電子証明書が同一カード由来であることを、PF事業者の紐付け（シリアル対応）機能で確認できるか。できない場合、登録時の同一性は「同じ NFC セッション・同じ nonce で両方の署名が得られた」ことで担保する。
+- 署名用・利用者証明用の両電子証明書が同一カード由来であることを、PF事業者の紐付け（シリアル対応）機能で確認できるか。できない場合、登録時の同一性は「同じ NFC セッションで単一の原子的リクエスト（同一 nonce）または同一 `session_id` に束縛した個別の単回 nonce により両方の署名が得られた」ことで担保する。
 - チャレンジレスポンスを COMPUTE DIGITAL SIGNATURE `80 2A 00 80` で行うか、`INTERNAL AUTHENTICATE`（`00 88 …`）等の別コマンドか。tex2e は認証用でも `80 2A 00 80` を示すが 1 ソースのみ。
 - 手順 5 に渡す入力形式（サーバーのチャレンジ＝生 nonce をそのまま署名するのか、SHA-256 ハッシュか、DigestInfo でラップするか、ハッシュ長）。サーバー仕様（`ekyc-session-orchestration`）と要すり合わせ。
 - `63 CX` の下位ニブルが残り試行回数か、`69 83` がロックか（ISO/IEC 7816-4 標準値。JPKI 固有の一次ソースは `未確認`）。利用者証明用暗証番号のロック回数 3 回は J-LIS `jpki.go.jp` で確認済。

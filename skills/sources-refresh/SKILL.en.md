@@ -1,6 +1,6 @@
 ---
 name: sources-refresh
-description: Use when re-acquiring primary sources (JPKI-related pages and PDFs on digital.go.jp, and e-Gov law search revisions for the Enforcement Ordinances of the Act on Prevention of Transfer of Criminal Proceeds, the Mobile Phone Fraud Prevention Act and the Secondhand Articles Dealer Act, and for the Public Personal Authentication Act) to check for differences. Document updates / re-acquiring sources / updating JPKI materials / digital.go.jp diff checking / re-confirming method designations in laws / updating sources.md and hourei-eKYC.md. Executes `references/refresh.sh` to report New, Disappeared, and CHANGED files. The script does not modify SKILL.md. A human decides which skills to update for CHANGED materials.
+description: Use when re-acquiring primary sources (JPKI-related pages and PDFs on digital.go.jp, and e-Gov law search revisions for the Act on Prevention of Transfer of Criminal Proceeds, Mobile Phone Fraud Prevention Act, Secondhand Articles Dealer Act, Public Personal Authentication Act, and their Enforcement Ordinances) to check for differences. Document updates / re-acquiring sources / updating JPKI materials / digital.go.jp diff checking / re-confirming method designations in laws / updating sources.md and hourei-eKYC.md. Executes `references/refresh.sh` to report New, Disappeared, and CHANGED files. The script does not modify SKILL.md. A human decides which skills to update for CHANGED materials.
 ---
 
 # Re-acquiring Primary Sources and Difference Checking (sources-refresh)
@@ -41,14 +41,17 @@ Make each step a todo when executing (`refresh.sh` runs 4 stages in one pass: `1
    any discrepancies. `refresh.sh` does not modify the skill body.
 8. **Match e-Gov law revisions.** `refresh.sh` fetches the **revision IDs** for the Ordinance for
    Enforcement of the Act on Prevention of Transfer of Criminal Proceeds (current and 2027-04-01
-   un-enforced versions), Ordinance for Enforcement of the Mobile Phone Fraud Prevention Act, Public
-   Personal Authentication Act, Ordinance for Enforcement of the Secondhand Articles Dealer Act,
+   un-enforced versions), Ordinance for Enforcement of the Mobile Phone Fraud Prevention Act (current and
+   2027-04-01 un-enforced versions), Mobile Phone Fraud Prevention Act (the Act itself), Public Personal
+   Authentication Act, Ordinance for Enforcement of the Public Personal Authentication Act, Ordinance for
+   Enforcement of the Secondhand Articles Dealer Act,
    and Secondhand Articles Dealer Act (the Act itself) from the e-Gov Law Search API v2, and compares
    them with the `取得リビジョン` (recorded revision) line in the matching section of
    `references/hourei-eKYC.md`. If `CHANGED`, re-read the legal text of that revision on e-Gov (especially
    method designations in Article 6, Paragraph 1, Item 1, and Article 19 of the Ordinance for Enforcement
    of the Act on Prevention of Transfer of Criminal Proceeds, Article 3 of the Ordinance for Enforcement
-   of the Mobile Phone Act, Article 17 of the Public Personal Authentication Act, Article 15, Paragraph 3
+   of the Mobile Phone Act, Article 4 of the Mobile Phone Fraud Prevention Act, Article 17 of the Public
+   Personal Authentication Act, Articles 29 and 35-2 of its Enforcement Ordinance, Article 15, Paragraph 3
    of the Ordinance for Enforcement of the Secondhand Articles Dealer Act, and Articles 15 & 16 of the
    Secondhand Articles Dealer Act), update the excerpts and revision IDs in `hourei-eKYC.md`, and then
    have a human match the method designations and application dates in `references/method-map.md` and
@@ -71,7 +74,7 @@ The script prints its messages in Japanese. The first column shows them verbatim
 | `!! PDF ではない/小さすぎる応答` (not a PDF / too small) | The response lacks a PDF header or is under 1KB (error page, etc.). The local PDF **was not modified**. | Same as above. The script does not `cp` to avoid erroneous overwrites. |
 | `same <法令名> (<リビジョン ID>)` (law name, revision ID) | The e-Gov law revision matches the record in `hourei-eKYC.md`. | No action needed. |
 | `CHANGED <法令名>` + `記録 = … / 現在 = …` (recorded / current) | The e-Gov law was amended, and the revision ID changed. | Execute step 8 (Update excerpts/IDs in `hourei-eKYC.md` -> Human matches method designations in `method-map.md` / `honnin-kakunin-houhou`). |
-| `?? 記録リビジョンが見つからない` (recorded revision not found) | The matching section of `hourei-eKYC.md` (`## 1.`–`## 5.`) has no `取得リビジョン` line. Happens when sections are renumbered. | Align the section numbers in `hourei-eKYC.md` with the 4th argument of `check_law` at the end of `refresh.sh`. |
+| `?? 記録リビジョンが見つからない` (recorded revision not found) | The matching section of `hourei-eKYC.md` (`## 1.`–`## 7.`) has no `取得リビジョン` line. Happens when sections are renumbered. | Align the section numbers in `hourei-eKYC.md` with the 4th argument of `check_law` at the end of `refresh.sh`. |
 | `?? リビジョン ID を抽出できず` (revision ID not extracted) | No revision ID could be extracted from the e-Gov API response. | Check manually whether the API v2 response format has changed. |
 
 ## What to Do After CHANGED
@@ -91,7 +94,7 @@ The script prints its messages in Japanese. The first column shows them verbatim
 - Public Personal Authentication Service (For private businesses): https://www.digital.go.jp/policies/mynumber/private-business/jpki-introduction (Verified 2026-09-08)
 - e-Gov Law Search API v2: https://laws.e-gov.go.jp/api/2/law_data/ (Destination for matching revision IDs. Verified 2026-09-10)
 
-## Last Verified: 2026-09-11
+## Last Verified: 2026-11-25
 
 ## Unverified Items
 

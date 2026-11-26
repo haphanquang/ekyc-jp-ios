@@ -5,7 +5,7 @@ description: Used in iOS implementation for handling My Number Card PIN lock and
 
 # Handling My Number Card PIN Lock and Retry
 
-A reference for interpreting the response SW1SW2 to VERIFY (`00 20 00 80` + PIN byte sequence) and providing **remaining attempt display, pre-lock warnings, and lock release guidance**. For the SELECT/VERIFY procedures of each AP, see `jpki-ap-shomei` / `jpki-ap-riyousha` / `kenmen-jikou-kakunin-ap` / `kenmen-nyuryoku-hojo-ap`; for CoreNFC APDU communication, see `ios-corenfc-apdu`; for error screen messages, see `ios-nfc-ux-errors`.
+A reference for interpreting the response SW1SW2 to VERIFY (`00 20 00 80` + PIN byte sequence; `P2=80` is an example for JPKI-AP / 4-digit card-face input assistance, others are unverified) and providing **remaining attempt display, pre-lock warnings, and lock release guidance**. For the SELECT/VERIFY procedures of each AP, see `jpki-ap-shomei` / `jpki-ap-riyousha` / `kenmen-jikou-kakunin-ap` / `kenmen-nyuryoku-hojo-ap`; for CoreNFC APDU communication, see `ios-corenfc-apdu`; for error screen messages, see `ios-nfc-ux-errors`.
 
 PIN initialization and reset cannot be performed by the app (done at municipal offices, convenience store kiosk terminals, or smartphone apps). This skill covers "how to guide the user." Method names and applicability dates under the Act on Prevention of Transfer of Criminal Proceeds are not asserted here (`honnin-kakunin-houhou`).
 
@@ -106,18 +106,23 @@ func interpret(sw1: UInt8, sw2: UInt8) -> VerifyOutcome {
     }
 }
 
-/// Checks the remaining attempts / lock status without consuming attempts using an empty VERIFY APDU (Lc = 0, ISO/IEC 7816-4 §7.5.2).
+/// Checks the remaining attempts / lock status without consuming attempts using an empty-body VERIFY APDU (Case 1: 4 bytes, no Lc or data field; ISO/IEC 7816-4 §7.5.2; physical card support is unverified).
 /// Used for recovering status after session disconnection, etc. When connecting to a fresh session, select the DF (such as JPKI-AP) before selecting the EF.
 func checkRemainingAttempts(pinEFID: [UInt8], p2: UInt8 = 0x80, aid: [UInt8]? = nil, tag: NFCISO7816Tag) async throws -> VerifyOutcome {
     guard pinEFID.count == 2 else { throw PINInputError.invalidInput }
     if let aid = aid {
-        let selectAID = NFCISO7816APDU(data: Data([0x00, 0xA4, 0x04, 0x0C, UInt8(aid.count)] + aid))!
+        guard (1...16).contains(aid.count),
+              let selectAID = NFCISO7816APDU(data: Data([0x00, 0xA4, 0x04, 0x0C, UInt8(aid.count)] + aid)) else {
+            throw PINInputError.invalidInput
+        }
         let (_, sw1AID, sw2AID) = try await tag.sendCommand(apdu: selectAID)
         guard sw1AID == 0x90, sw2AID == 0x00 else {
             return .other(sw1: sw1AID, sw2: sw2AID)
         }
     }
-    let selectCmd = NFCISO7816APDU(data: Data([0x00, 0xA4, 0x02, 0x0C, 0x02] + pinEFID))!
+    guard let selectCmd = NFCISO7816APDU(data: Data([0x00, 0xA4, 0x02, 0x0C, 0x02] + pinEFID)) else {
+        throw PINInputError.invalidInput
+    }
     let (_, sw1Sel, sw2Sel) = try await tag.sendCommand(apdu: selectCmd)
     guard sw1Sel == 0x90, sw2Sel == 0x00 else {
         return .other(sw1: sw1Sel, sw2: sw2Sel)
@@ -143,7 +148,7 @@ The input field should use `.numberPad` (4, 12, or 14 digits) / `.asciiCapable` 
 - [ ] **Warn before final attempt** — Before reaching 1 remaining, convey the gravity: "If you enter incorrectly again, the card will be locked and you will need to visit a municipal office or similar to resolve it"
 - [ ] **Do not implement auto-retry** — VERIFY resends must always be initiated by explicit user action. Do not send in a loop
 - [ ] **Do not waste attempts** — Perform full-width to half-width normalization, and check for empty strings, insufficient digits, and wrong character types before sending to the card (`pinBytes`). Do not let the wrong type of PIN be sent
-- [ ] **If SW is not received, do not assume it was "consumed"** — On communication error or session disconnect, retrieve the remaining count on the next screen before displaying
+- [ ] **If SW is not received, do not assume it was "consumed"** — On communication error or session disconnect, retrieve the remaining count on the next screen before displaying (however, physical card support for empty-body VERIFY is unverified, so if unsupported, guide cautiously without assuming an attempt was consumed)
 - [ ] **Do not retain PIN** — Wipe immediately after VERIFY; require re-entry on retry (`ios-security`)
 - [ ] **Close entry field on lock** — When `69 83` is received, hide the PIN re-entry field and switch to lock release guidance
 - [ ] **Do not confuse PIN types** — Do not show 6–16 digit instructions on a screen requesting 4 digits, and vice versa
@@ -192,3 +197,4 @@ PDFs under `references/pdfs/` are third-party works and are not shipped with the
 - VERIFY keyref (P2), Lc, target EF, and digit formatting for Card Surface Input Assistance and Card Surface Verification PINs (corresponding rows in `references/apdu-cheatsheet.md` are also `unverified`).
 - Range of terminals and devices supporting convenience store/smartphone initialization. Whether the Card Surface Input Assistance PIN can be reset outside of municipal offices.
 - Response when performing non-VERIFY operations (certificate READ, etc.) on a locked card. Whether blocking is per-AP or card-wide is unverified.
+- Whether physical My Number Cards / individual APs support empty-body VERIFY (`checkRemainingAttempts`: `00 20 00 [p2]` Case 1 for querying remaining PIN retries and lock status) and the exact SW returned are unverified (`references/apdu-cheatsheet.md`).

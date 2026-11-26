@@ -92,8 +92,11 @@ extension CardReader {
     }
 
     // (B) Create from a raw byte array (include Lc yourself) — init?(data:)
-    func rawAPDU(_ bytes: [UInt8]) -> NFCISO7816APDU {
-        NFCISO7816APDU(data: Data(bytes))!                   // Assumes valid ≥4B header + matching Lc (nil if malformed)
+    func rawAPDU(_ bytes: [UInt8]) throws -> NFCISO7816APDU {
+        guard let apdu = NFCISO7816APDU(data: Data(bytes)) else {   // Assumes valid ≥4B header + matching Lc (nil if malformed)
+            throw ReaderError.invalidInput
+        }
+        return apdu
     }
 
     // Send. The async version overloads are determined by the return type
@@ -137,7 +140,8 @@ enum ReaderError: Error {
 extension CardReader {
     // SELECT by AID: Raw byte array is 00 A4 04 0C <Lc> <AID...>
     func selectAP(aid: [UInt8], tag: NFCISO7816Tag) async throws {
-        let apdu = rawAPDU([0x00, 0xA4, 0x04, 0x0C, UInt8(aid.count)] + aid)
+        guard (1...16).contains(aid.count) else { throw ReaderError.invalidInput }
+        let apdu = try rawAPDU([0x00, 0xA4, 0x04, 0x0C, UInt8(aid.count)] + aid)
         let (_, sw1, sw2) = try await send(apdu, to: tag)
         guard sw1 == 0x90, sw2 == 0x00 else { throw ReaderError.selectFailed(sw1, sw2) }
     }
@@ -145,7 +149,7 @@ extension CardReader {
     // SELECT by EF id: 00 A4 02 0C 02 <ef-hi> <ef-lo>
     func selectEF(efID: [UInt8], tag: NFCISO7816Tag) async throws {
         guard efID.count == 2 else { throw ReaderError.invalidInput }
-        let apdu = rawAPDU([0x00, 0xA4, 0x02, 0x0C, 0x02] + efID)
+        let apdu = try rawAPDU([0x00, 0xA4, 0x02, 0x0C, 0x02] + efID)
         let (_, sw1, sw2) = try await send(apdu, to: tag)
         guard sw1 == 0x90, sw2 == 0x00 else { throw ReaderError.selectFailed(sw1, sw2) }
     }

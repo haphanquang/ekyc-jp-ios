@@ -39,7 +39,7 @@ Electronic signatures using signing certificates can be subject to Article 3 (Pr
 | Signature verifier / User-authentication verifier | A private business that receives and verifies electronic certificates from users. Those who verify signing certificates are signature verifiers, and those who verify user-authentication certificates are user-authentication verifiers |
 | J-LIS (Japan Agency for Local Authority Information Systems) | Certificate Authority. Manages the issuance and revocation of electronic certificates and responds to inquiries for certificate validity verification. Trust anchor |
 | Platform operator (PF operator) | A business that has received competent minister certification and directly verifies the validity of electronic certificates with J-LIS. Can provide certificate validity verification functions to other businesses as a "platform" |
-| Service provider operator (SP operator) | A business that does not have its own signature verification facilities and provides services by outsourcing certificate validity verification to a PF operator |
+| Service provider operator (SP operator) | A business that does not have its own signature verification facilities and provides services by outsourcing certificate validity verification to a PF operator (prohibited from retaining submitted certificates or acquiring/retaining issuance numbers under deemed status; PDF 05 §4(2)ア(ｴ), see `platform-jigyousha`) |
 
 There are two introduction methods. **Reading the electronic certificate from the IC chip by the app itself is possible with either method**; the difference lies in the route of certificate validity verification.
 
@@ -110,10 +110,10 @@ PDFs under `references/pdfs/` are third-party works and are not shipped with the
 - `references/pdfs/03_public-key-cryptography.pdf` (Public key cryptography, authentication flow for signing / user-authentication)
 - `references/pdfs/04_jpki-platform-operator-system.pdf` (Platform operator system, relationship with SP operators, procedures on the J-LIS side)
 - `references/pdfs/05_private-sector-guidelines-v1.8.pdf` (Guidelines for Private Operators Using the Public Personal Authentication Service, Version 1.8)
-- `references/pdfs/21_guide-public-personal-authentication.pdf` (Example of introduction flow from the perspective of an SP operator)
+- `references/pdfs/21_guide-public-personal-authentication.pdf` (JPKI usage process and App Clip adoption example)
 - `references/pdfs/29_guide-trustdock-jpki.pdf` (Guide to TRUSTDOCK Public Personal Authentication Service, configuration example as an SP operator)
 
-## Last Verified: 2026-09-11
+## Last Verified: 2026-11-24
 
 ## Unverified Items
 

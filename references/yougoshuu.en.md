@@ -1,6 +1,6 @@
 # Glossary (yougoshuu)
 
-Last Verified: 2026-10-05
+Last Verified: 2026-11-24
 
 > This file is the shared terminology reference for all skills in the `ekyc-jp` plugin.
 > Once all 19 skills were complete, it was supplemented with the terms that actually appear in each skill.
@@ -55,7 +55,7 @@ Last Verified: 2026-10-05
 | Electronic signature (電子署名) | でんししょめい | A measure applied to an electromagnetic record that makes it possible to confirm the identity of its creator and that it has not been tampered with. Generated with the private key corresponding to the signing certificate. | jpki-ap-shomei, signature-verification |
 | Notation variants (表記揺れ) | ひょうきゆれ | The phenomenon of the same name or address appearing in multiple notations (old vs. new character forms, differences in chome/banchi notation, etc.). Normalization is required when matching the four basic attributes. | kihon-4-jouhou-doui |
 | Trust anchor (トラストアンカー) | トラストアンカー | The root of trust in a certificate chain. In JPKI, this is J-LIS, the issuer of the electronic certificates. | jpki-overview, signature-verification |
-| Validity check (有効性確認) | ゆうこうせいかくにん | Confirming through an authorized Platform Operator via J-LIS (CRL provision method / OCSP responder method) that an electronic certificate provided by a customer has not been revoked. (Except where the private business itself is a minister-certified PF operator, private businesses cannot inquire directly with J-LIS.) | jlis-yukousei-kakunin, platform-jigyousha |
+| Validity check (有効性確認) | ゆうこうせいかくにん | Confirming with J-LIS (CRL provision method / OCSP responder method) via an authorized Platform Operator that an electronic certificate provided by a customer has not been revoked. (Except where the private business itself is a minister-certified PF operator, private businesses cannot inquire directly with J-LIS.) | jlis-yukousei-kakunin, platform-jigyousha |
 | Holder authentication (当人認証) | とうにんにんしょう | Confirming that the person performing authentication is the legitimate holder of the electronic certificate. Mainly handled by the user-authentication certificate. | jpki-ap-riyousha, honnin-kakunin-houhou |
 | Identity proofing (身元確認) | みもとかくにん | Confirming that the person actually exists and that the applicant is that very person. Required, for example, for verification at the time of transaction under the Act on Prevention of Transfer of Criminal Proceeds. | honnin-kakunin-houhou |
 | Selfie (セルフィー) | セルフィー | An image of the individual's appearance captured on the spot. In document-photo methods, it is matched against the facial photo on the identity document. | honnin-kakunin-houhou |

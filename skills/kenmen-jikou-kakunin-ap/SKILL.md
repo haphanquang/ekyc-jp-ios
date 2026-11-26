@@ -76,11 +76,13 @@ extension CardReader {
     // EF-ID / keyref(P2) / Lc / 桁整形は未確認のため、確定したバイト列に差し替えて使う。
     // VerifyOutcome / PINKind / pinBytes / interpret は pin-lock-handling で定義。
     // kind: 表面のみは .shogoB（14 桁）、個人番号も読むなら .shogoA（12 桁）
+    // ※ 本サンプルの inquiry: String 引数は例示用。特に .shogoA は特定個人情報（マイナンバー12桁）を扱うため、金融機関水準の本番実装では Swift の String/Array による Copy-on-Write コピーを避け、ios-security に記載の SecureBytes（memset_s）を用いて APDU 送信直後にゼロ消去すること。
     func verifyKenmenInquiry(_ inquiry: String, kind: PINKind, pinEFID: [UInt8], tag: NFCISO7816Tag) async throws -> VerifyOutcome {
+        guard kind == .shogoB || kind == .shogoA else { throw ReaderError.invalidInput }
         let bytes = try pinBytes(inquiry, kind: kind)        // 全角→半角・桁数チェック（整形は未確認）
         try await selectEF(efID: pinEFID, tag: tag)          // 00 A4 02 0C 02 <pinEFID>（EF-ID は未確認）
         let p2: UInt8 = 0x80                                 // keyref は未確認（JPKI-AP の値を仮置き）
-        let apdu = rawAPDU([0x00, 0x20, 0x00, p2, UInt8(bytes.count)] + bytes)
+        let apdu = try rawAPDU([0x00, 0x20, 0x00, p2, UInt8(bytes.count)] + bytes)
         let (_, sw1, sw2) = try await send(apdu, to: tag)
         return interpret(sw1: sw1, sw2: sw2)                // pin-lock-handling
     }

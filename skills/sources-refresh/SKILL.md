@@ -1,6 +1,6 @@
 ---
 name: sources-refresh
-description: 一次資料（digital.go.jp の JPKI 関連ページ・PDF、および e-Gov 法令検索の犯収法・携帯法・古物営業法の施行規則および公的個人認証法のリビジョン）を再取得して差分を確認する際に使用。資料更新 / 出典の再取得 / JPKI資料の最新化 / digital.go.jp 差分チェック / 犯収法・携帯法の号記号の再確認 / sources.md・hourei-eKYC.md 更新。`references/refresh.sh` を実行し、新規・消滅・内容変更（CHANGED）を報告する。スクリプトは SKILL.md を書き換えない。CHANGED 資料をどのスキルへ反映するかは人が判断する。
+description: 一次資料（digital.go.jp の JPKI 関連ページ・PDF、および e-Gov 法令検索の犯収法・携帯法・古物営業法の各施行規則および本法・公的個人認証法および同施行規則のリビジョン）を再取得して差分を確認する際に使用。資料更新 / 出典の再取得 / JPKI資料の最新化 / digital.go.jp 差分チェック / 犯収法・携帯法の号記号の再確認 / sources.md・hourei-eKYC.md 更新。`references/refresh.sh` を実行し、新規・消滅・内容変更（CHANGED）を報告する。スクリプトは SKILL.md を書き換えない。CHANGED 資料をどのスキルへ反映するかは人が判断する。
 ---
 
 # 一次資料の再取得と差分チェック（sources-refresh）
@@ -48,10 +48,10 @@ description: 一次資料（digital.go.jp の JPKI 関連ページ・PDF、お�
    挙がっているスキルを開き、引用箇所・数値・版番号が新しい PDF と食い違っていないか確認する。
    食い違いがあれば人が判断して直す。`refresh.sh` はスキル本文を変更しない。
 8. **e-Gov 法令リビジョンを突合する。** `refresh.sh` が犯収法施行規則（現行・2027-04-01 未施行版）・
-   携帯法施行規則・公的個人認証法・古物営業法施行規則および古物営業法（本法）の**リビジョン ID** を e-Gov 法令検索 API v2 から取得し、
+   携帯法施行規則（現行・2027-04-01 未施行版）・公的個人認証法・同施行規則・古物営業法施行規則・古物営業法（本法）および携帯電話不正利用防止法（本法）の**リビジョン ID** を e-Gov 法令検索 API v2 から取得し、
    `references/hourei-eKYC.md` に記録した「取得リビジョン」と比較する。`CHANGED` なら、
    e-Gov で当該リビジョンの条文（特に犯収法施行規則第6条第1項第1号の号記号、第19条、
-   携帯法施行規則第3条、公的個人認証法第17条、古物営業法施行規則第15条第3項、古物営業法第15条・第16条）を読み直し、`hourei-eKYC.md` の抜粋・リビジョン ID
+   携帯法施行規則第3条、携帯法本法第4条、公的個人認証法第17条・同施行規則第29条・第35条の2、古物営業法施行規則第15条第3項、古物営業法第15条・第16条）を読み直し、`hourei-eKYC.md` の抜粋・リビジョン ID
    を更新したうえで、`references/method-map.md` と `skills/honnin-kakunin-houhou/SKILL.md` の
    号記号・施行時期を人が突合する。2027-04-01 版は施行までに再改正され得るので、制度改正の
    時期に関わる質問の前には毎回このステップを実行する。
@@ -69,7 +69,7 @@ description: 一次資料（digital.go.jp の JPKI 関連ページ・PDF、お�
 | `!! PDF ではない/小さすぎる応答` | 応答が PDF ヘッダを持たない、または 1KB 未満（エラーページ等）。ローカル PDF は**変更していない**。 | 同上。誤った上書きを避けるためスクリプトは `cp` しない。 |
 | `same <法令名> (<リビジョン ID>)` | e-Gov 法令のリビジョンが `hourei-eKYC.md` の記録と同一。 | 対応不要。 |
 | `CHANGED <法令名>` ＋ `記録 = … / 現在 = …` | e-Gov 法令が改正され、リビジョン ID が変わった。 | 手順 8 を実施（`hourei-eKYC.md` の抜粋・ID を更新 → `method-map.md`・`honnin-kakunin-houhou` の号記号を人が突合）。 |
-| `?? 記録リビジョンが見つからない` | `hourei-eKYC.md` の該当節（`## 1.`〜`## 5.`）に「取得リビジョン」行が無い。節番号を変えたときに起きる。 | `hourei-eKYC.md` の節番号と `refresh.sh` 末尾の `check_law` の第 4 引数を揃える。 |
+| `?? 記録リビジョンが見つからない` | `hourei-eKYC.md` の該当節（`## 1.`〜`## 7.`）に「取得リビジョン」行が無い。節番号を変えたときに起きる。 | `hourei-eKYC.md` の節番号と `refresh.sh` 末尾の `check_law` の第 4 引数を揃える。 |
 | `?? リビジョン ID を抽出できず` | e-Gov API の応答からリビジョン ID を取り出せない。 | API v2 の応答形式が変わっていないか手動で確認する。 |
 
 ## CHANGED のあとにやること
@@ -91,7 +91,7 @@ description: 一次資料（digital.go.jp の JPKI 関連ページ・PDF、お�
 - 公的個人認証サービス（民間事業者向け）: https://www.digital.go.jp/policies/mynumber/private-business/jpki-introduction （2026-09-08 確認）
 - e-Gov 法令検索 API v2: https://laws.e-gov.go.jp/api/2/law_data/ （リビジョン ID の突合先。2026-09-10 確認）
 
-## 最終確認日: 2026-09-11
+## 最終確認日: 2026-11-25
 
 ## 未確認事項
 

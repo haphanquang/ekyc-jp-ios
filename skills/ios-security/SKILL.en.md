@@ -28,9 +28,9 @@ The device side does not verify digital signatures or query J-LIS (server / plat
 ### Card Data is Volatile
 
 - **Pass the PIN only to the VERIFY APDU sent to the card.** Never send it to servers, analytics SDKs, logs, or the pasteboard. Do not save it in Keychain (including a biometrically protected "remember PIN" feature), UserDefaults, or files. Use `isSecureTextEntry` for the input field and discard the PIN as soon as the VERIFY response arrives. If a design sends the PIN to a server or stores it, correct it as an error.
-- Basic 4 information, face photo images, individual numbers, challenge/to-be-signed data, and signature values read from the card are **temporary data for sending to the server** (the PIN is not sent, as stated above). Hold as `Data` / `String` and discard immediately after server transmission (or session termination).
+- Basic 4 information, face photo images, individual numbers, challenge/to-be-signed data, and signature values read from the card are **temporary data for sending to the server** (the PIN is not sent, as stated above). Hold as `Data` / `String` (especially for highly sensitive values such as Individual Number, prefer `SecureBytes` where feasible and avoid prolonged retention in immutable `String`) and discard/zero immediately after server transmission (or session termination).
 - Limit retention to the scope of one request. On retry, re-read from the card.
-- For highly sensitive data such as PINs, to eliminate the risk of duplicate memory remaining due to Swift's `String` / `Array` Copy-on-Write (CoW) mechanism, handle them using an unmanaged native heap buffer (`SecureBytes` managing `UnsafeMutablePointer<UInt8>`), and securely zero-fill and release them immediately after use using `memset_s`. When receiving input from UI components (such as `UITextField`), it is advisable to design the flow to avoid creating intermediate Swift `String` variables, feeding input directly from custom secure keypads into `SecureBytes`. The top priority is "don't store it in the first place / don't log it."
+- For highly sensitive data such as PINs, the 12-digit Individual Number (My Number), and Inquiry Number A, to eliminate the risk of duplicate memory remaining due to Swift's `String` / `Array` Copy-on-Write (CoW) mechanism, handle them using an unmanaged native heap buffer (`SecureBytes` managing `UnsafeMutablePointer<UInt8>`), and securely zero-fill and release them immediately after use using `memset_s`. When receiving input from UI components (such as `UITextField`), it is advisable to design the flow to avoid creating intermediate Swift `String` variables, feeding input directly from custom secure keypads into `SecureBytes`. The top priority is "don't store it in the first place / don't log it."
 
 ```swift
 import Darwin
@@ -39,14 +39,21 @@ import Foundation
 /// Secure native heap buffer avoiding Swift Array/String Copy-on-Write (CoW)
 public final class SecureBytes: @unchecked Sendable {
     private var buffer: UnsafeMutablePointer<UInt8>?
-    public private(set) var count: Int
+    private var _count: Int
     private let lock = NSLock()
 
+    public var count: Int {
+        lock.lock()
+        defer { lock.unlock() }
+        return _count
+    }
+
     public init(count: Int) {
-        self.count = count
-        if count > 0 {
-            self.buffer = UnsafeMutablePointer<UInt8>.allocate(capacity: count)
-            self.buffer?.initialize(repeating: 0, count: count)
+        let safeCount = max(0, count)
+        self._count = safeCount
+        if safeCount > 0 {
+            self.buffer = UnsafeMutablePointer<UInt8>.allocate(capacity: safeCount)
+            self.buffer?.initialize(repeating: 0, count: safeCount)
         } else {
             self.buffer = nil
         }
@@ -57,7 +64,7 @@ public final class SecureBytes: @unchecked Sendable {
         if let buffer = self.buffer, !bytes.isEmpty {
             bytes.withUnsafeBufferPointer { src in
                 guard let base = src.baseAddress else { return }
-                buffer.assign(from: base, count: bytes.count)
+                buffer.update(from: base, count: bytes.count)
             }
         }
     }
@@ -68,7 +75,7 @@ public final class SecureBytes: @unchecked Sendable {
         guard let buffer = buffer else {
             return try body(UnsafeBufferPointer(start: nil, count: 0))
         }
-        return try body(UnsafeBufferPointer(start: buffer, count: count))
+        return try body(UnsafeBufferPointer(start: buffer, count: _count))
     }
 
     /// Mutable access to write directly into buffer from secure keypads, avoiding intermediate copies
@@ -78,18 +85,18 @@ public final class SecureBytes: @unchecked Sendable {
         guard let buffer = buffer else {
             return try body(UnsafeMutableBufferPointer(start: nil, count: 0))
         }
-        return try body(UnsafeMutableBufferPointer(start: buffer, count: count))
+        return try body(UnsafeMutableBufferPointer(start: buffer, count: _count))
     }
 
     /// Must be called after server transmission or when done (C11 memset_s prevents compiler optimization removal)
     public func wipe() {
         lock.lock()
         defer { lock.unlock() }
-        if let buffer = buffer, count > 0 {
-            _ = memset_s(buffer, count, 0, count)
+        if let buffer = buffer, _count > 0 {
+            _ = memset_s(buffer, _count, 0, _count)
             buffer.deallocate()
             self.buffer = nil
-            self.count = 0
+            self._count = 0
         }
     }
 
@@ -137,8 +144,8 @@ func urlSession(_ session: URLSession,
 
 In addition to TLS pinning on communication paths, to prevent unauthorized relay / replay attacks (Session Relay Attacks) and requests from tampered clients, combine with **App Attest (`DCAppAttestService`)** from the DeviceCheck framework (see `ekyc-session-orchestration`).
 
-1. **Key Pair Generation**: Create a hardware-protected key inside the Secure Enclave via `DCAppAttestService.shared.generateKey()`, and store the `keyId` in the Keychain.
-2. **Obtaining Attestation**: Pass the SHA-256 hash of the nonce (or initial challenge) received from the server at session initiation as `clientDataHash`, obtain Apple's Attestation object via `attestKey(keyId, clientDataHash:)`, and register it with the server.
+1. **Key Pair Generation**: Check `DCAppAttestService.shared.isSupported` first (returns `false` on Simulator and unsupported devices; route per the unsupported-device fallback policy in `ekyc-session-orchestration`, such as manual review), create a hardware-protected key inside the Secure Enclave via `DCAppAttestService.shared.generateKey()`, and store the `keyId` in the Data Protection Keychain with `kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly` (or `...WhenUnlockedThisDeviceOnly`) to exclude it from backups and cross-device sync (matching its hardware binding; note also that Keychain/App Attest keys are scoped separately between an App Clip and the full app).
+2. **Obtaining Attestation**: Pass the SHA-256 hash of the initial attestation challenge received from the server (or a separate challenge issued at session initiation before the signing nonce is issued, e.g., in PAD-first flows) as `clientDataHash`, obtain Apple's Attestation object via `attestKey(keyId, clientDataHash:)`, and register it with the server.
 3. **Generating Assertion**: When sending a JPKI signature or authentication request, pass the SHA-256 hash of the request payload (nonce + signature value + timestamp, etc.) as `clientDataHash`, generate an assertion via `generateAssertion(keyId, clientDataHash:)`, and attach it to an HTTP header (such as `X-App-Attest-Assertion`).
 4. **Server Verification**: The server verifies the monotonic counter increment and matches the `clientDataHash`, confirming that the request was transmitted directly from a legitimate app instance.
 
@@ -152,6 +159,7 @@ In app logs, `os_log` / `Logger`, analytics events, and crash reporter (Crashlyt
 - [ ] Individual number (My Number, 12 digits)
 - [ ] Face photo images, card surface images, camera-captured facial images
 - [ ] Basic 4 information (name, address, date of birth, sex) in plaintext
+- [ ] Electronic certificates (DER: signing and user-authentication)
 - [ ] Raw APDU byte sequences / HTTP request/response bodies containing the above
 
 Additionally:
@@ -188,10 +196,15 @@ logger.info("Sending JPKI signature: session=\(sessionID, privacy: .public) len=
 - These are **deterrents, not complete prevention** (jailbroken devices, external cameras). Use in conjunction with server-side countermeasures.
 
 ```swift
-NotificationCenter.default.addObserver(
+// Check initial state on appearance (e.g. viewDidAppear / didMoveToWindow) and retain the observer token
+func updateScreenCaptureState() {
+    sensitiveContentHidden = view.window?.screen.isCaptured ?? true
+}
+
+captureObserver = NotificationCenter.default.addObserver(
     forName: UIScreen.capturedDidChangeNotification, object: nil, queue: .main
 ) { [weak self] _ in
-    self?.sensitiveContentHidden = self?.view.window?.screen.isCaptured ?? false
+    self?.updateScreenCaptureState()
 }
 ```
 
@@ -214,7 +227,8 @@ NotificationCenter.default.addObserver(
 - [ ] Read data is memory-only. Discarded immediately after server transmission / session termination; retries re-read
 - [ ] No ATS-weakening settings (`NSAllowsArbitraryLoads`, etc.) for the eKYC server
 - [ ] Certificate/public key pinning for eKYC server. Connection rejected on pin mismatch, no fallback, backup key also registered
-- [ ] PINs, challenge/hash, signature values, individual numbers, face photos, card surface images, and basic 4 information plaintext do NOT appear in logs, analytics, crash reports, or APDU dumps
+- [ ] App Attest (`DCAppAttestService`) used for account-opening eKYC, with `keyId` stored as `...ThisDeviceOnly` and `clientDataHash` verified on the server
+- [ ] PINs, challenge/hash, signature values, electronic certificates (DER), individual numbers, face photos, card surface images, and basic 4 information plaintext do NOT appear in logs, analytics, crash reports, or APDU dumps
 - [ ] `.public` / `%{public}` is NOT used on these values in `os_log` / `Logger`
 - [ ] Temporary storage is Keychain (`kSecAttrAccessibleWhenUnlockedThisDeviceOnly` or stronger, Data Protection Keychain) or app-generated keys in Secure Enclave only. No `UserDefaults` / plist / plaintext files
 - [ ] When retaining individual numbers: encryption at rest, access minimization, post-purpose deletion, and retention period defined (Number Use Act: `kenmen-jikou-kakunin-ap`)
@@ -236,7 +250,7 @@ PDFs under `references/pdfs/` are third-party works and are not shipped with the
 - <https://mas.owasp.org/MASTG/tests/ios/MASVS-STORAGE/MASTG-TEST-0052/> (iOS local data storage test. Don't put sensitive data in `UserDefaults` / plist / Core Data plaintext, Keychain `kSecAttrAccessible` should be least privilege. Retrieved 2026-09-08)
 - `references/pdfs/33_guide-liquid-ekyc.pdf` (p.10 "JPKI+ (facial) overview," p.19 "Advanced fraud detection functions," p.20 "Liquid PAD / ISO/IEC 30107" — facial presentation attack detection (PAD for display/photo attacks), camera injection attack detection (hijacking camera control to inject virtual video), and face/identity reuse & warning-list checks; all server-side functions, not device app responsibilities)
 
-## Last Verified: 2026-09-08
+## Last Verified: 2026-11-25
 
 ## Unverified Items
 

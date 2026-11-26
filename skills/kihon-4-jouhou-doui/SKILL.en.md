@@ -27,7 +27,7 @@ Scope of each item (Based on consent screen examples *1 and *2 in PDF 09):
 
 | Item | Scope / Notes |
 |---|---|
-| Name | If a former surname is jointly written, **the former surname is also included**. **On or after May 26, Reiwa 8 (2026-05-26), the phonetic spelling (furigana) of the name and former surname will also be included** (Text of PDF 09 *1: "On or after May 26, Reiwa 8, the phonetic spelling of the name and former surname will also be included."). |
+| Name | If a former surname is jointly written, **the former surname is also included**. **Since May 26, Reiwa 8 (2026-05-26), the phonetic spelling (furigana) of the name and former surname is also included** (Text of PDF 09 *1: "On or after May 26, Reiwa 8, the phonetic spelling of the name and former surname will also be included."). |
 | Address | If the person has moved overseas, "**the fact that they have moved overseas**" and "**the scheduled date of moving out**" are also included (PDF 09 *2). |
 | Date of Birth | — |
 | Gender | — |
@@ -104,7 +104,7 @@ Required = 1, 3, 4, 5, 6, 8, 9, 10, 12, 13, 15 (11 items) / Optional = 2, 7, 11,
 
 ### Validity Period
 
-- In principle, **10 years** with the **day following** the consent as the starting date. Example in PDF 05 §5(5): Reception date/time 2023-05-18 10:00:00 → Validity period start 2023-05-19 00:00:00 → Validity period end 2033-05-18 23:59:59.
+- In principle, **10 years** with the **day following** the consent as the starting date. Example in PDF 05 §5(3)⑤: Reception date/time 2023-05-18 10:00:00 → Validity period start 2023-05-19 00:00:00 → Validity period end 2033-05-18 23:59:59.
 - Even if the signing certificate is revoked multiple times within the validity period, the consent during the validity period remains valid.
 - Around the time the 10-year validity period elapses, the signature verifier must **prompt the user to renew the consent**.
 - There are discrepancies among materials regarding the base date for calculation (PDF 09 "The day the fact of consent is reflected in the Agency's system" / PDF 05 "The day following the SP operator's reception"). → `## Unverified Items`
@@ -126,7 +126,7 @@ Required = 1, 3, 4, 5, 6, 8, 9, 10, 12, 13, 15 (11 items) / Optional = 2, 7, 11,
 - [ ] Consent acquisition is **electronic only** (paper is not permitted). Acquired via **electronic signature using a signing certificate** on the My Number Card or smartphone. The submitted signing certificate is not retained (for the purpose of the consent service). *When performing transaction verification under the Act on Prevention of Transfer of Criminal Proceeds using the ka method (JPKI), Article 19 of the Enforcement Ordinance requires attaching the electronic signature and signing certificate to the verification record and preserving them for 7 years, which is a separate store (`honnin-kakunin-houhou` "Creation and Preservation of Verification Records", `doui-jouhou-kanri`).
 - [ ] Design the consent acquisition unit **per in-house service**. If acquiring in a blanket manner, explicitly and comprehensively specify the target services, and explicitly acquire consent for each service.
 - [ ] Implement an independent consent screen (title, summary, "Agree"/"Do not agree" buttons, "Details and Supplementary Explanations of Consent Items" link), and ensure the 15 items in `## Consent Screen Requirements` can be displayed in full.
-- [ ] Decide how to handle cases where consent is given for only some of the 4 target consent items (the service provider can decide to make the service itself unavailable, but must not impose disadvantages such as making services unavailable simply due to non-consent).
+- [ ] Decide how to handle cases where consent is given for only some of the 4 target consent items (the service provider may decide to make the Latest 4 Attributes Provision Service itself unavailable, but must not impose disadvantages such as denying access to the provider's primary services simply due to non-consent).
 - [ ] Design a lifecycle to **preserve and manage** consent information and electronic certificate information in the in-house DB, and delete it when no longer needed. → **`doui-jouhou-kanri`** (Server-side preservation of consent information, transmission to the Agency, storage period, deletion).
 - [ ] Consent information is transmitted via the route **SP Operator → PF Operator → Agency**. Do not inquire or transmit directly to J-LIS from the app / in-house servers (see `jpki-overview`).
 - [ ] Prepare deadline management for the **10-year** validity period and a flow for **consent renewal guidance** prior to expiration.
@@ -145,15 +145,15 @@ PDFs under `references/pdfs/` are third-party works and are not shipped with the
 - `references/pdfs/08_latest-information-4-types.pdf` — "Latest User Information (4 Attributes) Provision Service Using the Public Personal Authentication Service". Comparison before and after service utilization, overview via PF operator and J-LIS, 4 attributes = address, name, date of birth, gender.
 - `references/pdfs/10_platform-operators-4-info-list.pdf` — "List of Platform Operators Supporting the Latest User Information (4 Attributes) Provision Service" (As of June 10, Reiwa 8).
 - `references/pdfs/11_personal-consent-support-mynaportal.pdf` — "'User Consent Acquisition Support Service' for the 'Four Basic Attributes Provision Service' Leveraging Mynaportal". Consent flow via QR/links, linked information (consent information, electronic certificate information, PPID, etc.).
-- `references/pdfs/05_private-sector-guidelines-v1.8.pdf` §5 "Overview of the Latest User Information (Four Basic Attributes) Provision Service Based on User Consent" (pages 44–50, Version 1.8, 2026-04-13). Mechanism (Figure 5-2), acquisition and cancellation of consent, example of calculating the 10-year validity period, User Client Software (Windows/Android/Mac/iOS versions), fee 20 yen per case.
+- `references/pdfs/05_private-sector-guidelines-v1.8.pdf` §5 "Overview of the Latest User Information (Four Basic Attributes) Provision Service Based on User Consent" (pages 44–51, Version 1.8, 2026-04-13). Mechanism (Figure 5-2), acquisition and cancellation of consent, example of calculating the 10-year validity period (§5(3)⑤), User Client Software (Windows/Android/Mac/iOS versions), fee 20 yen per case.
 - `references/jpki-introduction.ja.md` (§6.1 "Latest User Information (4 Attributes) Provision Service" started May 16, 2023, §6.1.1 "User Consent Acquisition Support Service" started October 29, 2024. Digital Agency, acquired 2026-09-07).
 - Live URL: <https://www.digital.go.jp/policies/mynumber/private-business/jpki-introduction> (Acquired 2026-09-07)
 
-## Last Verified: 2026-09-11
+## Last Verified: 2026-11-24
 
 ## Unverified Items
 
-- **Specific update time of the J-LIS CRL (revocation information).** Primary materials read only stated that the CRL is "updated about once a day (on a daily basis)" and the OCSP responder method is on a "15-minute basis". The specific time (e.g., 7 AM) is unverified in primary sources.
+- **General update/distribution cutover time of the J-LIS CRL (revocation list).** Guidelines v1.8 FAQ A.10 (p62) notes `7:00 AM the next day` (`翌日7時`) for overseas-relocation revocation entries on the CRL, while general primary materials only state that the CRL is "updated about once a day (on a daily basis)" and the OCSP responder method is on a "15-minute basis"; full operational cutover SLAs across all revocation reasons require J-LIS NDA technical specifications.
 - **Whether the "electronic certificate issue number (serial number)" is included in the consent screen for SP operators and the information received by SP operators.** PDF 09's consent screen example/detailed explanation 1 lists "issue number of the signing certificate" as an item provided from the Agency to the PF operator, but PDF 05 §5(3) states the issue number is not provided to the SP operator and is not subject to consent. Requires verification with the latest PF operator specifications when designing the service.
 - **Base date for calculating the 10-year validity period.** PDF 09 states it is the day following "the day the fact of consent is reflected in the Agency's system", while PDF 05 states it is the day following "the day the SP operator received consent from the user", showing inconsistent wording. The practical base date requires verification via PF operator specifications and Agency specifications.
 - **Verification via primary sources that the provision of the phonetic spelling of the name and former surname on or after May 26, Reiwa 8 (2026-05-26)** is accompanied by the enforcement of the phonetic spelling system for names under the Basic Resident Registration Act. This skill relies solely on the wording of PDF 09 *1 and does not assert the background of the system.

@@ -32,10 +32,10 @@ description: iOS で NFC 読み取り UX とエラーメッセージ 日本語 �
 | NFC 無線が無効（機内モード等） | `readerErrorRadioDisabled` | 「NFC が使えない状態です。機内モードなどの設定を確認し、もう一度お試しください」 |
 | この端末が NFC 読み取り非対応 | エラーではなく `NFCTagReaderSession.readingAvailable == false` を事前判定 | 「この iPhone は NFC 読み取りに対応していません」（読み取りボタンを出さない） |
 | セキュリティ違反（entitlement 不備等） | `readerErrorSecurityViolation` | 実装・配布設定の不具合。利用者には一般的な失敗表示に留める |
-| APDU パラメータ／パケット長の不正 | `readerErrorInvalidParameter` / `readerErrorInvalidParameterLength` / `readerTransceiveErrorPacketTooLong` | 実装バグ。利用者には「読み取りに失敗しました」。ログで APDU を確認する |
+| APDU パラメータ／パケット長の不正 | `readerErrorInvalidParameter` / `readerErrorInvalidParameterLength` / `readerTransceiveErrorPacketTooLong` | 実装バグ。利用者には「読み取りに失敗しました」。デバッグ診断では機微ペイロードや PIN バイト列を除いた APDU ヘッダ・長さ（CLA/INS/P1/P2/Lc/Le）のみを確認する（生 APDU のログ出力禁止は `ios-security`） |
 | かざしたのがマイナンバーカードでない／対応 AP が無い | CoreNFC エラーなし。`didDetect` で `case .iso7816` 以外、または SELECT が `6A 82` を返す。自前で `session.invalidate(errorMessage:)` | 「マイナンバーカードを読み取れませんでした。マイナンバーカードであることを確認してください」 |
 | 暗証番号が違う | CoreNFC エラーなし。VERIFY 応答 `63 CX`（`X` が残り回数） | 「暗証番号が違います。残り ◯ 回入力できます」→ 詳細は `pin-lock-handling` |
-| 暗証番号がロックされた | CoreNFC エラーなし。VERIFY 応答 `69 83` | 「暗証番号がロックされました。市区町村の窓口などでの手続きが必要です」→ 導線は `pin-lock-handling` |
+| 暗証番号がロックされた | CoreNFC エラーなし。VERIFY 応答 `69 83` / `69 84` / `63 C0` | 「暗証番号がロックされました。市区町村の窓口などでの手続きが必要です」→ 導線は `pin-lock-handling` |
 
 - 成功時・失敗時とも `session.invalidate()` でセッションを閉じる。利用者に理由を見せたいときは `session.invalidate(errorMessage:)` を使うと、システムのスキャンシート上に赤字で文言が表示される。
 - 上表の詳細な文言・画面遷移は自前の UI 側で出す。システムシートの文言は短く、アプリ内の結果画面で「なぜ失敗したか」「次にどうするか」を丁寧に示す（PDF 33 の「失敗の理由を具体的に提示する」）。
@@ -86,7 +86,7 @@ session.invalidate(errorMessage: "読み取りに失敗しました。ケース�
 - **NFC / CoreNFC との関係**: Apple の「App Clip で機能しないフレームワーク一覧」に CoreNFC は含まれていない。App Clip 側でも NFC の capability / entitlement（`ios-corenfc-apdu` 参照）を設定する必要がある。ただし「App Clip 内で CoreNFC の読み取りセッションが動作する」と明記した Apple の公式記述は確認できていない（下記「未確認事項」）。実装前に検証すること。
 - **制約**:
   - App Clip はバックグラウンド動作ができない。NFC の**バックグラウンドタグ読み取り**は使えず、前面のリーダーセッション（`NFCTagReaderSession` / `NFCNDEFReaderSession`）に限られる。マイナンバーカード読み取りは前面セッションなので通常は問題ない。
-  - サイズ上限がある（iOS のバージョンにより 15 MB / 100 MB。詳細と条件は下記出典）。読み取り・暗証番号入力に必要な最小構成に絞る。
+  - サイズ上限がある（iOS 15 以前 10 MB / iOS 16 以前 15 MB / iOS 17 以降 最大 100 MB〔条件付き〕。詳細と条件は下記出典）。読み取り・暗証番号入力に必要な最小構成に絞る。
   - App Clip は対応する 1 つのフルアプリと組で提供し、フルアプリは App Clip と同じ機能を含む必要がある。
 - フルアプリと App Clip で読み取り・エラー処理コードを共有し、UX 文言・オンボーディングも同じものを使う。
 
@@ -115,7 +115,7 @@ session.invalidate(errorMessage: "読み取りに失敗しました。ケース�
 - <https://developer.apple.com/documentation/appclip/choosing-the-right-functionality-for-your-app-clip>（App Clip で「実行時に機能しないフレームワーク」一覧に CoreNFC は含まれない。App Clip はバックグラウンド動作不可。サイズ上限 iOS 15 以前 10 MB / iOS 16 以前 15 MB / iOS 17 以降 最大 100 MB（条件付き）。フルアプリと同一機能を含む単一ターゲットで提供。HTTP 200。取得日 2026-09-08）
 - `skills/ios-corenfc-apdu/SKILL.md` / `skills/pin-lock-handling/SKILL.md`（セッション実装・`alertMessage` 初期値・SW1SW2 の解釈との整合）
 
-## 最終確認日: 2026-09-08
+## 最終確認日: 2026-11-25
 
 ## 未確認事項
 
