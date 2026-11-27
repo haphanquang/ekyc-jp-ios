@@ -1,6 +1,6 @@
 # APDU / AID / SW1SW2 早見表
 
-最終確認日: 2026-11-25
+最終確認日: 2026-11-28
 
 > J-LIS の正式な技術仕様書は NDA が必要。本表は公開情報（TrustDock 解説記事、個人ブログ、
 > OSS 実装）からの整理であり、`未確認` の項目は実装前に必ず検証すること。
@@ -76,7 +76,7 @@
 - https://blog.moritamori.net/entry/my-number-card-with-apdu （「APDUプロトコルを通じてマイナンバーカードで電子署名する方法」）— JPKI-AP AID、SELECT `00 A4 04 0C`、VERIFY `00 20 00 80`、COMPUTE DIGITAL SIGNATURE `80 2A 00 80`、SW `63CX` / `6983` を応答コードとして言及。
 - https://zenn.dev/kopaneet/articles/1ee74f87eb31d3 （「マイナンバーカードから基本4情報の取得」）— 券面入力補助AP AID `D3 92 10 00 31 00 01 01 04 08`（tex2e と一致）、JPKI-AP AID、EF-ID の例（基本4情報 `00 02`、個人番号 `00 01`、入力補助用PIN `00 11`）、SELECT/VERIFY/READ BINARY の INS、本体は 3 バイト目に長さ・最大 112B・UTF-8、「連続3回失敗でロック」。取得日 2026-09-08。
 - https://www.digital.go.jp/assets/contents/node/basic_page/field_ref_resources/68bc86d6-94d7-4fe8-a592-302d78828e1f/d8c514f8/20231102_policies_mynumber_pros-and-safety_outline_01.pdf （デジタル庁「マイナンバーカードのアプリの概要／AP構成」）— 券面AP（＝券面事項確認AP）の用途＝対面での券面記載情報の改ざん検知・本人確認の証跡としての画像利用、記録情報＝表面：4情報＋顔写真の画像／裏面：マイナンバーの画像、アクセスコントロール＝マイナンバー12桁で表と裏、生年月日6桁＋有効期限西暦4桁＋セキュリティコード4桁で表のみ。券面入力補助AP のマイナンバーは「番号法に基づく事務でのみ利用可能」。AID・EF・APDU バイト列の記載はなし。取得日 2026-09-08。
-- https://qiita.com/ribig/items/3814cf7f095854ce0e61 （「マイナンバーカードから顔写真データを読み込む #APDU」）— 券面事項確認AP を SELECT・照合後にデータ EF を READ BINARY、外側 TLV `FF 20 82 <長さ2B>`、`DF 21`（ヘッダ）/ `DF 22`（生年月日）/ `DF 23`（性別）/ `DF 24`（公開鍵）/ `DF 27`（顔写真）、顔写真は JPEG2000（先頭 `00 00 0C 6A 50 20 20` 付近／末尾 `FF D9`、モノクロ表示）。AID・EF 識別子・VERIFY keyref の 16 進値は本文から抽出できず。個人ブログ・1ソース・要検証。取得日 2026-09-08。
+- https://qiita.com/ribig/items/3814cf7f095854ce0e61 （「マイナンバーカードから顔写真データを読み込む #APDU」）— 券面事項確認AP を SELECT・照合後にデータ EF を READ BINARY、外側 TLV `FF 20 82 <長さ2B>`、`DF 21`（ヘッダ）/ `DF 22`（生年月日）/ `DF 23`（性別）/ `DF 24`（公開鍵）/ `DF 27`（顔写真）、顔写真は JPEG2000（同ブログは先頭 `00 00 0C 6A 50 20 20` 付近／末尾 `FF D9` と記載。なお ISO/IEC 15444-1 の JP2 Signature Box 先頭は 4B 長さ `00 00 00 0C` + `'jP  '`=`6A 50 20 20` であり、先頭の `00` が 1B 欠落している点に注意）。AID・EF 識別子・VERIFY keyref の 16 進値は本文から抽出できず。個人ブログ・1ソース・要検証。取得日 2026-09-08。
 - https://tex2e.github.io/blog/protocol/jpki-mynumbercard-with-apdu — （上記 JPKI-AP に加え）**券面入力補助AP**: DF 名 `D3 92 10 00 31 00 01 01 04 08`、券面入力補助用PIN EF `00 11`、基本4情報 EF `00 02`、個人番号 EF `00 01`、VERIFY `00 20 00 80 04 31 32 33 34`（4 桁 PIN 例）、READ BINARY `00 B0 00 02 01`（長さ）→ `00 B0 00 00 71`（本体）、TLV `FF 20` / `DF 21`〜`DF 25`、性別 `31`=男/`32`=女/`33`=その他、氏名・住所は UTF-8、2023 年頃発行分は先頭に余分 2B。取得日 2026-09-08。
 
 - https://www.jpki.go.jp/procedure/password.html （J-LIS「公的個人認証サービス ポータルサイト」— 電子証明書のパスワードをロック／失念した場合の解除方法。署名用は「5回連続」でロック、利用者証明用は「3回連続」でロック。ロック解除は (a) もう一方のパスワードが使えればスマートフォンアプリ＋コンビニのキオスク端末で初期化、(b) マイナンバーカードを持参して住民票のある市区町村窓口で再設定。郵送・オンライン不可。HTTP 200。取得日 2026-09-08）

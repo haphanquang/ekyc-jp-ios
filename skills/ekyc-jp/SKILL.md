@@ -89,10 +89,10 @@ description: 日本のeKYC（マイナンバーカード・公的個人認証JPK
 - `references/yougoshuu.md` — 用語集
 - `references/apdu-cheatsheet.md` — APDU早見表
 - `references/sources.md` — 一次資料の一覧と取得日・ハッシュ
-- `references/jpki-introduction.ja.md` — デジタル庁「公的個人認証サービス（JPKI）による本人確認」
-- ライブ URL: <https://www.digital.go.jp/policies/mynumber/private-business/jpki-introduction>（取得日 2026-09-08）
+- `references/jpki-introduction.ja.md` — デジタル庁「公的個人認証サービス（JPKI）」
+- ライブ URL: <https://www.digital.go.jp/policies/mynumber/private-business/jpki-introduction>（取得日 2026-09-07）
 
-## 最終確認日: 2026-11-26
+## 最終確認日: 2026-11-28
 
 ## 未確認事項
 

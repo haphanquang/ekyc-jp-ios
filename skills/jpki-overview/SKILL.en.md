@@ -29,7 +29,7 @@ There are two types of electronic certificates.
 | Signing certificate | Creation and transmission of electronic documents such as applications and contracts. Can verify that it is an "authentic document created and transmitted by the person themselves" | In principle age 15+ (*) | **Retains** | Expiration of validity period, change in four basic attributes (moving, marriage, etc.), death or moving overseas of the person, etc. |
 | User-authentication certificate | Logging into websites, etc. Proves only that "the person is the user themselves". Identifies the logged-in person by the issue number | No age limit (from age 0) | Does not retain | Expiration of validity period, death or moving overseas of the person, etc. (Not revoked by changes in the four basic attributes) |
 
-* In principle, under Article 3, Paragraph 2 of the Public Personal Authentication Act, signing certificates are not issued to persons under 15 years of age or adult wards.
+* Because a signing certificate is equivalent to a registered seal (*jitsuin*), under Ministry of Internal Affairs and Communications (MIC) operational rules, signing certificates are in principle not issued to persons under 15 years of age or adult wards (excluding exceptional applications accompanied by a statutory agent at the municipal counter, etc.; this is not a statutory provision of Article 3, Paragraph 2 of the Public Personal Authentication Act).
 Electronic signatures using signing certificates can be subject to Article 3 (Presumption of Authentic Execution) of the Electronic Signatures Act.
 
 ## Actors and 2 Introduction Methods
@@ -112,8 +112,9 @@ PDFs under `references/pdfs/` are third-party works and are not shipped with the
 - `references/pdfs/05_private-sector-guidelines-v1.8.pdf` (Guidelines for Private Operators Using the Public Personal Authentication Service, Version 1.8)
 - `references/pdfs/21_guide-public-personal-authentication.pdf` (JPKI usage process and App Clip adoption example)
 - `references/pdfs/29_guide-trustdock-jpki.pdf` (Guide to TRUSTDOCK Public Personal Authentication Service, configuration example as an SP operator)
+- <https://www.soumu.go.jp/kojinbango_card/03.html> (Ministry of Internal Affairs and Communications "Structure of the My Number Card under the Individual Number System, etc." — Signing certificates are equivalent to a registered seal and therefore in principle not issued to persons under 15. Retrieved 2026-11-28)
 
-## Last Verified: 2026-11-24
+## Last Verified: 2026-11-28
 
 ## Unverified Items
 

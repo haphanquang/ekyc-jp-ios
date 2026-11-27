@@ -15,7 +15,7 @@ Method names such as the Act on Prevention of Transfer of Criminal Proceeds (He-
 - When checking the APDU for SELECT, unlock, and READ BINARY of the four basic attributes for the card-face input-assist application
 - When implementing a configuration where the user does not input a 4-digit PIN (unlocked with values written on the card face)
 
-The Individual Number (My Number) text (EF `00 01`) is also inside this AP, but reading it requires different unlocking and a legal basis under the Numbers Act (for the card-face confirmation AP used for back-side image / My Number reading and the Numbers Act compliance checklist, see `kenmen-jikou-kakunin-ap`). For lock/remaining count UX, see `pin-lock-handling`. To verify authenticity via electronic signature, use the Ka-method → `jpki-ap-shomei`.
+The Individual Number (My Number) text (EF `00 01`) is also inside this AP, but reading it requires a separate access path/unlock (such as the 4-digit PIN EF `00 11` rather than the 14-digit Verification Number B used in the He-method) and a legal basis under the Numbers Act (for the card-face confirmation AP used for back-side image / My Number reading and the Numbers Act compliance checklist, see `kenmen-jikou-kakunin-ap`). For lock/remaining count UX, see `pin-lock-handling`. To verify authenticity via electronic signature, use the Ka-method → `jpki-ap-shomei`.
 
 ## Prerequisites
 
@@ -118,7 +118,7 @@ PDFs under `references/pdfs/` are third-party works and are not shipped with the
 - <https://tex2e.github.io/blog/protocol/jpki-mynumbercard-with-apdu> ("Creating signature data with My Number Card and APDU" — Card-face input-assist AP DF Name `D3 92 10 00 31 00 01 01 04 08`, SELECT `00 A4 04 0C` / `00 A4 02 0C`, card-face input-assist PIN EF `00 11`, 4 basic attributes EF `00 02`, VERIFY `00 20 00 80 04 31 32 33 34`, READ BINARY `00 B0 00 02 01` → `00 B0 00 00 71`, TLV `FF 20` / `DF 21` to `DF 25`, Sex `31`/`32`/`33`, Name/Address are UTF-8, prefix 2-byte correction for cards issued around 2023. Retrieved on 2026-09-08)
 - <https://zenn.dev/kopaneet/articles/1ee74f87eb31d3> ("Acquiring 4 basic attributes from My Number Card" — Card-face input-assist AP AID `D3 92 10 00 31 00 01 01 04 08`, EF-IDs (4 basic attributes `00 02` / Individual Number `00 01` / Input-assist PIN `00 11`), order of SELECT/VERIFY/READ BINARY, body length is at the 3rd byte, max 112 bytes, UTF-8, locks after 3 consecutive failures. Retrieved on 2026-09-08)
 
-## Last Verified: 2026-11-26
+## Last Verified: 2026-11-28
 
 ## Unverified Items
 

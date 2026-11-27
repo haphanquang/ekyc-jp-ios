@@ -7,7 +7,7 @@ description: Used when designing the acquisition of user consent using the four 
 
 A reference summarizing the definition of the four basic attributes, the mechanism of the service, the consent screen requirements demanded by the Ministry of Internal Affairs and Communications / Digital Agency, and the validity period and withdrawal of consent when incorporating the "Latest User Information (Four Basic Attributes) Provision Service", which is a value-added service of the Public Personal Authentication Service, into your company.
 
-- This service is a value-added service **based on the Public Personal Authentication Act (Act on Certification Business of Local Government Information Systems Institution Pertaining to Electronic Signatures, etc.)**, and operates on a different institutional track from non-face-to-face identity verification methods. The selection, legal basis, and enforcement dates of identity verification methods are not covered in this skill. Refer to `honnin-kakunin-houhou`.
+- This service is a value-added service **based on the Public Personal Authentication Act (Act on Certification Services of the Japan Agency for Local Authority Information Systems Related to Electronic Signatures, etc.)**, and operates on a different institutional track from non-face-to-face identity verification methods. The selection, legal basis, and enforcement dates of identity verification methods are not covered in this skill. Refer to `honnin-kakunin-houhou`.
 - For server-side preservation of acquired consent information, transmission to the Agency, and lifecycle management, refer to `doui-jouhou-kanri`.
 - For the overall picture and actors involved in electronic certificate verification and validity checking, refer to `jpki-overview`.
 
@@ -147,9 +147,10 @@ PDFs under `references/pdfs/` are third-party works and are not shipped with the
 - `references/pdfs/11_personal-consent-support-mynaportal.pdf` — "'User Consent Acquisition Support Service' for the 'Four Basic Attributes Provision Service' Leveraging Mynaportal". Consent flow via QR/links, linked information (consent information, electronic certificate information, PPID, etc.).
 - `references/pdfs/05_private-sector-guidelines-v1.8.pdf` §5 "Overview of the Latest User Information (Four Basic Attributes) Provision Service Based on User Consent" (pages 44–51, Version 1.8, 2026-04-13). Mechanism (Figure 5-2), acquisition and cancellation of consent, example of calculating the 10-year validity period (§5(3)⑤), User Client Software (Windows/Android/Mac/iOS versions), fee 20 yen per case.
 - `references/jpki-introduction.ja.md` (§6.1 "Latest User Information (4 Attributes) Provision Service" started May 16, 2023, §6.1.1 "User Consent Acquisition Support Service" started October 29, 2024. Digital Agency, acquired 2026-09-07).
+- `references/hourei-eKYC.md` (§4 Public Personal Authentication Act `414AC0000000153_20260614_506AC0000000059`, §7 Enforcement Ordinance Article 35-2(4)–(5) [10-year validity and anytime cancellation of consent for latest 4-attributes provision] `415M60000008120_20260614_508M60004008011`).
 - Live URL: <https://www.digital.go.jp/policies/mynumber/private-business/jpki-introduction> (Acquired 2026-09-07)
 
-## Last Verified: 2026-11-24
+## Last Verified: 2026-11-28
 
 ## Unverified Items
 

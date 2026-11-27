@@ -89,10 +89,10 @@ This skill does not hold detailed knowledge. Refer to each skill and `references
 - `references/yougoshuu.md` — Glossary
 - `references/apdu-cheatsheet.md` — APDU cheat sheet
 - `references/sources.md` — List of primary sources and acquisition dates/hashes
-- `references/jpki-introduction.ja.md` — Digital Agency "Identity Verification by Public Personal Authentication Service (JPKI)"
-- Live URL: <https://www.digital.go.jp/policies/mynumber/private-business/jpki-introduction> (Acquired 2026-09-08)
+- `references/jpki-introduction.ja.md` — Digital Agency "Public Personal Authentication Service (JPKI)"
+- Live URL: <https://www.digital.go.jp/policies/mynumber/private-business/jpki-introduction> (Acquired 2026-09-07)
 
-## Last Verified: 2026-11-26
+## Last Verified: 2026-11-28
 
 ## Unverified Items
 

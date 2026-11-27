@@ -39,7 +39,7 @@ plausible guess. When a value is not confirmed, the skill says so.
 | Plugin | `ekyc-jp` v0.1.0 · 19 skills · knowledge and procedure only |
 | Skill language | Japanese (`SKILL.md`). Each skill also has a `SKILL.en.md` English reference translation, which Claude Code does not load |
 | Quality checks | `claude plugin validate` passes · 115 `claude plugin eval` triggering cases |
-| Last reviewed | 2026-11-26 |
+| Last reviewed | 2026-11-28 |
 | License | [MIT](LICENSE) (third-party documents excluded, see [License](#license)) |
 
 ## Key terms in 30 seconds
