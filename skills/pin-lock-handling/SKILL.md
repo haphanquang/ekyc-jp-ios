@@ -70,7 +70,7 @@ enum PINInputError: Error { case invalidFormat, invalidInput }
 func pinBytes(_ input: String, kind: PINKind) throws -> [UInt8] {
     // 日本語 IME の全角数字・全角英字（「１２３４」「ＡＢＣ」）を半角へ（NFKC）
     var s = input.precomposedStringWithCompatibilityMapping
-    if kind == .shomei { s = s.uppercased() }   // 署名用は英大文字＋数字
+    if kind == .shomei { s = s.uppercased(with: Locale(identifier: "en_US_POSIX")) }   // 署名用は英大文字＋数字（ロケール非依存）
     let pattern: String
     switch kind {
     case .riyousha, .kenmenHojo: pattern = "\\A[0-9]{4}\\z"
@@ -188,7 +188,7 @@ func checkRemainingAttempts(pinEFID: [UInt8], p2: UInt8 = 0x80, aid: [UInt8]? = 
 - https://services.digital.go.jp/mynumbercard/info-passcode/ （デジタル庁「マイナンバーカードの券面事項入力補助用暗証番号」— 4 桁・3 回でロック。券面AP読み取りの照会番号は 14 桁で、続けて 10 回誤るとカードがロック。HTTP 200。取得日 2026-09-08）
 - https://www.city.matsuyama.ehime.jp/kurashi/tetsuzuki/mynumberseido/syo-go-bango.html （松山市「照合番号Bのロック解除」— 照合番号B（14 桁）を 10 回連続で誤るとロック、顔認証 10 回連続失敗でもロック、市区町村窓口で解除。HTTP 200。取得日 2026-09-08）
 
-## 最終確認日: 2026-09-08
+## 最終確認日: 2026-11-27
 
 ## 未確認事項
 

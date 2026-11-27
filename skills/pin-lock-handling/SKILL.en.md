@@ -70,7 +70,7 @@ enum PINInputError: Error { case invalidFormat, invalidInput }
 func pinBytes(_ input: String, kind: PINKind) throws -> [UInt8] {
     // Convert full-width numbers and full-width letters from Japanese IME ("１２３４", "ＡＢＣ") to half-width (NFKC)
     var s = input.precomposedStringWithCompatibilityMapping
-    if kind == .shomei { s = s.uppercased() }   // Signature requires uppercase letters + numbers
+    if kind == .shomei { s = s.uppercased(with: Locale(identifier: "en_US_POSIX")) }   // Signature requires uppercase ASCII letters + numbers (locale-independent)
     let pattern: String
     switch kind {
     case .riyousha, .kenmenHojo: pattern = "\\A[0-9]{4}\\z"
@@ -188,7 +188,7 @@ PDFs under `references/pdfs/` are third-party works and are not shipped with the
 - https://services.digital.go.jp/mynumbercard/info-passcode/ (Digital Agency "My Number Card Surface Input Assistance PIN" — 4 digits, locks after 3. Card surface AP reading 14-digit inquiry number locks after 10 consecutive errors. HTTP 200. Retrieved 2026-09-08)
 - https://www.city.matsuyama.ehime.jp/kurashi/tetsuzuki/mynumberseido/syo-go-bango.html (Matsuyama City "Releasing Inquiry Number B Lock" — Inquiry Number B (14 digits) locks after 10 consecutive errors, face recognition locks after 10 consecutive failures, release at municipal office. HTTP 200. Retrieved 2026-09-08)
 
-## Last Verified: 2026-09-08
+## Last Verified: 2026-11-27
 
 ## Unverified Items
 

@@ -1,6 +1,6 @@
 # Source List (sources manifest)
 
-Last updated: 2026-11-26
+Last updated: 2026-11-27
 
 The `sources-refresh` skill reads this file to detect changes in primary sources.
 If a URL changes, a document disappears, or a new document is added, update this table
@@ -26,7 +26,7 @@ Article excerpts are in `hourei-eKYC.md`. The `refresh.sh` script of `sources-re
 | # | Law | LawId | Retrieved Revision | e-Gov | Retrieved | Skills Used |
 |---|---|---|---|---|---|---|
 | L1 | Ordinance for Enforcement of the Act on Prevention of Transfer of Criminal Proceeds (current) (犯罪収益移転防止法施行規則（現行）) | 420M60000F5A001 | 420M60000F5A001_20260806_508M60000F5A006 | https://laws.e-gov.go.jp/law/420M60000F5A001 | 2026-09-10 | honnin-kakunin-houhou, jpki-overview, platform-jigyousha, signature-verification, ekyc-session-orchestration, doui-jouhou-kanri |
-| L2 | Ordinance for Enforcement of the Act on Prevention of Transfer of Criminal Proceeds (version effective 2027-04-01, not yet in force) (犯罪収益移転防止法施行規則（2027-04-01 未施行版）) | 420M60000F5A001 | 420M60000F5A001_20270401_508M60000F5A005 | https://laws.e-gov.go.jp/law/420M60000F5A001?asof=2027-04-01 | 2026-09-10 | honnin-kakunin-houhou, platform-jigyousha, signature-verification, doui-jouhou-kanri |
+| L2 | Ordinance for Enforcement of the Act on Prevention of Transfer of Criminal Proceeds (version effective 2027-04-01, not yet in force) (犯罪収益移転防止法施行規則（2027-04-01 未施行版）) | 420M60000F5A001 | 420M60000F5A001_20270401_508M60000F5A005 | https://laws.e-gov.go.jp/law/420M60000F5A001?asof=2027-04-01 | 2026-09-10 | honnin-kakunin-houhou, jpki-overview, platform-jigyousha, signature-verification, doui-jouhou-kanri |
 | L3 | Ordinance for Enforcement of the Mobile Phone Fraud Prevention Act (current) (携帯電話不正利用防止法施行規則（現行）) | 417M60000008167 | 417M60000008167_20260806_508M60000008099 | https://laws.e-gov.go.jp/law/417M60000008167 | 2026-09-10 | honnin-kakunin-houhou |
 | L3b | Ordinance for Enforcement of the Mobile Phone Fraud Prevention Act (version effective 2027-04-01, not yet in force) (携帯電話不正利用防止法施行規則（2027-04-01 未施行版）) | 417M60000008167 | 417M60000008167_20270401_508M60000008094 | https://laws.e-gov.go.jp/law/417M60000008167?asof=2027-04-01 | 2026-11-02 | honnin-kakunin-houhou |
 | L4 | Act on Certification Services of the Japan Agency for Local Authority Information Systems Related to Electronic Signatures, etc. (Public Personal Authentication Act) (電子署名等に係る地方公共団体情報システム機構の認証業務に関する法律（公的個人認証法）) | 414AC0000000153 | 414AC0000000153_20260614_506AC0000000059 | https://laws.e-gov.go.jp/law/414AC0000000153 | 2026-09-10 | honnin-kakunin-houhou, platform-jigyousha, jpki-overview, kihon-4-jouhou-doui, doui-jouhou-kanri |
@@ -37,7 +37,7 @@ Article excerpts are in `hourei-eKYC.md`. The `refresh.sh` script of `sources-re
 | L9 | Ordinance for Enforcement of the Public Personal Authentication Act (current) (公的個人認証法施行規則（現行）) | 415M60000008120 | 415M60000008120_20260614_508M60004008011 | https://laws.e-gov.go.jp/law/415M60000008120 | 2026-11-24 | honnin-kakunin-houhou, platform-jigyousha, doui-jouhou-kanri |
 
 L5 (the Act on Prevention of Transfer of Criminal Proceeds itself) has no verbatim extract or recorded revision in `hourei-eKYC.md` and is not cross-checked by `refresh.sh` (L1–L3, L3b, L4, and L6–L9 are automatically cross-checked by `refresh.sh`).
-During `sources-refresh`, check `https://laws.e-gov.go.jp/api/2/law_revisions/419AC0000000022` if needed.
+During `sources-refresh`, check `https://laws.e-gov.go.jp/api/2/law_revisions/419AC0000000022` if needed (as of 2026-11-27, the current enforced revision is `419AC0000000022_20260812_508AC0000000064`, and none of the 4 unenforced future revisions on e-Gov [2027-04-01 / 2027-06-09 Act No. 34 of 2026 / 2027-07-22 / 2027-10-01] amend Articles 4, 6, or 7 on verification and verification records).
 
 ## PDF Documents
 

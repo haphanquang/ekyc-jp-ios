@@ -1,6 +1,6 @@
 # 出典一覧（sources manifest）
 
-最終更新: 2026-11-26
+最終更新: 2026-11-27
 
 `sources-refresh` スキルが本ファイルを読み取り、一次資料の差分を検出します。
 URL が変わった・資料が消えた・新規追加された場合は本表を更新し、
@@ -26,7 +26,7 @@ PDF は第三者の著作物のためリポジトリに含めません。`refres
 | # | 法令 | LawId | 取得リビジョン | e-Gov | 取得日 | 使用スキル |
 |---|---|---|---|---|---|---|
 | L1 | 犯罪収益移転防止法施行規則（現行） | 420M60000F5A001 | 420M60000F5A001_20260806_508M60000F5A006 | https://laws.e-gov.go.jp/law/420M60000F5A001 | 2026-09-10 | honnin-kakunin-houhou, jpki-overview, platform-jigyousha, signature-verification, ekyc-session-orchestration, doui-jouhou-kanri |
-| L2 | 犯罪収益移転防止法施行規則（2027-04-01 未施行版） | 420M60000F5A001 | 420M60000F5A001_20270401_508M60000F5A005 | https://laws.e-gov.go.jp/law/420M60000F5A001?asof=2027-04-01 | 2026-09-10 | honnin-kakunin-houhou, platform-jigyousha, signature-verification, doui-jouhou-kanri |
+| L2 | 犯罪収益移転防止法施行規則（2027-04-01 未施行版） | 420M60000F5A001 | 420M60000F5A001_20270401_508M60000F5A005 | https://laws.e-gov.go.jp/law/420M60000F5A001?asof=2027-04-01 | 2026-09-10 | honnin-kakunin-houhou, jpki-overview, platform-jigyousha, signature-verification, doui-jouhou-kanri |
 | L3 | 携帯電話不正利用防止法施行規則（現行） | 417M60000008167 | 417M60000008167_20260806_508M60000008099 | https://laws.e-gov.go.jp/law/417M60000008167 | 2026-09-10 | honnin-kakunin-houhou |
 | L3b | 携帯電話不正利用防止法施行規則（2027-04-01 未施行版） | 417M60000008167 | 417M60000008167_20270401_508M60000008094 | https://laws.e-gov.go.jp/law/417M60000008167?asof=2027-04-01 | 2026-11-02 | honnin-kakunin-houhou |
 | L4 | 電子署名等に係る地方公共団体情報システム機構の認証業務に関する法律（公的個人認証法） | 414AC0000000153 | 414AC0000000153_20260614_506AC0000000059 | https://laws.e-gov.go.jp/law/414AC0000000153 | 2026-09-10 | honnin-kakunin-houhou, platform-jigyousha, jpki-overview, kihon-4-jouhou-doui, doui-jouhou-kanri |
@@ -37,7 +37,7 @@ PDF は第三者の著作物のためリポジトリに含めません。`refres
 | L9 | 公的個人認証法施行規則（現行） | 415M60000008120 | 415M60000008120_20260614_508M60004008011 | https://laws.e-gov.go.jp/law/415M60000008120 | 2026-11-24 | honnin-kakunin-houhou, platform-jigyousha, doui-jouhou-kanri |
 
 L5（犯収法 本法）は `hourei-eKYC.md` に条文抜粋・取得リビジョンを持たないため `refresh.sh` の自動突合対象外（L1〜L3, L3b, L4, L6〜L9 は `refresh.sh` で自動突合）。
-`sources-refresh` の際に必要に応じ `https://laws.e-gov.go.jp/api/2/law_revisions/419AC0000000022` を確認する。
+`sources-refresh` の際に必要に応じ `https://laws.e-gov.go.jp/api/2/law_revisions/419AC0000000022` を確認する（2026-11-27 確認時点で現行施行リビジョンは `419AC0000000022_20260812_508AC0000000064` であり、e-Gov 上の未施行改正 4 件〔2027-04-01 / 2027-06-09 令和8年法律第34号 / 2027-07-22 / 2027-10-01〕はいずれも第4条・第6条・第7条の本人確認・確認記録規定を改正しない）。
 
 ## PDF 資料
 

@@ -39,7 +39,7 @@ description: サーバー側で 1 回の eKYC セッションを設計・実装�
 | `rejected` | いずれかのステップが失敗（署名不一致・nonce 不一致・失効・4情報不一致・liveness 不合格・タイムアウト等）。事由を記録し session token を失効 | （終端） | — |
 | `expired` | 全体 TTL または nonce TTL を超過。事由を記録し session token を失効 | （終端） | — |
 
-- **全体 TTL は短く保つ**（IC 読取・撮影・通信の現実的な所要時間 ＋ 余裕。長時間開いたセッションは攻撃者の作業時間になる）。具体値は運用・離脱率とのトレードオフで決め、`未確認事項`に残す。
+- **全体 TTL は短く保つ**（IC 読取・撮影・通信の現実的な所要時間 ＋ 余裕。長時間開いたセッションは攻撃者の作業時間になる）。具体値は運用・離脱率とのトレードオフで決め（標準推奨ベースラインは下記手順 2「TTL の推奨基準」参照）、公式な一次推奨 SLA が存在しない点は `未確認事項` に残す。
 - 状態を飛ばす不正な遷移（`created` → `signed` 等）、許可されていない後退遷移、終端からの遷移はすべて拒否し `rejected` として監査に残す。正規の遷移パスは次の 2 系統のいずれかに限定する: (a) 純粋な JPKI（カ方式／`jpki-ap-shomei`・`jpki-ap-riyousha`）: `created` → `nonce_issued` → `signed`（1 回の NFC セッション内で PIN `VERIFY`・署名生成・証明書読取が不可分に実行されるため、直接遷移または `card_read` ＋ `signed` 一括記録を正当とみなし、状態飛ばしとして拒否しない）、(b) ヘ方式等の PAD 先行フロー: `created` → `card_read`（容貌撮影・PAD 完了）→ `nonce_issued` → `signed`（または `created` → `nonce_issued` → `card_read` → `signed`）。
 - **セッション作成・nonce 発行のレート制限と同時セッション数制限**: `(user_id / applicant_id, operation_type)` ごとに同時アクティブセッション数の上限（例: 1 件、新規開始時は旧セッションを失効）と、セッション作成・nonce 発行・署名提出のレート制限を設ける。検証失敗時に nonce が消費済みとなる設計上、無制限な新規 nonce 再発行による CPU／PF事業者 API 枯渇を防ぎ、連続失敗や `pin-lock-handling` のカード閉塞シグナル時はセッションを停止・クールダウンする。
 - `verifying` / `validity_checked` での失敗は再試行の余地があるもの（ネットワーク・5xx）と確定失敗（署名不一致・失効）を区別する。確定失敗は即 `rejected`。再試行は `jlis-yukousei-kakunin` の有界リトライ設計に従い、上限到達で `rejected`。このとき、原子的な nonce 消費（`signature-verification`）と受信した `signed` ペイロード／冪等状態（`verifying` への遷移）の保存は**同一の原子的 DB トランザクション**で行い、下流の `jlis-yukousei-kakunin` 呼び出しが一時的な 5xx／ネットワークエラーで失敗した際に、同じ `Idempotency-Key` でのリトライが「nonce 消費済み」で失敗せず `verifying` から再開できるようにする。
@@ -88,7 +88,7 @@ description: サーバー側で 1 回の eKYC セッションを設計・実装�
   - **容貌真贋判定** — ディスプレイ攻撃・写真攻撃によるなりすましを検知する真贋判定。同社の顔認証向けなりすまし検知 AI「**Liquid PAD**」（`references/pdfs/33_guide-liquid-ekyc.pdf` p19）。
   - **カメラインジェクション攻撃判定** — スマホや PC のカメラ制御をハッキングし、ツールで仮想的な映像に差し替えた攻撃かどうかを判定（同 p19）。
   - **容貌パッシブ判定** — ランダムアクション（表情筋 ＋ フラッシュ）を省いても真贋を確認できる有償オプション。スコアが低い場合は目視確認へ（同 p10）。
-  - 過去ユーザー同一人物判定・顔／本人特定事項の使いまわし判定・警告リスト判定（約 10,000 件の容貌データ等）との突合（同 p19）。
+  - 過去ユーザー同一人物判定・顔／本人特定事項の使いまわし判定・警告リスト判定（約 10,000 件の容貌データ等）との突合（同 p10・p19）。
 - **PAD（Presentation Attack Detection）の国際規格 `ISO/IEC 30107`** は実在の標準。LIQUID は「Liquid PAD」が第三者評価機関 Fime 社から `ISO/IEC 30107` の公式確認書を受領したとしている（同 p20）。自前実装・他ベンダー採用いずれでも、真贋判定の評価軸として `ISO/IEC 30107` を基準にできる。
 - 設計上の扱い: 容貌撮影を含むフロー（ヘ方式、または容貌撮影＋サーバー側 PAD を組み合わせるフロー）では `card_read` の完了条件に「サーバー側 liveness / 真贋判定（PAD）に合格」を含め、不合格は `rejected`。このとき、容貌撮影とサーバー側 PAD（`card_read`）がカードかざし前の短い署名用 `nonce` TTL を食い潰して期限切れにしないよう、撮影・PAD 完了後に署名用 `nonce` を払い出すか TTL を分離する。スコアが閾値未満のグレーゾーンは目視審査キューへ回し、自動で `completed` にしない。判定結果（スコア、判定モデル、警告リスト該当有無）を監査ログに残す。
 - 犯収法ヘ方式等における容貌画像の確認記録への添付・保存期間（契約終了日等から 7 年。施行規則第19条第1項第2号）は `honnin-kakunin-houhou`「確認記録の作成・保存」および `references/hourei-eKYC.md` を参照（同意情報ストアとの分離設計は `doui-jouhou-kanri`）。
@@ -126,7 +126,7 @@ description: サーバー側で 1 回の eKYC セッションを設計・実装�
 - <https://developer.apple.com/documentation/devicecheck/dcappattestservice>（Apple「DCAppAttestService」— App Attest の `generateKey()` / `attestKey(_:clientDataHash:)` / `generateAssertion(_:clientDataHash:)`。取得日 2026-09-08、HTTP 200）
 - <https://developer.apple.com/documentation/devicecheck/validating-apps-that-connect-to-your-server>（Apple「Validating apps that connect to your server」— サーバー発行 challenge の検証、assertion のカウンタ検証。取得日 2026-09-08、HTTP 200）
 
-## 最終確認日: 2026-11-25
+## 最終確認日: 2026-11-27
 
 ## 未確認事項
 
